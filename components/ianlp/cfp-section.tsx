@@ -86,7 +86,7 @@ export default function CFPSection() {
           </p>
           <a
             href="#submission"
-            className="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-primary to-accent text-white font-semibold rounded-lg hover:shadow-lg transition-all hover:shadow-primary/20"
+            className="inline-flex items-center justify-center px-8 py-3 bg-[#002bb8] text-white font-semibold rounded-lg hover:shadow-lg transition-all hover:shadow-primary/20"
           >
             Submit Your Research
           </a>
@@ -139,12 +139,12 @@ export default function CFPSection() {
         </div>
 
         {/* CTA Strip */}
-        <div className="p-8 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg text-center">
+        <div className="p-8 bg-[#002bb8]/10 border border-[#002bb8]/20 rounded-lg text-center">
           <p className="text-muted-foreground mb-4">Ready to submit your research?</p>
           <Button
             disabled
             size="lg"
-            className="bg-gradient-to-r from-primary to-accent text-white"
+            className="bg-[#002bb8] text-white"
             title="Coming soon"
           >
             Submit Paper on EasyChair (Coming Soon)

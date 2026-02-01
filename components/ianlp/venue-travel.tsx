@@ -92,7 +92,7 @@ export default function VenueTravel() {
           >
             <Card className="p-8 h-full border border-border/50 hover:border-primary/30 transition-colors">
               <div className="flex items-center gap-3 mb-6">
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center">
+                <div className="h-12 w-12 rounded-lg bg-[#002bb8] text-white flex items-center justify-center">
                   <MapPin size={24} />
                 </div>
                 <h3 className="text-2xl font-bold text-foreground">Venue</h3>
@@ -198,7 +198,7 @@ export default function VenueTravel() {
         </div>
 
         {/* Map Placeholder */}
-        <Card className="p-8 border border-border/50 bg-gradient-to-br from-primary/5 to-accent/5 overflow-hidden">
+        <Card className="p-8 border border-border/50 bg-[#002bb8]/5 overflow-hidden">
           <div className="relative bg-muted rounded-lg overflow-hidden h-96 flex items-center justify-center">
             <div className="text-center">
               <div className="text-4xl mb-4">📍</div>

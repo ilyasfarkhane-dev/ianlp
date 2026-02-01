@@ -87,7 +87,7 @@ export default function Contact() {
           <div className="space-y-6">
             <Card className="p-8 border border-border/50">
               <div className="flex items-start gap-4 mb-6">
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center flex-shrink-0">
+                <div className="h-12 w-12 rounded-lg bg-[#002bb8] text-white flex items-center justify-center flex-shrink-0">
                   <Mail size={24} />
                 </div>
                 <div>
@@ -104,7 +104,7 @@ export default function Contact() {
 
             <Card className="p-8 border border-border/50">
               <div className="flex items-start gap-4 mb-6">
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-accent to-secondary text-white flex items-center justify-center flex-shrink-0">
+                <div className="h-12 w-12 rounded-lg bg-[#002bb8] text-white flex items-center justify-center flex-shrink-0">
                   <Phone size={24} />
                 </div>
                 <div>
@@ -121,7 +121,7 @@ export default function Contact() {
 
             <Card className="p-8 border border-border/50">
               <div className="flex items-start gap-4">
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-secondary to-primary text-white flex items-center justify-center flex-shrink-0">
+                <div className="h-12 w-12 rounded-lg bg-[#002bb8] text-white flex items-center justify-center flex-shrink-0">
                   <MapPin size={24} />
                 </div>
                 <div>

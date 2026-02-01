@@ -88,13 +88,13 @@ export default function ReviewProcess() {
               </ul>
             </div>
 
-            <div className="p-6 bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-lg">
+            <div className="p-6 bg-[#002bb8]/10 border border-[#002bb8]/20 rounded-lg">
               <h3 className="font-bold text-lg text-foreground mb-4">
                 Evaluation Criteria
               </h3>
               <ul className="space-y-2 text-sm text-foreground/80">
                 <li className="flex gap-2">
-                  <span className="text-primary font-semibold">1.</span>
+                  <span className="text-[#002bb8] font-semibold">1.</span>
                   <span>Novelty and originality</span>
                 </li>
                 <li className="flex gap-2">

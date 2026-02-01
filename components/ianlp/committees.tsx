@@ -126,7 +126,7 @@ export default function Committees() {
               >
                 <Card className="p-6 border border-border/50 hover:border-primary/30 transition-all hover:shadow-md h-full">
                   <div className="flex items-start gap-3 mb-3">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-bold">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-[#002bb8] text-white flex items-center justify-center font-bold">
                       {member.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">

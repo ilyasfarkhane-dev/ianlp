@@ -95,8 +95,8 @@ export default function Topics() {
               }}
             >
               <Badge
-                variant="secondary"
-                className="px-4 py-2 text-sm font-medium hover:bg-primary/80 hover:text-white transition-colors cursor-default"
+                variant="outline"
+                className="px-4 py-2 text-sm font-medium hover:bg-[#002bb8]/80 hover:text-white transition-colors cursor-default"
               >
                 {topic}
               </Badge>

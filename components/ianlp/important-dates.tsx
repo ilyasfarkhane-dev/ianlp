@@ -99,7 +99,7 @@ export default function ImportantDates() {
               <Card className="p-6 h-full border border-border/50 hover:border-primary/30 transition-colors">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent text-white font-bold">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#002bb8] text-white font-bold">
                       {index + 1}
                     </div>
                   </div>
@@ -120,23 +120,6 @@ export default function ImportantDates() {
           ))}
         </div>
 
-        {/* Timeline Visual */}
-        <div className="mt-16 relative">
-          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary to-accent transform -translate-x-1/2 hidden md:block" />
-          <div className="space-y-8 md:space-y-12">
-            {dates.map((item, index) => (
-              <div key={item.label} className="hidden md:block">
-                <div className={`flex gap-8 ${index % 2 === 0 ? '' : 'flex-row-reverse'}`}>
-                  <div className="flex-1 text-right" />
-                  <div className="flex justify-center">
-                    <div className="h-4 w-4 rounded-full bg-gradient-to-br from-primary to-accent ring-4 ring-background" />
-                  </div>
-                  <div className="flex-1" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   )

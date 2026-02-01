@@ -37,7 +37,7 @@ export default function Navbar() {
 
     ScrollTrigger.create({
       onUpdate: (self) => {
-        if (self.getVelocity() > 500 || self.momentum() > 0.5) {
+        if (self.getVelocity() > 500 || self.getMomentum() > 0.5) {
           gsap.to(navRef.current, { className: '+=blur-active' })
         } else {
           gsap.to(navRef.current, { className: '-=blur-active' })
@@ -65,12 +65,9 @@ export default function Navbar() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
-            <span className="text-sm font-bold text-white">AI</span>
-          </div>
+        
           <div className="hidden sm:block">
-            <h1 className="text-lg font-bold text-primary">IANLP 2026</h1>
-            <p className="text-xs text-muted-foreground">AI for NLP</p>
+            <h1 className="text-lg font-bold text-[#002bb8]">IANLP 2026</h1>
           </div>
         </div>
 
@@ -100,7 +97,7 @@ export default function Navbar() {
           <Button
             disabled
             size="sm"
-            className="bg-gradient-to-r from-primary to-accent text-white"
+            className="bg-[#002bb8] text-white"
             title="Coming soon"
           >
             Submit Paper
@@ -142,7 +139,7 @@ export default function Navbar() {
               </Button>
               <Button
                 disabled
-                className="w-full bg-gradient-to-r from-primary to-accent text-white"
+                className="w-full bg-[#002bb8] text-white"
                 size="sm"
                 title="Coming soon"
               >

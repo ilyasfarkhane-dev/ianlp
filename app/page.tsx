@@ -7,7 +7,7 @@ export default function Home() {
       <div className="text-center space-y-6 max-w-2xl">
         <div>
           <h1 className="text-5xl font-bold text-foreground mb-2">IANLP 2026</h1>
-          <p className="text-2xl text-primary font-semibold">
+          <p className="text-2xl text-[#002bb8] font-semibold">
             1st International Conference on AI for Natural Language Processing
           </p>
         </div>
@@ -20,7 +20,7 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
           <Link href="/ianlp">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-accent text-white">
+            <Button size="lg" className="bg-[#002bb8] text-white">
               Explore Conference
             </Button>
           </Link>

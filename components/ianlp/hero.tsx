@@ -97,7 +97,7 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="#cfp"
-                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary to-accent text-white font-semibold rounded-lg hover:shadow-lg transition-all hover:shadow-primary/20"
+                className="inline-flex items-center justify-center px-6 py-3 bg-[#002bb8] text-white font-semibold rounded-lg hover:shadow-lg transition-all hover:shadow-primary/20"
               >
                 Call for Papers <ArrowRight className="ml-2 h-5 w-5" />
               </a>
