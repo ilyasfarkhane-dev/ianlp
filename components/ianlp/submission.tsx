@@ -3,13 +3,21 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTranslations } from 'next-intl'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle2 } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const submissionCards = [
+  { titleKey: 'platform', descKey: 'platformDesc', itemKeys: ['platform1', 'platform2', 'platform3'] },
+  { titleKey: 'format', descKey: 'formatDesc', itemKeys: ['format1', 'format2', 'format3'] },
+  { titleKey: 'keyReqs', descKey: 'keyReqsDesc', itemKeys: ['keyReqs1', 'keyReqs2', 'keyReqs3'] },
+]
+
 export default function Submission() {
+  const t = useTranslations('submission')
   const containerRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
@@ -77,55 +85,31 @@ export default function Submission() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Submission Guidelines
+            {t('title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to know about submitting your research to IANLP 2026
+            {t('subtitle')}
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          {[
-            {
-              title: 'Submission Platform',
-              description: 'EasyChair',
-              items: ['Link to be added', 'Easy manuscript upload', 'Real-time status tracking'],
-            },
-            {
-              title: 'Paper Format',
-              description: 'Official LNCS Template',
-              items: [
-                'Available in Word & LaTeX',
-                'Full papers: 12-15 pages',
-                'Includes references',
-              ],
-            },
-            {
-              title: 'Key Requirements',
-              description: 'Submission Policy',
-              items: [
-                'Original & unpublished work',
-                'Double-blind (anonymized)',
-                '3+ independent reviews',
-              ],
-            },
-          ].map((card, idx) => (
+          {submissionCards.map((card, idx) => (
             <div
-              key={card.title}
+              key={card.titleKey}
               ref={(el) => {
                 cardsRef.current[idx] = el
               }}
             >
               <Card className="p-6 h-full border border-border/50 hover:border-primary/30 transition-colors">
-                <Badge className="mb-3">{card.description}</Badge>
+                <Badge className="mb-3">{t(card.descKey)}</Badge>
                 <h3 className="text-xl font-bold text-foreground mb-4">
-                  {card.title}
+                  {t(card.titleKey)}
                 </h3>
                 <ul className="space-y-2">
-                  {card.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                  {card.itemKeys.map((key) => (
+                    <li key={key} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <CheckCircle2 className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                      <span>{item}</span>
+                      <span>{t(key)}</span>
                     </li>
                   ))}
                 </ul>
@@ -134,7 +118,6 @@ export default function Submission() {
           ))}
         </div>
 
-        {/* Detailed Requirements Card */}
         <Card
           ref={(el) => {
             cardsRef.current[3] = el
@@ -142,57 +125,29 @@ export default function Submission() {
           className="p-8 border border-border/50 bg-card"
         >
           <h3 className="text-2xl font-bold text-foreground mb-6">
-            Quality & Ethics Standards
+            {t('qualityEthics')}
           </h3>
           <div className="grid sm:grid-cols-2 gap-8">
             <div>
-              <p className="font-semibold text-primary mb-3">Evaluation Criteria</p>
+              <p className="font-semibold text-primary mb-3">{t('evaluationCriteria')}</p>
               <ul className="space-y-2 text-muted-foreground">
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Novelty & originality of contributions</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Technical soundness & methodology</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Significance & impact on field</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Clarity & presentation quality</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Relevance to IANLP scope</span>
-                </li>
+                {['eval1', 'eval2', 'eval3', 'eval4', 'eval5'].map((key) => (
+                  <li key={key} className="flex gap-2">
+                    <span className="text-primary">•</span>
+                    <span>{t(key)}</span>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
-              <p className="font-semibold text-accent mb-3">Plagiarism & Integrity</p>
+              <p className="font-semibold text-accent mb-3">{t('plagiarism')}</p>
               <ul className="space-y-2 text-muted-foreground">
-                <li className="flex gap-2">
-                  <span className="text-accent">•</span>
-                  <span>Mandatory plagiarism screening</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-accent">•</span>
-                  <span>iThenticate preferred tool</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-accent">•</span>
-                  <span>Original work only required</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-accent">•</span>
-                  <span>Double-blind review process</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-accent">•</span>
-                  <span>Conflict-of-interest management</span>
-                </li>
+                {['plag1', 'plag2', 'plag3', 'plag4', 'plag5'].map((key) => (
+                  <li key={key} className="flex gap-2">
+                    <span className="text-accent">•</span>
+                    <span>{t(key)}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

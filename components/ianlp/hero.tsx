@@ -2,10 +2,12 @@
 
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
+import { useTranslations } from 'next-intl'
 import { Card } from '@/components/ui/card'
 import { ArrowRight } from 'lucide-react'
 
 export default function Hero() {
+  const t = useTranslations('hero')
   const containerRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const subtitleRef = useRef<HTMLParagraphElement>(null)
@@ -65,7 +67,7 @@ export default function Hero() {
           <div>
             <div className="inline-block mb-4 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
               <span className="text-sm font-semibold text-primary">
-                New Conference Series
+                {t('badge')}
               </span>
             </div>
 
@@ -73,25 +75,21 @@ export default function Hero() {
               ref={titleRef}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-6"
             >
-              IANLP 2026
+              {t('title')}
             </h1>
 
             <p
               ref={subtitleRef}
               className="text-xl sm:text-2xl text-muted-foreground mb-6 font-semibold"
             >
-              1st International Conference on Artificial Intelligence for
-              Natural Language Processing
+              {t('subtitle')}
             </p>
 
             <p
               ref={descRef}
               className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-2xl"
             >
-              A premier international conference dedicated to advancing AI and NLP research,
-              featuring Transformers, Large Language Models, RAG systems, and trustworthy
-              language technologies. Join researchers and practitioners from around the world
-              to share cutting-edge discoveries.
+              {t('description')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -99,13 +97,13 @@ export default function Hero() {
                 href="#cfp"
                 className="inline-flex items-center justify-center px-6 py-3 bg-[#002bb8] text-white font-semibold rounded-lg hover:shadow-lg transition-all hover:shadow-primary/20"
               >
-                Call for Papers <ArrowRight className="ml-2 h-5 w-5" />
+                {t('callForPapers')} <ArrowRight className="ml-2 h-5 w-5 rtl:ml-0 rtl:mr-2" />
               </a>
               <a
                 href="#dates"
                 className="inline-flex items-center justify-center px-6 py-3 border border-border rounded-lg font-semibold hover:bg-muted transition-colors"
               >
-                Important Dates
+                {t('importantDates')}
               </a>
             </div>
           </div>
@@ -116,10 +114,10 @@ export default function Hero() {
               <div className="space-y-6">
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                    Event Details
+                    {t('eventDetails')}
                   </p>
                   <h3 className="text-2xl font-bold text-foreground">
-                    Conference Snapshot
+                    {t('conferenceSnapshot')}
                   </h3>
                 </div>
 
@@ -130,10 +128,10 @@ export default function Hero() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-muted-foreground">
-                        Dates
+                        {t('dates')}
                       </p>
                       <p className="text-foreground font-semibold">
-                        26–27 June 2026
+                        {t('datesValue')}
                       </p>
                     </div>
                   </div>
@@ -144,13 +142,13 @@ export default function Hero() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-muted-foreground">
-                        Venue
+                        {t('venue')}
                       </p>
                       <p className="text-foreground font-semibold">
-                        Faculty of Sciences Ben M'Sick (FSBM)
+                        {t('venueValue')}
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Hassan II University of Casablanca
+                        {t('venueSub')}
                       </p>
                     </div>
                   </div>
@@ -161,13 +159,13 @@ export default function Hero() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-muted-foreground">
-                        Publication
+                        {t('publication')}
                       </p>
                       <p className="text-foreground font-semibold">
-                        Springer LNCS
+                        {t('publicationValue')}
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Proposed proceedings
+                        {t('publicationSub')}
                       </p>
                     </div>
                   </div>
@@ -175,8 +173,7 @@ export default function Hero() {
 
                 <div className="pt-4 border-t border-border">
                   <p className="text-sm text-muted-foreground italic">
-                    "Gathering researchers, academics, and practitioners to share advances
-                    in NLP, Transformers, LLMs, and trustworthy AI."
+                    {t('quote')}
                   </p>
                 </div>
               </div>

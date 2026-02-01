@@ -3,13 +3,20 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTranslations } from 'next-intl'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CheckCircle } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const cfpSections = [
+  { titleKey: 'publication', itemKeys: ['pub1', 'pub2', 'pub3'] },
+  { titleKey: 'requirements', itemKeys: ['req1', 'req2', 'req3', 'req4'] },
+]
+
 export default function CFPSection() {
+  const t = useTranslations('cfp')
   const containerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
@@ -77,59 +84,39 @@ export default function CFPSection() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Call for Papers
+            {t('title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
-            IANLP 2026 invites original and unpublished research contributions in Artificial
-            Intelligence for Natural Language Processing. Submissions must present novel
-            scientific results and be written in English.
+            {t('intro')}
           </p>
           <a
             href="#submission"
             className="inline-flex items-center justify-center px-8 py-3 bg-[#002bb8] text-white font-semibold rounded-lg hover:shadow-lg transition-all hover:shadow-primary/20"
           >
-            Submit Your Research
+            {t('submitResearch')}
           </a>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mb-12">
-          {[
-            {
-              title: 'Publication',
-              items: [
-                'Springer LNCS proceedings',
-                'Subject to Springer editorial approval',
-                'Full compliance with LNCS standards',
-              ],
-            },
-            {
-              title: 'Submission Requirements',
-              items: [
-                'LNCS format (Word/LaTeX template)',
-                'Double-blind review (anonymized)',
-                'Full papers: 12-15 pages',
-                'Includes references',
-              ],
-            },
-          ].map((section, idx) => (
+          {cfpSections.map((section, idx) => (
             <div
-              key={section.title}
+              key={section.titleKey}
               ref={(el) => {
                 cardsRef.current[idx] = el
               }}
             >
               <Card className="p-8 h-full border border-border/50">
                 <h3 className="text-xl font-bold text-foreground mb-6">
-                  {section.title}
+                  {t(section.titleKey)}
                 </h3>
                 <ul className="space-y-3">
-                  {section.items.map((item) => (
+                  {section.itemKeys.map((key) => (
                     <li
-                      key={item}
+                      key={key}
                       className="flex items-start gap-3 text-foreground/80"
                     >
                       <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                      <span>{item}</span>
+                      <span>{t(key)}</span>
                     </li>
                   ))}
                 </ul>
@@ -138,16 +125,15 @@ export default function CFPSection() {
           ))}
         </div>
 
-        {/* CTA Strip */}
         <div className="p-8 bg-[#002bb8]/10 border border-[#002bb8]/20 rounded-lg text-center">
-          <p className="text-muted-foreground mb-4">Ready to submit your research?</p>
+          <p className="text-muted-foreground mb-4">{t('readyToSubmit')}</p>
           <Button
             disabled
             size="lg"
             className="bg-[#002bb8] text-white"
-            title="Coming soon"
+            title={t('submitEasyChair')}
           >
-            Submit Paper on EasyChair (Coming Soon)
+            {t('submitEasyChair')}
           </Button>
         </div>
       </div>

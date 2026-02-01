@@ -3,39 +3,20 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Button } from '@/components/ui/button'
+import { useTranslations } from 'next-intl'
 import { FileText, Users, Calendar, Send } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const links = [
-  {
-    icon: FileText,
-    label: 'Call for Papers',
-    href: '#cfp',
-    color: 'from-primary',
-  },
-  {
-    icon: Calendar,
-    label: 'Important Dates',
-    href: '#dates',
-    color: 'from-accent',
-  },
-  {
-    icon: Send,
-    label: 'Submit Paper',
-    href: '#submission',
-    color: 'from-secondary',
-  },
-  {
-    icon: Users,
-    label: 'Committees',
-    href: '#committees',
-    color: 'from-primary',
-  },
+  { icon: FileText, labelKey: 'callForPapers', href: '#cfp', color: 'from-primary' },
+  { icon: Calendar, labelKey: 'importantDates', href: '#dates', color: 'from-accent' },
+  { icon: Send, labelKey: 'submitPaper', href: '#submission', color: 'from-secondary' },
+  { icon: Users, labelKey: 'committees', href: '#committees', color: 'from-primary' },
 ]
 
 export default function QuickLinks() {
+  const t = useTranslations('quickLinks')
   const containerRef = useRef<HTMLDivElement>(null)
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([])
 
@@ -85,8 +66,8 @@ export default function QuickLinks() {
     <section ref={containerRef} className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/30">
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-foreground mb-3">Quick Links</h2>
-          <p className="text-muted-foreground">Navigate to key conference sections</p>
+          <h2 className="text-3xl font-bold text-foreground mb-3">{t('title')}</h2>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -94,7 +75,7 @@ export default function QuickLinks() {
             const Icon = link.icon
             return (
               <button
-                key={link.label}
+                key={link.href}
                 ref={(el) => {
                   buttonsRef.current[index] = el
                 }}
@@ -105,7 +86,7 @@ export default function QuickLinks() {
                   <Icon size={20} />
                 </div>
                 <p className="font-semibold text-foreground text-left">
-                  {link.label}
+                  {t(link.labelKey)}
                 </p>
               </button>
             )

@@ -3,11 +3,15 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTranslations } from 'next-intl'
 import { Card } from '@/components/ui/card'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const keynoteTopicKeys = ['topic1', 'topic2', 'topic3', 'topic4', 'topic5', 'topic6']
+
 export default function KeynoteSpeakers() {
+  const t = useTranslations('keynote')
   const containerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
 
@@ -53,51 +57,41 @@ export default function KeynoteSpeakers() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Keynote Speakers
+            {t('title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Keynote speakers will be announced soon. IANLP 2026 will invite internationally
-            recognized speakers in emerging topics such as:
+            {t('subtitle')}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {[
-            'Large Language Models (LLMs)',
-            'Transformer Architectures',
-            'Retrieval-Augmented Generation (RAG)',
-            'Multilingual NLP',
-            'Trustworthy & Explainable AI',
-            'Prompt Engineering',
-          ].map((topic) => (
+          {keynoteTopicKeys.map((key) => (
             <div
-              key={topic}
+              key={key}
               className="p-6 bg-card border border-border/50 rounded-lg hover:border-primary/30 transition-colors"
             >
               <div className="flex items-center gap-3">
                 <div className="h-3 w-3 rounded-full bg-[#002bb8]" />
-                <p className="font-semibold text-foreground">{topic}</p>
+                <p className="font-semibold text-foreground">{t(key)}</p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Placeholder Card */}
         <Card className="p-12 text-center border border-border/50 bg-[#002bb8]/5">
           <div className="space-y-4">
             <div className="h-16 w-16 rounded-full bg-[#002bb8]/20 mx-auto flex items-center justify-center">
               <span className="text-2xl">🎤</span>
             </div>
             <p className="text-xl font-bold text-foreground">
-              Distinguished Speakers Coming Soon
+              {t('comingSoon')}
             </p>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Check back for updates on keynote speakers and presentation details.
-              We're bringing together the brightest minds in AI and NLP for IANLP 2026.
+              {t('comingSoonDesc')}
             </p>
             <div className="pt-4">
               <p className="text-sm text-muted-foreground">
-                Stay tuned for announcements!
+                {t('stayTuned')}
               </p>
             </div>
           </div>

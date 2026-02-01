@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTranslations } from 'next-intl'
 import { Card } from '@/components/ui/card'
 import { Globe } from 'lucide-react'
 
@@ -38,6 +39,7 @@ const committees = {
 }
 
 export default function Committees() {
+  const t = useTranslations('committees')
   const containerRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
@@ -105,16 +107,16 @@ export default function Committees() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Committee Members
+            {t('title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Distinguished researchers and academics guiding IANLP 2026
+            {t('subtitle')}
           </p>
         </div>
 
         <div>
           <h3 className="text-2xl font-bold text-foreground mb-8">
-            External Reviewers & Advisors
+            {t('externalReviewers')}
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {committees['External Reviewers'].map((member, index) => (
@@ -147,18 +149,16 @@ export default function Committees() {
           </div>
         </div>
 
-        {/* Organizing Committee */}
         <div className="mt-16 p-8 bg-card border border-border/50 rounded-lg">
           <h3 className="text-2xl font-bold text-foreground mb-6">
-            Organizing Committee
+            {t('organizingCommittee')}
           </h3>
           <div className="grid sm:grid-cols-2 gap-8">
             <div>
-              <p className="font-bold text-primary mb-2">General Chair</p>
-              <p className="text-foreground font-semibold">Prof. Omar Zahour</p>
+              <p className="font-bold text-primary mb-2">{t('generalChair')}</p>
+              <p className="text-foreground font-semibold">{t('profOmar')}</p>
               <p className="text-sm text-muted-foreground">
-                Faculty of Sciences Ben M'Sick (FSBM)<br />
-                Hassan II University of Casablanca, Morocco
+                {t('fsbmH2c')}
               </p>
               <p className="text-sm text-muted-foreground mt-2">
                 Email:{' '}
@@ -171,12 +171,10 @@ export default function Committees() {
               </p>
             </div>
             <div>
-              <p className="font-bold text-accent mb-2">Organizing Institution</p>
-              <p className="text-foreground font-semibold">AM2I & FSBM</p>
+              <p className="font-bold text-accent mb-2">{t('organizingInstitution')}</p>
+              <p className="text-foreground font-semibold">{t('am2iFsbm')}</p>
               <p className="text-sm text-muted-foreground">
-                Hassan II University of Casablanca<br />
-                Bd Commandant Driss Al Harti<br />
-                Casablanca 20670, Morocco
+                {t('h2cAddress')}
               </p>
             </div>
           </div>

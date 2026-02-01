@@ -3,34 +3,20 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTranslations } from 'next-intl'
 import { Card } from '@/components/ui/card'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const dates = [
-  {
-    label: 'Paper Submission Deadline',
-    date: '15 March 2026',
-    description: 'Submit your original research papers',
-  },
-  {
-    label: 'Notification of Acceptance',
-    date: '30 April 2026',
-    description: 'Receive review results and decisions',
-  },
-  {
-    label: 'Camera-Ready Deadline',
-    date: '15 May 2026',
-    description: 'Submit final papers incorporating reviews',
-  },
-  {
-    label: 'Conference Dates',
-    date: '26–27 June 2026',
-    description: 'IANLP 2026 takes place in Casablanca',
-  },
+const dateKeys = [
+  { labelKey: 'paperDeadline', dateKey: 'paperDate', descKey: 'paperDesc' },
+  { labelKey: 'notification', dateKey: 'notificationDate', descKey: 'notificationDesc' },
+  { labelKey: 'cameraReady', dateKey: 'cameraReadyDate', descKey: 'cameraReadyDesc' },
+  { labelKey: 'conferenceDates', dateKey: 'conferenceDate', descKey: 'conferenceDesc' },
 ]
 
 export default function ImportantDates() {
+  const t = useTranslations('dates')
   const containerRef = useRef<HTMLDivElement>(null)
   const timelineRef = useRef<(HTMLDivElement | null)[]>([])
 
@@ -81,17 +67,17 @@ export default function ImportantDates() {
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Important Dates
+            {t('title')}
           </h2>
           <p className="text-lg text-muted-foreground">
-            Key milestones for IANLP 2026
+            {t('subtitle')}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {dates.map((item, index) => (
+          {dateKeys.map((item, index) => (
             <div
-              key={item.label}
+              key={item.labelKey}
               ref={(el) => {
                 timelineRef.current[index] = el
               }}
@@ -105,13 +91,13 @@ export default function ImportantDates() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                      {item.label}
+                      {t(item.labelKey)}
                     </p>
                     <p className="text-2xl font-bold text-foreground mb-2">
-                      {item.date}
+                      {t(item.dateKey)}
                     </p>
                     <p className="text-muted-foreground text-sm">
-                      {item.description}
+                      {t(item.descKey)}
                     </p>
                   </div>
                 </div>

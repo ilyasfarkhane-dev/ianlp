@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { setRequestLocale } from 'next-intl/server'
 import Navbar from '@/components/ianlp/navbar'
 import Hero from '@/components/ianlp/hero'
 import QuickLinks from '@/components/ianlp/quick-links'
@@ -18,7 +19,12 @@ export const metadata: Metadata = {
   description: 'IANLP 2026: International Conference on Artificial Intelligence for Natural Language Processing. June 26-27, 2026 in Casablanca, Morocco.',
 }
 
-export default function IANLPPage() {
+type Props = { params: Promise<{ locale: string }> }
+
+export default async function IANLPPage({ params }: Props) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />

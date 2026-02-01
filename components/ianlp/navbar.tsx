@@ -3,25 +3,27 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Menu, X } from 'lucide-react'
+import LanguageSwitcher from './language-switcher'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const navLinks = [
-  { label: 'Overview', href: '#overview' },
-  { label: 'Topics', href: '#topics' },
-  { label: 'CFP', href: '#cfp' },
-  { label: 'Dates', href: '#dates' },
-  { label: 'Submission', href: '#submission' },
-  { label: 'Review', href: '#review' },
-  { label: 'Committees', href: '#committees' },
-  { label: 'Venue', href: '#venue' },
-  { label: 'Contact', href: '#contact' },
+  { labelKey: 'overview', href: '#overview' },
+  { labelKey: 'topics', href: '#topics' },
+  { labelKey: 'cfp', href: '#cfp' },
+  { labelKey: 'dates', href: '#dates' },
+  { labelKey: 'submission', href: '#submission' },
+  { labelKey: 'review', href: '#review' },
+  { labelKey: 'committees', href: '#committees' },
+  { labelKey: 'venue', href: '#venue' },
+  { labelKey: 'contact', href: '#contact' },
 ]
 
 export default function Navbar() {
+  const t = useTranslations('nav')
   const navRef = useRef<HTMLElement>(null)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -79,39 +81,41 @@ export default function Navbar() {
               onClick={() => handleNavClick(link.href)}
               className="px-3 py-2 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
             >
-              {link.label}
+              {t(link.labelKey)}
             </button>
           ))}
         </div>
 
-        {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-2">
+          <LanguageSwitcher />
           <Button
             disabled
             variant="outline"
             size="sm"
-            title="Coming soon"
+            title={t('comingSoon')}
           >
-            LNCS Template
+            {t('lncsTemplate')}
           </Button>
           <Button
             disabled
             size="sm"
             className="bg-[#002bb8] text-white"
-            title="Coming soon"
+            title={t('comingSoon')}
           >
-            Submit Paper
+            {t('submitPaper')}
           </Button>
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden p-2 text-foreground hover:bg-muted rounded-lg transition-colors"
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="flex items-center gap-1 lg:hidden">
+          <LanguageSwitcher />
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 text-foreground hover:bg-muted rounded-lg transition-colors"
+            aria-label={t('toggleMenu')}
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -124,7 +128,7 @@ export default function Navbar() {
                 onClick={() => handleNavClick(link.href)}
                 className="block w-full text-left px-4 py-2 text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors"
               >
-                {link.label}
+                {t(link.labelKey)}
               </button>
             ))}
             <div className="pt-2 flex flex-col gap-2">
@@ -133,17 +137,17 @@ export default function Navbar() {
                 variant="outline"
                 className="w-full bg-transparent"
                 size="sm"
-                title="Coming soon"
+                title={t('comingSoon')}
               >
-                LNCS Template
+                {t('lncsTemplate')}
               </Button>
               <Button
                 disabled
                 className="w-full bg-[#002bb8] text-white"
                 size="sm"
-                title="Coming soon"
+                title={t('comingSoon')}
               >
-                Submit Paper
+                {t('submitPaper')}
               </Button>
             </div>
           </div>

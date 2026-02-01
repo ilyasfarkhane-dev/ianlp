@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTranslations } from 'next-intl'
 import {
   Accordion,
   AccordionContent,
@@ -13,6 +14,7 @@ import {
 gsap.registerPlugin(ScrollTrigger)
 
 export default function ReviewProcess() {
+  const t = useTranslations('review')
   const containerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
 
@@ -59,30 +61,22 @@ export default function ReviewProcess() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Review Process
+            {t('title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            IANLP 2026 applies a strict double-blind peer-review process aligned with
-            Springer LNCS quality expectations
+            {t('subtitle')}
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* Left: Overview */}
           <div className="space-y-6">
             <div className="p-6 bg-card border border-border/50 rounded-lg">
-              <h3 className="font-bold text-lg text-foreground mb-4">Key Principles</h3>
+              <h3 className="font-bold text-lg text-foreground mb-4">{t('keyPrinciples')}</h3>
               <ul className="space-y-3">
-                {[
-                  'Minimum 3 independent reviewers per paper',
-                  'Strict conflict-of-interest management',
-                  'Double-blind review methodology',
-                  'Rigorous evaluation criteria applied',
-                  'Fair and transparent process',
-                ].map((item) => (
-                  <li key={item} className="flex gap-3 text-foreground">
+                {['principle1', 'principle2', 'principle3', 'principle4', 'principle5'].map((key) => (
+                  <li key={key} className="flex gap-3 text-foreground">
                     <span className="text-primary font-bold">✓</span>
-                    <span>{item}</span>
+                    <span>{t(key)}</span>
                   </li>
                 ))}
               </ul>
@@ -90,116 +84,86 @@ export default function ReviewProcess() {
 
             <div className="p-6 bg-[#002bb8]/10 border border-[#002bb8]/20 rounded-lg">
               <h3 className="font-bold text-lg text-foreground mb-4">
-                Evaluation Criteria
+                {t('evaluationCriteria')}
               </h3>
               <ul className="space-y-2 text-sm text-foreground/80">
-                <li className="flex gap-2">
-                  <span className="text-[#002bb8] font-semibold">1.</span>
-                  <span>Novelty and originality</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary font-semibold">2.</span>
-                  <span>Technical soundness</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary font-semibold">3.</span>
-                  <span>Significance and impact</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary font-semibold">4.</span>
-                  <span>Clarity of presentation</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary font-semibold">5.</span>
-                  <span>Relevance to conference</span>
-                </li>
+                {['crit1', 'crit2', 'crit3', 'crit4', 'crit5'].map((key, i) => (
+                  <li key={key} className="flex gap-2">
+                    <span className="text-[#002bb8] font-semibold">{i + 1}.</span>
+                    <span>{t(key)}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
 
-          {/* Right: Accordion Details */}
           <Accordion type="single" collapsible className="space-y-3">
             <AccordionItem value="item-1" className="border border-border rounded-lg px-6">
               <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
-                Submission & Initial Check
+                {t('accordion1Title')}
               </AccordionTrigger>
               <AccordionContent className="text-foreground/80 space-y-2">
-                <p>
-                  Upon submission, papers undergo an initial desk review to verify they meet
-                  basic requirements (format, length, scope).
-                </p>
+                <p>{t('accordion1Desc')}</p>
                 <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>Format compliance verification</li>
-                  <li>Plagiarism screening initiated</li>
-                  <li>Scope relevance assessment</li>
+                  <li>{t('accordion1a')}</li>
+                  <li>{t('accordion1b')}</li>
+                  <li>{t('accordion1c')}</li>
                 </ul>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-2" className="border border-border rounded-lg px-6">
               <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
-                Reviewer Assignment
+                {t('accordion2Title')}
               </AccordionTrigger>
               <AccordionContent className="text-foreground/80 space-y-2">
-                <p>
-                  Papers are assigned to 3+ expert reviewers based on their expertise and
-                  conflict-of-interest declarations.
-                </p>
+                <p>{t('accordion2Desc')}</p>
                 <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>Expertise matching algorithm used</li>
-                  <li>COI declarations reviewed</li>
-                  <li>Geographically diverse reviewers</li>
+                  <li>{t('accordion2a')}</li>
+                  <li>{t('accordion2b')}</li>
+                  <li>{t('accordion2c')}</li>
                 </ul>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-3" className="border border-border rounded-lg px-6">
               <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
-                Review & Plagiarism Screening
+                {t('accordion3Title')}
               </AccordionTrigger>
               <AccordionContent className="text-foreground/80 space-y-2">
-                <p>
-                  Concurrent with peer review, papers are screened for plagiarism using
-                  iThenticate or similar tools.
-                </p>
+                <p>{t('accordion3Desc')}</p>
                 <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>Detailed review reports provided</li>
-                  <li>iThenticate plagiarism check</li>
-                  <li>Constructive feedback given</li>
+                  <li>{t('accordion3a')}</li>
+                  <li>{t('accordion3b')}</li>
+                  <li>{t('accordion3c')}</li>
                 </ul>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-4" className="border border-border rounded-lg px-6">
               <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
-                Decision & Camera-Ready
+                {t('accordion4Title')}
               </AccordionTrigger>
               <AccordionContent className="text-foreground/80 space-y-2">
-                <p>
-                  After reviews are compiled, a decision is made. Accepted papers must address
-                  reviewer comments.
-                </p>
+                <p>{t('accordion4Desc')}</p>
                 <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>Meta-review by area chairs</li>
-                  <li>Revision requests for accepted papers</li>
-                  <li>Response to all reviewer comments</li>
+                  <li>{t('accordion4a')}</li>
+                  <li>{t('accordion4b')}</li>
+                  <li>{t('accordion4c')}</li>
                 </ul>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-5" className="border border-border rounded-lg px-6">
               <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
-                Publication & Proceedings
+                {t('accordion5Title')}
               </AccordionTrigger>
               <AccordionContent className="text-foreground/80 space-y-2">
-                <p>
-                  Final papers are compiled into Springer LNCS proceedings, subject to
-                  Springer&apos;s editorial approval.
-                </p>
+                <p>{t('accordion5Desc')}</p>
                 <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>Springer LNCS format compliance</li>
-                  <li>Copyright agreements signed</li>
-                  <li>Online and print publication</li>
+                  <li>{t('accordion5a')}</li>
+                  <li>{t('accordion5b')}</li>
+                  <li>{t('accordion5c')}</li>
                 </ul>
               </AccordionContent>
             </AccordionItem>

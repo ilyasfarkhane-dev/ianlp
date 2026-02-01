@@ -3,12 +3,14 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTranslations } from 'next-intl'
 import { Card } from '@/components/ui/card'
 import { Mail, Phone, MapPin } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Contact() {
+  const t = useTranslations('contact')
   const containerRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
   const contactRef = useRef<HTMLDivElement>(null)
@@ -72,10 +74,10 @@ export default function Contact() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Get in Touch
+            {t('title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Have questions? Contact the IANLP 2026 organizing committee
+            {t('subtitle')}
           </p>
         </div>
 
@@ -91,7 +93,7 @@ export default function Contact() {
                   <Mail size={24} />
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground mb-1">Email</p>
+                  <p className="font-semibold text-foreground mb-1">{t('email')}</p>
                   <a
                     href="mailto:omar.zahour@univh2c.ma"
                     className="text-primary hover:underline font-semibold"
@@ -108,7 +110,7 @@ export default function Contact() {
                   <Phone size={24} />
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground mb-1">Phone</p>
+                  <p className="font-semibold text-foreground mb-1">{t('phone')}</p>
                   <a
                     href="tel:+212660082091"
                     className="text-accent hover:underline font-semibold"
@@ -125,27 +127,23 @@ export default function Contact() {
                   <MapPin size={24} />
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground mb-2">Address</p>
+                  <p className="font-semibold text-foreground mb-2">{t('address')}</p>
                   <p className="text-foreground/80">
-                    Faculty of Sciences Ben M'Sick (FSBM)<br />
-                    Hassan II University of Casablanca<br />
-                    Bd Commandant Driss Al Harti<br />
-                    Casablanca 20670, Morocco
+                    {t('addressValue')}
                   </p>
                 </div>
               </div>
             </Card>
           </div>
 
-          {/* Contact Details Card */}
           <Card className="p-8 border border-border/50 bg-gradient-to-br from-primary/5 to-accent/5">
             <h3 className="text-2xl font-bold text-foreground mb-6">
-              General Chair
+              {t('generalChair')}
             </h3>
             <div className="space-y-6">
               <div>
                 <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Name
+                  {t('name')}
                 </p>
                 <p className="text-xl font-bold text-foreground">
                   Prof. Omar Zahour
@@ -154,7 +152,7 @@ export default function Contact() {
 
               <div>
                 <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Affiliation
+                  {t('affiliation')}
                 </p>
                 <p className="text-foreground font-semibold">
                   Faculty of Sciences Ben M'Sick (FSBM)
@@ -166,11 +164,11 @@ export default function Contact() {
 
               <div className="pt-6 border-t border-border">
                 <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                  Quick Contact
+                  {t('quickContact')}
                 </p>
                 <div className="space-y-2">
                   <p className="text-foreground">
-                    <strong>Email:</strong>{' '}
+                    <strong>{t('email')}:</strong>{' '}
                     <a
                       href="mailto:omar.zahour@univh2c.ma"
                       className="text-primary hover:underline"
@@ -179,7 +177,7 @@ export default function Contact() {
                     </a>
                   </p>
                   <p className="text-foreground">
-                    <strong>Phone:</strong>{' '}
+                    <strong>{t('phone')}:</strong>{' '}
                     <a
                       href="tel:+212660082091"
                       className="text-primary hover:underline"
@@ -192,8 +190,7 @@ export default function Contact() {
 
               <div className="pt-6 border-t border-border">
                 <p className="text-sm text-foreground/70 italic">
-                  Feel free to reach out with any questions about IANLP 2026,
-                  submissions, or conference logistics.
+                  {t('reachOut')}
                 </p>
               </div>
             </div>
