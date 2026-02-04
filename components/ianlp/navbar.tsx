@@ -39,7 +39,8 @@ export default function Navbar() {
 
     ScrollTrigger.create({
       onUpdate: (self) => {
-        if (self.getVelocity() > 500 || self.getMomentum() > 0.5) {
+        const velocity = typeof self.getVelocity === 'function' ? self.getVelocity() : 0
+        if (velocity > 500) {
           gsap.to(navRef.current, { className: '+=blur-active' })
         } else {
           gsap.to(navRef.current, { className: '-=blur-active' })

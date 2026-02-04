@@ -150,6 +150,21 @@ export default function Committees() {
         </div>
 
         <div className="mt-16 p-8 bg-card border border-border/50 rounded-lg">
+          <h3 className="text-2xl font-bold text-foreground mb-2">
+            {t('officeMembers')}
+          </h3>
+          <p className="text-muted-foreground mb-6">{t('officeMembersSub')}</p>
+          <ul className="space-y-2 text-foreground">
+            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <li key={i} className="flex gap-2">
+                <span className="text-[#002bb8]">•</span>
+                <span>{t(`office${i}`)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-16 p-8 bg-card border border-border/50 rounded-lg">
           <h3 className="text-2xl font-bold text-foreground mb-6">
             {t('organizingCommittee')}
           </h3>
