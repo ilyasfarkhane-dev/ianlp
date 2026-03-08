@@ -68,19 +68,19 @@ export default function KeynoteSpeakers() {
           {keynoteTopicKeys.map((key) => (
             <div
               key={key}
-              className="p-6 bg-card border border-border/50 rounded-lg hover:border-primary/30 transition-colors"
+              className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="h-3 w-3 rounded-full bg-[#002bb8]" />
+                <div className="h-3 w-3 rounded-full bg-primary" />
                 <p className="font-semibold text-foreground">{t(key)}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <Card className="p-12 text-center border border-border/50 bg-[#002bb8]/5">
+        <Card className="p-12 text-center rounded-xl border border-white/10 bg-primary/5 backdrop-blur-sm">
           <div className="space-y-4">
-            <div className="h-16 w-16 rounded-full bg-[#002bb8]/20 mx-auto flex items-center justify-center">
+            <div className="h-16 w-16 rounded-full bg-primary/20 mx-auto flex items-center justify-center">
               <span className="text-2xl">🎤</span>
             </div>
             <p className="text-xl font-bold text-foreground">
@@ -89,11 +89,7 @@ export default function KeynoteSpeakers() {
             <p className="text-muted-foreground max-w-2xl mx-auto">
               {t('comingSoonDesc')}
             </p>
-            <div className="pt-4">
-              <p className="text-sm text-muted-foreground">
-                {t('stayTuned')}
-              </p>
-            </div>
+           
           </div>
         </Card>
       </div>

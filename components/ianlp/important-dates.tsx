@@ -82,10 +82,10 @@ export default function ImportantDates() {
                 timelineRef.current[index] = el
               }}
             >
-              <Card className="p-6 h-full border border-border/50 hover:border-primary/30 transition-colors">
+              <Card className="p-6 h-full rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#002bb8] text-white font-bold">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent text-white font-bold">
                       {index + 1}
                     </div>
                   </div>

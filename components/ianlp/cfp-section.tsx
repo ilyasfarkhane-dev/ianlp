@@ -76,7 +76,7 @@ export default function CFPSection() {
     <section
       ref={containerRef}
       id="cfp"
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-muted/50 to-transparent"
+      className="py-20 px-4 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
         <div
@@ -91,7 +91,7 @@ export default function CFPSection() {
           </p>
           <a
             href="#submission"
-            className="inline-flex items-center justify-center px-8 py-3 bg-[#002bb8] text-white font-semibold rounded-lg hover:shadow-lg transition-all hover:shadow-primary/20"
+            className="btn-gradient inline-flex items-center justify-center px-8 py-3 text-white font-semibold rounded-lg transition-all shadow-lg"
           >
             {t('submitResearch')}
           </a>
@@ -105,7 +105,7 @@ export default function CFPSection() {
                 cardsRef.current[idx] = el
               }}
             >
-              <Card className="p-8 h-full border border-border/50">
+              <Card className="p-8 h-full rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
                 <h3 className="text-xl font-bold text-foreground mb-6">
                   {t(section.titleKey)}
                 </h3>
@@ -125,12 +125,12 @@ export default function CFPSection() {
           ))}
         </div>
 
-        <div className="p-8 bg-[#002bb8]/10 border border-[#002bb8]/20 rounded-lg text-center">
+        <div className="p-8 rounded-xl bg-primary/10 border border-primary/20 text-center">
           <p className="text-muted-foreground mb-4">{t('readyToSubmit')}</p>
           <Button
             disabled
             size="lg"
-            className="bg-[#002bb8] text-white"
+            className="btn-gradient text-white border-0"
             title={t('submitEasyChair')}
           >
             {t('submitEasyChair')}

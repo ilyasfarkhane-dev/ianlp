@@ -70,7 +70,7 @@ export default function VenueTravel() {
     <section
       ref={containerRef}
       id="venue"
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30"
+      className="py-20 px-4 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
         <div
@@ -92,9 +92,9 @@ export default function VenueTravel() {
               cardsRef.current[0] = el
             }}
           >
-            <Card className="p-8 h-full border border-border/50 hover:border-primary/30 transition-colors">
+            <Card className="p-8 h-full rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
               <div className="flex items-center gap-3 mb-6">
-                <div className="h-12 w-12 rounded-lg bg-[#002bb8] text-white flex items-center justify-center">
+                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center">
                   <MapPin size={24} />
                 </div>
                 <h3 className="text-2xl font-bold text-foreground">{t('venue')}</h3>
@@ -141,9 +141,9 @@ export default function VenueTravel() {
                 cardsRef.current[1] = el
               }}
             >
-              <Card className="p-6 border border-border/50 hover:border-primary/30 transition-colors">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-10 w-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center">
+              <Card className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
+            <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
                     <Plane size={20} />
                   </div>
                   <h4 className="font-bold text-foreground">{t('gettingThere')}</h4>
@@ -159,9 +159,9 @@ export default function VenueTravel() {
                 cardsRef.current[2] = el
               }}
             >
-              <Card className="p-6 border border-border/50 hover:border-primary/30 transition-colors">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-10 w-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+              <Card className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
+            <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
                     <Hotel size={20} />
                   </div>
                   <h4 className="font-bold text-foreground">{t('accommodation')}</h4>
@@ -177,9 +177,9 @@ export default function VenueTravel() {
                 cardsRef.current[3] = el
               }}
             >
-              <Card className="p-6 border border-border/50 hover:border-primary/30 transition-colors">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+              <Card className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
+            <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
                     <Info size={20} />
                   </div>
                   <h4 className="font-bold text-foreground">{t('moreInfo')}</h4>
@@ -192,17 +192,21 @@ export default function VenueTravel() {
           </div>
         </div>
 
-        <Card className="p-8 border border-border/50 bg-[#002bb8]/5 overflow-hidden">
-          <div className="relative bg-muted rounded-lg overflow-hidden h-96 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-4xl mb-4">📍</div>
-              <p className="text-lg font-semibold text-foreground mb-2">
-                {t('mapTitle')}
-              </p>
-              <p className="text-muted-foreground text-sm max-w-md">
-                {t('mapDesc')}
-              </p>
-            </div>
+        <Card className="p-8 border border-border/50 bg-gradient-to-br from-primary to-accent/5 overflow-hidden">
+          <p className="text-lg font-semibold text-foreground mb-4">
+            {t('mapTitle')}
+          </p>
+          <div className="relative w-full rounded-lg overflow-hidden border border-border/50" style={{ aspectRatio: '16/10', minHeight: '384px' }}>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3324.4905454412437!2d-7.544054523992428!3d33.56661057334374!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda633261bbe100f%3A0xe48b03dd8c6794a0!2sFacult%C3%A9%20des%20Sciences%20Ben%20M%E2%80%99Sick!5e0!3m2!1sfr!2sma!4v1772934740958!5m2!1sfr!2sma"
+              width="100%"
+              height="100%"
+              style={{ border: 0, position: 'absolute', inset: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title={t('mapTitle')}
+            />
           </div>
         </Card>
       </div>

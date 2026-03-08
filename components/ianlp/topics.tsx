@@ -79,7 +79,7 @@ export default function Topics() {
             >
               <Badge
                 variant="outline"
-                className="px-4 py-2 text-sm font-medium hover:bg-[#002bb8]/80 hover:text-white transition-colors cursor-default"
+                className="px-4 py-2 text-sm font-medium rounded-lg border-white/20 hover:bg-primary/60 hover:border-primary/50 hover:text-white transition-colors cursor-default"
               >
                 {t(key)}
               </Badge>
@@ -87,7 +87,7 @@ export default function Topics() {
           ))}
         </div>
 
-        <div className="mt-16 p-8 bg-card border border-border rounded-lg">
+        <div className="mt-16 p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
           <h3 className="text-xl font-bold text-foreground mb-4">
             {t('specialFocus')}
           </h3>

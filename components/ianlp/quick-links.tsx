@@ -63,7 +63,7 @@ export default function QuickLinks() {
   }
 
   return (
-    <section ref={containerRef} className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/30">
+    <section ref={containerRef} className="py-16 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-3">{t('title')}</h2>
@@ -80,9 +80,9 @@ export default function QuickLinks() {
                   buttonsRef.current[index] = el
                 }}
                 onClick={() => handleClick(link.href)}
-                className="group p-4 rounded-lg border border-border hover:border-primary/50 bg-card hover:bg-card/80 transition-all hover:shadow-md"
+                className="group p-4 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 hover:bg-white/10 backdrop-blur-sm transition-all hover:shadow-lg hover:shadow-primary/10"
               >
-                <div className={`h-10 w-10 rounded-lg bg-gradient-to-br ${link.color} to-accent/50 text-white flex items-center justify-center mb-3 group-hover:shadow-lg transition-all`}>
+                <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center mb-3 group-hover:shadow-lg group-hover:shadow-primary/30 transition-all">
                   <Icon size={20} />
                 </div>
                 <p className="font-semibold text-foreground text-left">

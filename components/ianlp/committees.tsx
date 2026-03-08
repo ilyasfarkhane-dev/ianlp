@@ -9,34 +9,7 @@ import { Globe } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const committees = {
-  'External Reviewers': [
-    {
-      name: 'Prof. Ángel Ruiz Zafra',
-      affiliation: 'University of Granada, Spain',
-    },
-    {
-      name: 'Dr. Kawtar Benghazi Akhlaki Sekkate',
-      affiliation: 'University of Granada, Spain',
-    },
-    {
-      name: 'Prof. Olivier Debauche',
-      affiliation: 'University of Liège, Belgium',
-    },
-    {
-      name: 'Prof. Anderson Rocha',
-      affiliation: 'University of Campinas (UNICAMP), Brazil',
-    },
-    {
-      name: 'Prof. Mamadou Lamine Gueye',
-      affiliation: 'University of Pau and Pays de l\'Adour, France',
-    },
-    {
-      name: 'Prof. Rachid Saadane',
-      affiliation: 'EHTP, Hassan II University of Casablanca, Morocco',
-    },
-  ],
-}
+const REVIEWER_COUNT = 12
 
 export default function Committees() {
   const t = useTranslations('committees')
@@ -99,7 +72,7 @@ export default function Committees() {
     <section
       ref={containerRef}
       id="committees"
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30"
+      className="py-20 px-4 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
         <div
@@ -114,42 +87,65 @@ export default function Committees() {
           </p>
         </div>
 
+        <div className="mb-16 p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
+          <h3 className="text-2xl font-bold text-foreground mb-4">
+            {t('pcChairs')}
+          </h3>
+          <p className="text-muted-foreground mb-6">{t('pcChairsSub')}</p>
+          <div className="grid sm:grid-cols-2 gap-6 mb-4">
+            <div>
+              <p className="font-bold text-foreground">{t('pcChair1')}</p>
+              <p className="text-sm text-muted-foreground">{t('pcChair1Aff')}</p>
+            </div>
+            <div>
+              <p className="font-bold text-foreground">{t('pcChair2')}</p>
+              <p className="text-sm text-muted-foreground">{t('pcChair2Aff')}</p>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {t('pcChairsOthers')}
+          </p>
+        </div>
+
         <div>
           <h3 className="text-2xl font-bold text-foreground mb-8">
             {t('externalReviewers')}
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {committees['External Reviewers'].map((member, index) => (
-              <div
-                key={`${member.name}-${index}`}
-                ref={(el) => {
-                  cardsRef.current[index] = el
-                }}
-              >
-                <Card className="p-6 border border-border/50 hover:border-primary/30 transition-all hover:shadow-md h-full">
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-[#002bb8] text-white flex items-center justify-center font-bold">
-                      {member.name.charAt(0)}
+            {Array.from({ length: REVIEWER_COUNT }, (_, i) => i + 1).map((i, index) => {
+              const name = t(`reviewer${i}Name`)
+              return (
+                <div
+                  key={`reviewer-${i}`}
+                  ref={(el) => {
+                    cardsRef.current[index] = el
+                  }}
+                >
+                  <Card className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-all hover:shadow-lg hover:shadow-primary/10 h-full">
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-bold">
+                        {name.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-foreground truncate">
+                          {name}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-foreground truncate">
-                        {member.name}
+                    <div className="flex items-start gap-2 mt-3 pt-3 border-t border-border">
+                      <Globe className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-muted-foreground">
+                        {t(`reviewer${i}Aff`)}
                       </p>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-2 mt-3 pt-3 border-t border-border">
-                    <Globe className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-muted-foreground">
-                      {member.affiliation}
-                    </p>
-                  </div>
-                </Card>
-              </div>
-            ))}
+                  </Card>
+                </div>
+              )
+            })}
           </div>
         </div>
 
-        <div className="mt-16 p-8 bg-card border border-border/50 rounded-lg">
+        <div className="mt-16 p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
           <h3 className="text-2xl font-bold text-foreground mb-2">
             {t('officeMembers')}
           </h3>
@@ -157,14 +153,14 @@ export default function Committees() {
           <ul className="space-y-2 text-foreground">
             {[1, 2, 3, 4, 5, 6, 7].map((i) => (
               <li key={i} className="flex gap-2">
-                <span className="text-[#002bb8]">•</span>
+                <span className="text-primary">•</span>
                 <span>{t(`office${i}`)}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="mt-16 p-8 bg-card border border-border/50 rounded-lg">
+        <div className="mt-16 p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
           <h3 className="text-2xl font-bold text-foreground mb-6">
             {t('organizingCommittee')}
           </h3>

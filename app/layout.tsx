@@ -1,11 +1,14 @@
 import React from "react"
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Aldrich } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const aldrich = Aldrich({
+  subsets: ["latin"],
+  variable: "--font-aldrich",
+  weight: "400",
+});
 
 export const metadata: Metadata = {
   title: 'IANLP 2026 - 1st International Conference on AI for NLP',
@@ -25,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html suppressHydrationWarning>
+    <html suppressHydrationWarning className={aldrich.variable}>
       <body className="font-sans antialiased">
         {children}
         <Analytics />

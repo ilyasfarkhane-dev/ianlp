@@ -87,9 +87,9 @@ export default function Contact() {
         >
           {/* Contact Info */}
           <div className="space-y-6">
-            <Card className="p-8 border border-border/50">
+            <Card className="p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
               <div className="flex items-start gap-4 mb-6">
-                <div className="h-12 w-12 rounded-lg bg-[#002bb8] text-white flex items-center justify-center flex-shrink-0">
+                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center flex-shrink-0">
                   <Mail size={24} />
                 </div>
                 <div>
@@ -104,9 +104,9 @@ export default function Contact() {
               </div>
             </Card>
 
-            <Card className="p-8 border border-border/50">
+            <Card className="p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
               <div className="flex items-start gap-4 mb-6">
-                <div className="h-12 w-12 rounded-lg bg-[#002bb8] text-white flex items-center justify-center flex-shrink-0">
+                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center flex-shrink-0">
                   <Phone size={24} />
                 </div>
                 <div>
@@ -121,9 +121,9 @@ export default function Contact() {
               </div>
             </Card>
 
-            <Card className="p-8 border border-border/50">
+            <Card className="p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
               <div className="flex items-start gap-4">
-                <div className="h-12 w-12 rounded-lg bg-[#002bb8] text-white flex items-center justify-center flex-shrink-0">
+                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center flex-shrink-0">
                   <MapPin size={24} />
                 </div>
                 <div>
@@ -136,7 +136,7 @@ export default function Contact() {
             </Card>
           </div>
 
-          <Card className="p-8 border border-border/50 bg-gradient-to-br from-primary/5 to-accent/5">
+          <Card className="p-8 rounded-xl border border-white/10 bg-primary/5 backdrop-blur-sm">
             <h3 className="text-2xl font-bold text-foreground mb-6">
               {t('generalChair')}
             </h3>

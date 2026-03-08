@@ -64,13 +64,12 @@ export default function Navbar() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-0 z-50 w-full bg-background/80 backdrop-blur-sm transition-all duration-300"
+      className="fixed top-0 z-50 w-full border-b border-white/10 bg-background/90 backdrop-blur-md transition-all duration-300"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
-        
           <div className="hidden sm:block">
-            <h1 className="text-lg font-bold text-[#002bb8]">IANLP 2026</h1>
+            <h1 className="text-lg font-bold gradient-text">IANLP 2026</h1>
           </div>
         </div>
 
@@ -100,7 +99,7 @@ export default function Navbar() {
           <Button
             disabled
             size="sm"
-            className="bg-[#002bb8] text-white"
+            className="btn-gradient text-white border-0"
             title={t('comingSoon')}
           >
             {t('submitPaper')}
@@ -144,7 +143,7 @@ export default function Navbar() {
               </Button>
               <Button
                 disabled
-                className="w-full bg-[#002bb8] text-white"
+                className="w-full btn-gradient text-white border-0"
                 size="sm"
                 title={t('comingSoon')}
               >

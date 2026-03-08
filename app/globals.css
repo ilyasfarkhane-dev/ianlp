@@ -4,39 +4,39 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.98 0.001 340);
-  --foreground: oklch(0.15 0.02 300);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.02 300);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 300);
-  --primary: oklch(0.45 0.25 270);
+  --background: oklch(0.11 0.03 280);
+  --foreground: oklch(0.97 0.01 280);
+  --card: oklch(0.16 0.04 280);
+  --card-foreground: oklch(0.97 0.01 280);
+  --popover: oklch(0.16 0.04 280);
+  --popover-foreground: oklch(0.97 0.01 280);
+  --primary: oklch(0.65 0.22 292);
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.55 0.2 200);
+  --secondary: oklch(0.55 0.18 270);
   --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.92 0.01 300);
-  --muted-foreground: oklch(0.5 0.05 270);
-  --accent: oklch(0.5 0.22 180);
+  --muted: oklch(0.2 0.04 280);
+  --muted-foreground: oklch(0.7 0.03 280);
+  --accent: oklch(0.6 0.2 280);
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.01 300);
-  --input: oklch(0.98 0.002 300);
-  --ring: oklch(0.45 0.25 270);
-  --chart-1: oklch(0.45 0.25 270);
-  --chart-2: oklch(0.5 0.22 180);
-  --chart-3: oklch(0.6 0.15 160);
-  --chart-4: oklch(0.55 0.2 200);
-  --chart-5: oklch(0.65 0.18 240);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.26 0.05 280);
+  --input: oklch(0.2 0.04 280);
+  --ring: oklch(0.65 0.22 292);
+  --chart-1: oklch(0.65 0.22 292);
+  --chart-2: oklch(0.6 0.2 280);
+  --chart-3: oklch(0.6 0.15 200);
+  --chart-4: oklch(0.55 0.2 270);
+  --chart-5: oklch(0.65 0.18 300);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.45 0.25 270);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.5 0.22 180);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.14 0.04 280);
+  --sidebar-foreground: oklch(0.97 0 0);
+  --sidebar-primary: oklch(0.65 0.22 292);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.55 0.18 270);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.26 0.05 280);
+  --sidebar-ring: oklch(0.65 0.22 292);
 }
 
 .dark {
@@ -75,8 +75,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: var(--font-aldrich), 'Aldrich', system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -123,16 +123,43 @@
     @apply bg-background text-foreground;
   }
   
-  /* AI Grid Background */
+  /* Cyber-style grid background */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background-image: 
-      linear-gradient(to right, rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
+      linear-gradient(to right, rgba(139, 92, 246, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(139, 92, 246, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
     pointer-events: none;
     z-index: -1;
   }
+  /* Subtle gradient overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 58, 237, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 100% 50%, rgba(99, 102, 241, 0.08), transparent);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, oklch(0.75 0.2 292) 0%, oklch(0.6 0.25 270) 50%, oklch(0.7 0.2 280) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient button */
+.btn-gradient {
+  background: linear-gradient(135deg, oklch(0.5 0.22 292) 0%, oklch(0.6 0.2 280) 100%);
+}
+.btn-gradient:hover {
+  background: linear-gradient(135deg, oklch(0.55 0.22 292) 0%, oklch(0.65 0.2 280) 100%);
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.4);
 }

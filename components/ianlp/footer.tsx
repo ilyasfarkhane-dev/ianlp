@@ -15,7 +15,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-card border-t border-border">
+    <footer className="border-t border-white/10 bg-white/5 backdrop-blur-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
@@ -70,11 +70,16 @@ export default function Footer() {
 
         <Separator className="my-8" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-foreground/70">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-foreground/70">
           <div>
             <p className="font-semibold text-foreground mb-2">{t('organizedBy')}</p>
             <p>{t('organizedByValue')}</p>
             <p className="mt-1">{t('organizedByAddress')}</p>
+          </div>
+
+          <div>
+            <p className="font-semibold text-foreground mb-2">{t('sponsors')}</p>
+            <p>{t('sponsorsValue')}</p>
           </div>
 
           <div>

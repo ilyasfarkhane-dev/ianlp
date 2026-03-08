@@ -77,7 +77,7 @@ export default function Submission() {
     <section
       ref={containerRef}
       id="submission"
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30"
+      className="py-20 px-4 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
         <div
@@ -100,7 +100,7 @@ export default function Submission() {
                 cardsRef.current[idx] = el
               }}
             >
-              <Card className="p-6 h-full border border-border/50 hover:border-primary/30 transition-colors">
+              <Card className="p-6 h-full rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
                 <Badge className="mb-3">{t(card.descKey)}</Badge>
                 <h3 className="text-xl font-bold text-foreground mb-4">
                   {t(card.titleKey)}
@@ -122,7 +122,7 @@ export default function Submission() {
           ref={(el) => {
             cardsRef.current[3] = el
           }}
-          className="p-8 border border-border/50 bg-card"
+          className="p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm"
         >
           <h3 className="text-2xl font-bold text-foreground mb-6">
             {t('qualityEthics')}

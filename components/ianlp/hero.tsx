@@ -65,7 +65,7 @@ export default function Hero() {
       <div className="mx-auto max-w-7xl w-full">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
           <div>
-            <div className="inline-block mb-4 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+            <div className="inline-block mb-4 px-3 py-1 rounded-full border border-primary/30 bg-primary/10">
               <span className="text-sm font-semibold text-primary">
                 {t('badge')}
               </span>
@@ -73,9 +73,9 @@ export default function Hero() {
 
             <h1
               ref={titleRef}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-6"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
             >
-              {t('title')}
+              <span className="gradient-text">{t('title')}</span>
             </h1>
 
             <p
@@ -95,13 +95,13 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="#cfp"
-                className="inline-flex items-center justify-center px-6 py-3 bg-[#002bb8] text-white font-semibold rounded-lg hover:shadow-lg transition-all hover:shadow-primary/20"
+                className="btn-gradient inline-flex items-center justify-center px-6 py-3 text-white font-semibold rounded-lg transition-all shadow-lg"
               >
                 {t('callForPapers')} <ArrowRight className="ml-2 h-5 w-5 rtl:ml-0 rtl:mr-2" />
               </a>
               <a
                 href="#dates"
-                className="inline-flex items-center justify-center px-6 py-3 border border-border rounded-lg font-semibold hover:bg-muted transition-colors"
+                className="inline-flex items-center justify-center px-6 py-3 border border-primary/50 rounded-lg font-semibold hover:bg-primary/10 transition-colors text-foreground"
               >
                 {t('importantDates')}
               </a>
@@ -110,7 +110,7 @@ export default function Hero() {
 
           {/* Conference Snapshot Card */}
           <div ref={cardRef} className="relative">
-            <Card className="p-8 bg-card border border-border/50 shadow-xl">
+            <Card className="p-8 rounded-xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-sm">
               <div className="space-y-6">
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">
@@ -123,7 +123,7 @@ export default function Hero() {
 
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
                       <span className="text-primary font-bold">📅</span>
                     </div>
                     <div>
@@ -137,7 +137,7 @@ export default function Hero() {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
                       <span className="text-accent font-bold">📍</span>
                     </div>
                     <div>
@@ -154,7 +154,7 @@ export default function Hero() {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-secondary/10 flex items-center justify-center">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
                       <span className="text-secondary font-bold">📚</span>
                     </div>
                     <div>
@@ -180,7 +180,7 @@ export default function Hero() {
             </Card>
 
             {/* Decorative gradient blur */}
-            <div className="absolute -top-20 -right-20 h-40 w-40 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl -z-10" />
+            <div className="absolute -top-20 -right-20 h-40 w-40 bg-primary/30 rounded-full blur-3xl -z-10" />
           </div>
         </div>
       </div>

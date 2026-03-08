@@ -70,7 +70,7 @@ export default function ReviewProcess() {
 
         <div className="grid lg:grid-cols-2 gap-12">
           <div className="space-y-6">
-            <div className="p-6 bg-card border border-border/50 rounded-lg">
+            <div className="p-6 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
               <h3 className="font-bold text-lg text-foreground mb-4">{t('keyPrinciples')}</h3>
               <ul className="space-y-3">
                 {['principle1', 'principle2', 'principle3', 'principle4', 'principle5'].map((key) => (
@@ -82,14 +82,14 @@ export default function ReviewProcess() {
               </ul>
             </div>
 
-            <div className="p-6 bg-[#002bb8]/10 border border-[#002bb8]/20 rounded-lg">
+            <div className="p-6 rounded-xl bg-primary/10 border border-primary/20">
               <h3 className="font-bold text-lg text-foreground mb-4">
                 {t('evaluationCriteria')}
               </h3>
               <ul className="space-y-2 text-sm text-foreground/80">
                 {['crit1', 'crit2', 'crit3', 'crit4', 'crit5'].map((key, i) => (
                   <li key={key} className="flex gap-2">
-                    <span className="text-[#002bb8] font-semibold">{i + 1}.</span>
+                    <span className="text-primary font-semibold">{i + 1}.</span>
                     <span>{t(key)}</span>
                   </li>
                 ))}
@@ -98,7 +98,7 @@ export default function ReviewProcess() {
           </div>
 
           <Accordion type="single" collapsible className="space-y-3">
-            <AccordionItem value="item-1" className="border border-border rounded-lg px-6">
+            <AccordionItem value="item-1" className="border border-white/10 rounded-xl px-6 bg-white/5 backdrop-blur-sm">
               <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
                 {t('accordion1Title')}
               </AccordionTrigger>
@@ -112,7 +112,7 @@ export default function ReviewProcess() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-2" className="border border-border rounded-lg px-6">
+            <AccordionItem value="item-2" className="border border-white/10 rounded-xl px-6 bg-white/5 backdrop-blur-sm">
               <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
                 {t('accordion2Title')}
               </AccordionTrigger>
@@ -126,7 +126,7 @@ export default function ReviewProcess() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-3" className="border border-border rounded-lg px-6">
+            <AccordionItem value="item-3" className="border border-white/10 rounded-xl px-6 bg-white/5 backdrop-blur-sm">
               <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
                 {t('accordion3Title')}
               </AccordionTrigger>
@@ -140,7 +140,7 @@ export default function ReviewProcess() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-4" className="border border-border rounded-lg px-6">
+            <AccordionItem value="item-4" className="border border-white/10 rounded-xl px-6 bg-white/5 backdrop-blur-sm">
               <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
                 {t('accordion4Title')}
               </AccordionTrigger>
@@ -154,7 +154,7 @@ export default function ReviewProcess() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-5" className="border border-border rounded-lg px-6">
+            <AccordionItem value="item-5" className="border border-white/10 rounded-xl px-6 bg-white/5 backdrop-blur-sm">
               <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
                 {t('accordion5Title')}
               </AccordionTrigger>

@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import Navbar from '@/components/ianlp/navbar'
 import Hero from '@/components/ianlp/hero'
+import Countdown from '@/components/ianlp/countdown'
 import QuickLinks from '@/components/ianlp/quick-links'
 import Topics from '@/components/ianlp/topics'
 import CFPSection from '@/components/ianlp/cfp-section'
@@ -30,6 +31,11 @@ export default async function IANLPPage({ params }: Props) {
       <Navbar />
       <main className="relative">
         <Hero />
+        <section className="py-12 px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <Countdown />
+          </div>
+        </section>
         <QuickLinks />
         <Topics />
         <CFPSection />
