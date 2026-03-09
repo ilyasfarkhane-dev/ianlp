@@ -17,6 +17,7 @@ const cfpSections = [
 
 export default function CFPSection() {
   const t = useTranslations('cfp')
+  const tCommon = useTranslations('common')
   const containerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
@@ -124,6 +125,10 @@ export default function CFPSection() {
             </div>
           ))}
         </div>
+
+        <p className="text-center text-sm text-muted-foreground italic mb-8">
+          {tCommon('disclaimerLncs')}
+        </p>
 
         <div className="p-8 rounded-xl bg-primary/10 border border-primary/20 text-center">
           <p className="text-muted-foreground mb-4">{t('readyToSubmit')}</p>

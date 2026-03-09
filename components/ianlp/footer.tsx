@@ -12,6 +12,7 @@ const footerLinks = [
 
 export default function Footer() {
   const t = useTranslations('footer')
+  const tCommon = useTranslations('common')
   const currentYear = new Date().getFullYear()
 
   return (
@@ -86,6 +87,7 @@ export default function Footer() {
             <p className="font-semibold text-foreground mb-2">{t('publication')}</p>
             <p>{t('publicationValue')}</p>
             <p className="mt-1">{t('publicationNote')}</p>
+            <p className="mt-2 text-xs italic text-foreground/70">{tCommon('disclaimerLncs')}</p>
           </div>
         </div>
 

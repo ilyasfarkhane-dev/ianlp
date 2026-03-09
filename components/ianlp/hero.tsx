@@ -8,6 +8,7 @@ import { ArrowRight } from 'lucide-react'
 
 export default function Hero() {
   const t = useTranslations('hero')
+  const tCommon = useTranslations('common')
   const containerRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const subtitleRef = useRef<HTMLParagraphElement>(null)
@@ -166,6 +167,9 @@ export default function Hero() {
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
                         {t('publicationSub')}
+                      </p>
+                      <p className="text-xs text-muted-foreground/90 mt-2 italic">
+                        {tCommon('disclaimerLncs')}
                       </p>
                     </div>
                   </div>

@@ -9,7 +9,7 @@
     "committees": "Comités",
     "venue": "Lieu",
     "contact": "Contact",
-    "lncsTemplate": "Modèle de l'article",
+    "lncsTemplate": "Modèle LNCS",
     "submitPaper": "Soumettre un article",
     "comingSoon": "Bientôt disponible",
     "toggleMenu": "Ouvrir le menu"
@@ -79,9 +79,9 @@
     "publication": "Publication",
     "pub1": "Actes évalués par les pairs (série majeure)",
     "pub2": "Sous réserve d'approbation éditoriale",
-    "pub3": "Conformité au format de la conférence",
+    "pub3": "Conformité au format LNCS (si applicable)",
     "requirements": "Exigences de soumission",
-    "req1": "Format standard (modèle Word/LaTeX)",
+    "req1": "Format LNCS (modèle Word/LaTeX)",
     "req2": "Évaluation en double aveugle (anonymisée)",
     "req3": "Articles complets : 12-15+ pages ; courts : 6-11 pages",
     "req4": "Références incluses",
@@ -113,7 +113,7 @@
     "platform2": "Téléversement simple",
     "platform3": "Suivi en temps réel",
     "format": "Format des articles",
-    "formatDesc": "Modèle de la conférence",
+    "formatDesc": "Modèle LNCS officiel",
     "format1": "Word et LaTeX",
     "format2": "Articles complets : 12-15+ pages ; courts : 6-11 pages",
     "format3": "Références incluses",
@@ -172,8 +172,8 @@
     "accordion4b": "Demandes de révision pour les acceptés",
     "accordion4c": "Réponse à tous les commentaires",
     "accordion5Title": "Publication et actes",
-    "accordion5Desc": "Les versions finales sont compilées dans des actes évalués par les pairs. Format et exigences éditoriales seront précisés à l'acceptation.",
-    "accordion5a": "Conformité au format selon les instructions aux auteurs",
+    "accordion5Desc": "Les versions finales sont compilées dans des actes évalués par les pairs. Format LNCS et exigences éditoriales s'appliquent lorsque pertinent.",
+    "accordion5a": "Conformité au format LNCS (si applicable)",
     "accordion5b": "Signature des accords de copyright",
     "accordion5c": "Publication en ligne et imprimée"
   },
@@ -293,7 +293,7 @@
     "sponsorsValue": "Université Hassan II de Casablanca (FSBM), LTIM, LIAS, LAMS, CNRST, AM2I – Association marocaine pour l'IA et l'innovation, CRIAMA (Kinshasa, RD Congo). Partenariats avec l'Université de Grenade (Espagne).",
     "publication": "Publication",
     "publicationValue": "Actes évalués par les pairs",
-    "publicationNote": "Publication indexée évaluée par les pairs de haute qualité.",
+    "publicationNote": "Publication indexée de haute qualité. Normes LNCS si applicable.",
     "copyright": "1ère Conférence internationale sur l'IA pour le TALN",
     "privacyPolicy": "Politique de confidentialité",
     "termsOfUse": "Conditions d'utilisation",
@@ -306,6 +306,7 @@
     "seconds": "Secondes"
   },
   "common": {
-    "language": "Langue"
+    "language": "Langue",
+    "disclaimerLncs": "Informations soumises, pas définitives pour le moment."
   }
 }
