@@ -145,20 +145,7 @@ export default function Committees() {
           </div>
         </div>
 
-        <div className="mt-16 p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
-          <h3 className="text-2xl font-bold text-foreground mb-2">
-            {t('officeMembers')}
-          </h3>
-          <p className="text-muted-foreground mb-6">{t('officeMembersSub')}</p>
-          <ul className="space-y-2 text-foreground">
-            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-              <li key={i} className="flex gap-2">
-                <span className="text-primary">•</span>
-                <span>{t(`office${i}`)}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+      
 
         <div className="mt-16 p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
           <h3 className="text-2xl font-bold text-foreground mb-6">
