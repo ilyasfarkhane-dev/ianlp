@@ -14,7 +14,9 @@ export const metadata: Metadata = {
   title: 'IANLP 2026 - 1st International Conference on AI for NLP',
   description: 'IANLP 2026: 1st International Conference on Artificial Intelligence for Natural Language Processing. June 26-27, 2026 in Casablanca, Morocco.',
   generator: 'v0.app',
-  
+  icons: {
+    icon: '/favicon.ico',
+  },
   viewport: {
     width: 'device-width',
     initialScale: 1,
