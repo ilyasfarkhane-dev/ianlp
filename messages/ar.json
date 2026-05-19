@@ -18,6 +18,8 @@
     "badge": "سلسلة مؤتمرات جديدة",
     "title": "IANLP 2026",
     "subtitle": "المؤتمر الدولي الأول حول الذكاء الاصطناعي ومعالجة اللغة الطبيعية",
+    "themeLabel": "موضوع مؤتمر IANLP 2026 :",
+    "themeValue": "Artificial Intelligence, Intelligent Computing and Digital Transformation for a Smarter Future",
     "description": "مؤتمر دولي رائد مخصص لتطوير أبحاث الذكاء الاصطناعي ومعالجة اللغة الطبيعية، يشمل المحولات والنماذج اللغوية الكبيرة وأنظمة RAG وتقنيات اللغة الموثوقة. انضم إلى باحثين وممارسين من أنحاء العالم لتبادل أحدث الاكتشافات.",
     "callForPapers": "الدعوة لتقديم الأوراق",
     "importantDates": "التواريخ المهمة",
@@ -280,7 +282,8 @@
     "name": "الاسم",
     "affiliation": "الانتماء",
     "quickContact": "اتصال سريع",
-    "reachOut": "لا تتردد في التواصل لأي سؤال حول IANLP 2026 أو التقديمات أو ترتيبات المؤتمر."
+    "reachOut": "لا تتردد في التواصل لأي سؤال حول IANLP 2026 أو التقديمات أو ترتيبات المؤتمر.",
+    "partnersTitle": "الشركاء والرعاة"
   },
   "footer": {
     "aboutTitle": "عن IANLP",

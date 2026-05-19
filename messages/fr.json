@@ -18,6 +18,8 @@
     "badge": "Nouvelle série de conférences",
     "title": "IANLP 2026",
     "subtitle": "1ère Conférence internationale sur l'intelligence artificielle et le traitement du langage naturel",
+    "themeLabel": "Thème de la conférence IANLP 2026 :",
+    "themeValue": "Artificial Intelligence, Intelligent Computing and Digital Transformation for a Smarter Future",
     "description": "Une conférence internationale de premier plan dédiée à l'avancement de la recherche en IA et TALN, avec les Transformers, les grands modèles de langage, les systèmes RAG et les technologies linguistiques fiables. Rejoignez chercheurs et praticiens du monde entier pour partager des découvertes de pointe.",
     "callForPapers": "Appel à communications",
     "importantDates": "Dates importantes",
@@ -280,7 +282,8 @@
     "name": "Nom",
     "affiliation": "Affiliation",
     "quickContact": "Contact rapide",
-    "reachOut": "N'hésitez pas à nous contacter pour toute question sur IANLP 2026, les soumissions ou l'organisation."
+    "reachOut": "N'hésitez pas à nous contacter pour toute question sur IANLP 2026, les soumissions ou l'organisation.",
+    "partnersTitle": "Partenaires et sponsors"
   },
   "footer": {
     "aboutTitle": "À propos d'IANLP",

@@ -5,10 +5,14 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
 import { Menu, X } from 'lucide-react'
 import LanguageSwitcher from './language-switcher'
 
 gsap.registerPlugin(ScrollTrigger)
+
+const EASYCHAIR_SUBMIT_URL =
+  'https://easychair.org/conferences/?conf=ianlp2026'
 
 const navLinks = [
   { labelKey: 'overview', href: '#overview' },
@@ -66,11 +70,23 @@ export default function Navbar() {
       ref={navRef}
       className="fixed top-0 z-50 w-full border-b border-white/10 bg-background/90 backdrop-blur-md transition-all duration-300"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-9xl items-center justify-between px-4 py-3  ">
         <div className="flex items-center gap-2">
-          <div className="hidden sm:block">
-            <h1 className="text-lg font-bold gradient-text">IANLP 2026</h1>
-          </div>
+          <button
+            type="button"
+            onClick={() => handleNavClick('#overview')}
+            className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+            aria-label="IANLP 2026"
+          >
+            <Image
+              src="/ianlp-logo.png"
+              alt="IANLP 2026"
+              width={400}
+              height={120}
+              className="h-20 w-auto min-w-[200px] object-contain sm:h-28 sm:min-w-[280px]"
+              priority
+            />
+          </button>
         </div>
 
         {/* Desktop Navigation */}
@@ -97,12 +113,17 @@ export default function Navbar() {
             {t('lncsTemplate')}
           </Button>
           <Button
-            disabled
+            asChild
             size="sm"
             className="btn-gradient text-white border-0"
-            title={t('comingSoon')}
           >
-            {t('submitPaper')}
+            <a
+              href={EASYCHAIR_SUBMIT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('submitPaper')}
+            </a>
           </Button>
         </div>
 
@@ -142,12 +163,17 @@ export default function Navbar() {
                 {t('lncsTemplate')}
               </Button>
               <Button
-                disabled
+                asChild
                 className="w-full btn-gradient text-white border-0"
                 size="sm"
-                title={t('comingSoon')}
               >
-                {t('submitPaper')}
+                <a
+                  href={EASYCHAIR_SUBMIT_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('submitPaper')}
+                </a>
               </Button>
             </div>
           </div>

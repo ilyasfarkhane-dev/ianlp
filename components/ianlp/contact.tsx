@@ -4,10 +4,20 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTranslations } from 'next-intl'
+import Image from 'next/image'
 import { Card } from '@/components/ui/card'
 import { Mail, Phone, MapPin } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
+
+const partners = [
+  { src: '/PARTNERS/FSBM.jpeg', alt: 'Faculty of Sciences Ben M\'Sick (FSBM)' },
+  { src: '/PARTNERS/MI.jpeg', alt: 'MI' },
+  { src: '/PARTNERS/LTIM.png', alt: 'LTIM' },
+  { src: '/PARTNERS/LIAS.jpeg', alt: 'LIAS' },
+  { src: '/PARTNERS/LAMS.jpeg', alt: 'LAMS' },
+  { src: '/PARTNERS/AM2I.jpeg', alt: 'AM2I' },
+]
 
 export default function Contact() {
   const t = useTranslations('contact')
@@ -195,6 +205,23 @@ export default function Contact() {
               </div>
             </div>
           </Card>
+        </div>
+
+        <div className="mt-18 pt-18 border-t border-white/10">
+        
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 items-center">
+            {partners.map((partner) => (
+              
+                <Image
+                  src={partner.src}
+                  alt={partner.alt}
+                  width={140}
+                  height={80}
+                  className="h-14 sm:h-16 w-auto max-w-full object-contain"
+                />
+              
+            ))}
+          </div>
         </div>
       </div>
     </section>

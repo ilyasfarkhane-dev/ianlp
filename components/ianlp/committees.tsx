@@ -93,7 +93,7 @@ export default function Committees() {
           </h3>
           <p className="text-muted-foreground mb-6">{t('pcChairsSub')}</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2].map((i) => (
               <div key={i}>
                 <p className="font-bold text-foreground">{t(`pcChair${i}`)}</p>
                 <p className="text-sm text-muted-foreground">{t(`pcChair${i}Aff`)}</p>

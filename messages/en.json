@@ -18,6 +18,8 @@
     "badge": "New Conference Series",
     "title": "IANLP 2026",
     "subtitle": "1st International Conference on Artificial Intelligence and Natural Language Processing",
+    "themeLabel": "IANLP 2026 Conference Theme:",
+    "themeValue": "Artificial Intelligence, Intelligent Computing and Digital Transformation for a Smarter Future",
     "description": "A premier international conference dedicated to advancing AI and NLP research, featuring Transformers, Large Language Models, RAG systems, and trustworthy language technologies. Join researchers and practitioners from around the world to share cutting-edge discoveries.",
     "callForPapers": "Call for Papers",
     "importantDates": "Important Dates",
@@ -280,7 +282,8 @@
     "name": "Name",
     "affiliation": "Affiliation",
     "quickContact": "Quick Contact",
-    "reachOut": "Feel free to reach out with any questions about IANLP 2026, submissions, or conference logistics."
+    "reachOut": "Feel free to reach out with any questions about IANLP 2026, submissions, or conference logistics.",
+    "partnersTitle": "Partners & Sponsors"
   },
   "footer": {
     "aboutTitle": "About IANLP",

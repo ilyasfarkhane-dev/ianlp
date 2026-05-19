@@ -86,6 +86,15 @@ export default function Hero() {
               {t('subtitle')}
             </p>
 
+            <div className="mb-6 rounded-xl border border-primary/30 bg-primary/10 px-4 py-4 sm:px-5">
+              <p className="text-sm font-semibold text-primary mb-2">
+                {t('themeLabel')}
+              </p>
+              <p className="text-base sm:text-lg font-semibold leading-snug text-foreground">
+                {t('themeValue')}
+              </p>
+            </div>
+
             <p
               ref={descRef}
               className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-2xl"
