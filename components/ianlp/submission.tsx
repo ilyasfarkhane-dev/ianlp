@@ -11,7 +11,7 @@ import { CheckCircle2 } from 'lucide-react'
 gsap.registerPlugin(ScrollTrigger)
 
 const submissionCards = [
-  { titleKey: 'platform', descKey: 'platformDesc', itemKeys: ['platform1', 'platform2', 'platform3'] },
+  { titleKey: 'platform', descKey: 'platformDesc', itemKeys: [ 'platform2', 'platform3'] },
   { titleKey: 'format', descKey: 'formatDesc', itemKeys: ['format1', 'format2', 'format3'] },
   { titleKey: 'keyReqs', descKey: 'keyReqsDesc', itemKeys: ['keyReqs1', 'keyReqs2', 'keyReqs3'] },
 ]
