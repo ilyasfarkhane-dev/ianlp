@@ -14,6 +14,9 @@ gsap.registerPlugin(ScrollTrigger)
 const EASYCHAIR_SUBMIT_URL =
   'https://easychair.org/conferences/?conf=ianlp2026'
 
+const LNCS_GUIDELINES_URL =
+  'https://www.springer.com/gp/computer-science/lncs/conference-proceedings-guidelines'
+
 const navLinks = [
   { labelKey: 'overview', href: '#overview' },
   { labelKey: 'topics', href: '#topics' },
@@ -104,13 +107,14 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-2">
           <LanguageSwitcher />
-          <Button
-            disabled
-            variant="outline"
-            size="sm"
-            title={t('comingSoon')}
-          >
-            {t('lncsTemplate')}
+          <Button asChild variant="outline" size="sm">
+            <a
+              href={LNCS_GUIDELINES_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('lncsTemplate')}
+            </a>
           </Button>
           <Button
             asChild
@@ -154,13 +158,18 @@ export default function Navbar() {
             ))}
             <div className="pt-2 flex flex-col gap-2">
               <Button
-                disabled
+                asChild
                 variant="outline"
                 className="w-full bg-transparent"
                 size="sm"
-                title={t('comingSoon')}
               >
-                {t('lncsTemplate')}
+                <a
+                  href={LNCS_GUIDELINES_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('lncsTemplate')}
+                </a>
               </Button>
               <Button
                 asChild
