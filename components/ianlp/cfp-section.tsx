@@ -10,6 +10,9 @@ import { CheckCircle } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const EASYCHAIR_SUBMIT_URL =
+  'https://easychair.org/conferences/?conf=ianlp2026'
+
 const cfpSections = [
   { titleKey: 'publication', itemKeys: ['pub1', 'pub2', 'pub3'] },
   { titleKey: 'requirements', itemKeys: ['req1', 'req2', 'req3', 'req4'] },
@@ -91,7 +94,9 @@ export default function CFPSection() {
             {t('intro')}
           </p>
           <a
-            href="#submission"
+            href={EASYCHAIR_SUBMIT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn-gradient inline-flex items-center justify-center px-8 py-3 text-white font-semibold rounded-lg transition-all shadow-lg"
           >
             {t('submitResearch')}
@@ -133,12 +138,17 @@ export default function CFPSection() {
         <div className="p-8 rounded-xl bg-primary/10 border border-primary/20 text-center">
           <p className="text-muted-foreground mb-4">{t('readyToSubmit')}</p>
           <Button
-            disabled
+            asChild
             size="lg"
             className="btn-gradient text-white border-0"
-            title={t('submitEasyChair')}
           >
-            {t('submitEasyChair')}
+            <a
+              href={EASYCHAIR_SUBMIT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('submitEasyChair')}
+            </a>
           </Button>
         </div>
       </div>
