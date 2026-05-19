@@ -8,7 +8,10 @@ import { Badge } from '@/components/ui/badge'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const topicKeys = ['topic1', 'topic2', 'topic3', 'topic4', 'topic5', 'topic6', 'topic7', 'topic8', 'topic9', 'topic10', 'topic11', 'topic12', 'topic13', 'topic14', 'topic15', 'topic16', 'topic17', 'topic18']
+const topicKeys = [
+  'topic1', 'topic2', 'topic3', 'topic4', 'topic5', 'topic6',
+  'topic7', 'topic8', 'topic9', 'topic10', 'topic11', 'topic12',
+]
 
 export default function Topics() {
   const t = useTranslations('topics')

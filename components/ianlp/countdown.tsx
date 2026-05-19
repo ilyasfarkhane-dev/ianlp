@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 
-const CONFERENCE_DATE = new Date('2026-06-26T09:00:00')
+const CONFERENCE_DATE = new Date('2026-06-29T09:00:00')
 
 function getTimeLeft() {
   const now = new Date()

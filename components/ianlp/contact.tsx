@@ -11,12 +11,13 @@ import { Mail, Phone, MapPin } from 'lucide-react'
 gsap.registerPlugin(ScrollTrigger)
 
 const partners = [
+  {src:'/PARTNERS/UNIV.jpeg', alt: 'Faculty of Sciences Ben M\'Sick (FSBM)'},
   { src: '/PARTNERS/FSBM.jpeg', alt: 'Faculty of Sciences Ben M\'Sick (FSBM)' },
   { src: '/PARTNERS/MI.jpeg', alt: 'MI' },
   { src: '/PARTNERS/LTIM.png', alt: 'LTIM' },
-  { src: '/PARTNERS/LIAS.jpeg', alt: 'LIAS' },
-  { src: '/PARTNERS/LAMS.jpeg', alt: 'LAMS' },
   { src: '/PARTNERS/AM2I.jpeg', alt: 'AM2I' },
+  { src: '/PARTNERS/LIAS.jpeg', alt: 'LIAS' },
+  { src: '/PARTNERS/LAMS.jpeg', alt: 'LAMS' }
 ]
 
 export default function Contact() {
@@ -209,7 +210,7 @@ export default function Contact() {
 
         <div className="mt-18 pt-18 border-t border-white/10">
         
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 items-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-6 items-center">
             {partners.map((partner) => (
               
                 <Image

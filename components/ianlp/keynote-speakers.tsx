@@ -1,14 +1,92 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTranslations } from 'next-intl'
+import Image from 'next/image'
+import { User } from 'lucide-react'
 import { Card } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const keynoteTopicKeys = ['topic1', 'topic2', 'topic3', 'topic4', 'topic5', 'topic6']
+const speakerIds = [1, 2, 3, 4] as const
+
+const speakerImages: Record<(typeof speakerIds)[number], string> = {
+  1: '/speakers/Jaouad DABOUNOU.jpeg',
+  2: '/speakers/speaker-2.jpg',
+  3: '/speakers/speaker-3.jpg',
+  4: '/speakers/speaker-4.jpg',
+}
+
+function SpeakerCard({ id }: { id: (typeof speakerIds)[number] }) {
+  const t = useTranslations('keynote')
+  const [imgError, setImgError] = useState(false)
+  const name = t(`speaker${id}Name`)
+  const affiliation = t(`speaker${id}Affiliation`)
+  const bio = t(`speaker${id}Bio`)
+  const hasAffiliation = affiliation.trim().length > 0
+
+  return (
+    <Card className="overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm hover:border-primary/40 transition-colors">
+      <div className="w-full bg-primary/10">
+        {!imgError ? (
+          <Image
+            src={speakerImages[id]}
+            alt={name}
+            width={400}
+            height={400}
+            className="w-full h-auto object-contain"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="flex min-h-48 items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/30">
+              <User className="h-12 w-12 text-primary" />
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="p-6 space-y-2 text-center">
+        <h3 className="text-lg font-bold text-foreground">{name}</h3>
+        {hasAffiliation && (
+          <p className="text-sm font-medium text-primary">{affiliation}</p>
+        )}
+        <Dialog>
+          <DialogTrigger asChild>
+            <button
+              type="button"
+              className="text-sm font-medium text-primary hover:underline underline-offset-4"
+            >
+              {t('seeBiography')}
+            </button>
+          </DialogTrigger>
+          <DialogContent className="max-h-[85vh] overflow-y-auto border-white/10 bg-background sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>{name}</DialogTitle>
+              {hasAffiliation && (
+                <p className="text-sm font-medium text-primary">{affiliation}</p>
+              )}
+            </DialogHeader>
+            <DialogDescription className="text-sm leading-relaxed text-muted-foreground text-justify">
+              {bio}
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </Card>
+  )
+}
 
 export default function KeynoteSpeakers() {
   const t = useTranslations('keynote')
@@ -78,20 +156,11 @@ export default function KeynoteSpeakers() {
           ))}
         </div>
 
-        <Card className="p-12 text-center rounded-xl border border-white/10 bg-primary/5 backdrop-blur-sm">
-          <div className="space-y-4">
-            <div className="h-16 w-16 rounded-full bg-primary/20 mx-auto flex items-center justify-center">
-              <span className="text-2xl">🎤</span>
-            </div>
-            <p className="text-xl font-bold text-foreground">
-              {t('comingSoon')}
-            </p>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t('comingSoonDesc')}
-            </p>
-           
-          </div>
-        </Card>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {speakerIds.map((id) => (
+            <SpeakerCard key={id} id={id} />
+          ))}
+        </div>
       </div>
     </section>
   )

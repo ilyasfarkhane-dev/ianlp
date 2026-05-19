@@ -123,9 +123,7 @@ export default function Hero() {
             <Card className="p-8 rounded-xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-sm">
               <div className="space-y-6">
                 <div>
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                    {t('eventDetails')}
-                  </p>
+                  
                   <h3 className="text-2xl font-bold text-foreground">
                     {t('conferenceSnapshot')}
                   </h3>
@@ -174,12 +172,8 @@ export default function Hero() {
                       <p className="text-foreground font-semibold">
                         {t('publicationValue')}
                       </p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {t('publicationSub')}
-                      </p>
-                      <p className="text-xs text-muted-foreground/90 mt-2 italic">
-                        {tCommon('disclaimerLncs')}
-                      </p>
+                     
+                     
                     </div>
                   </div>
                 </div>

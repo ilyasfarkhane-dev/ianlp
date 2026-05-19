@@ -120,7 +120,6 @@ export default function ReviewProcess() {
                 <p>{t('accordion2Desc')}</p>
                 <ul className="list-disc list-inside space-y-1 mt-2">
                   <li>{t('accordion2a')}</li>
-                  <li>{t('accordion2b')}</li>
                   <li>{t('accordion2c')}</li>
                 </ul>
               </AccordionContent>
