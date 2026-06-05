@@ -24,14 +24,18 @@ import { createPartner, updatePartner } from '@/app/admin/(dashboard)/partners/a
 import { buildTranslationsForAllLocales } from '@/lib/admin/translations'
 import type { PartnerWithTranslations } from '@/types/database'
 
-function getPartnerFields(partner?: PartnerWithTranslations) {
+function deriveAltTextFromLogo(logoPath: string): string {
+  const filename = logoPath.split('/').pop()?.replace(/\.[^.]+$/, '') ?? ''
+  const cleaned = filename.replace(/[-_]/g, ' ').trim()
+  return cleaned || 'Partner'
+}
+
+function getExistingAltText(partner?: PartnerWithTranslations): string {
   const translation =
     partner?.partner_translations.find((t) => t.locale === 'en') ??
     partner?.partner_translations[0]
 
-  return {
-    altText: translation?.alt_text ?? '',
-  }
+  return translation?.alt_text ?? ''
 }
 
 type PartnerFormDialogProps = {
@@ -46,34 +50,31 @@ export function PartnerFormDialog({ partner, trigger }: PartnerFormDialogProps) 
   const [loading, setLoading] = useState(false)
   const [sortOrder, setSortOrder] = useState(partner?.sort_order ?? 0)
   const [logoPath, setLogoPath] = useState(partner?.logo_path ?? '')
-  const [url, setUrl] = useState(partner?.url ?? '')
   const [isPublished, setIsPublished] = useState(partner?.is_published ?? true)
-  const [altText, setAltText] = useState('')
 
   useEffect(() => {
     if (!open) return
 
-    const fields = getPartnerFields(partner)
     setSortOrder(partner?.sort_order ?? 0)
     setLogoPath(partner?.logo_path ?? '')
-    setUrl(partner?.url ?? '')
     setIsPublished(partner?.is_published ?? true)
-    setAltText(fields.altText)
   }, [open, partner])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    if (!logoPath.trim() || !altText.trim()) {
-      toast.error('Logo image and alt text are required')
+    if (!logoPath.trim()) {
+      toast.error('Logo image is required')
       return
     }
+
+    const altText = getExistingAltText(partner).trim() || deriveAltTextFromLogo(logoPath)
 
     setLoading(true)
     const payload = {
       sort_order: sortOrder,
       logo_path: logoPath,
-      url,
+      url: partner?.url ?? '',
       is_published: isPublished,
       translations: buildTranslationsForAllLocales({ alt_text: altText }),
     }
@@ -113,26 +114,15 @@ export function PartnerFormDialog({ partner, trigger }: PartnerFormDialogProps) 
           </DialogHeader>
 
           <div className="my-6 space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-sort_order`}>Sort order</Label>
-                <Input
-                  id={`${formId}-sort_order`}
-                  type="number"
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(Number(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-url`}>Website URL (optional)</Label>
-                <Input
-                  id={`${formId}-url`}
-                  type="url"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://..."
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor={`${formId}-sort_order`}>Sort order</Label>
+              <Input
+                id={`${formId}-sort_order`}
+                type="number"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(Number(e.target.value))}
+                className="max-w-xs"
+              />
             </div>
 
             <CloudinaryImageUpload
@@ -144,17 +134,6 @@ export function PartnerFormDialog({ partner, trigger }: PartnerFormDialogProps) 
               previewClassName="h-20 w-40"
               required
             />
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-alt_text`}>Alt text</Label>
-              <Input
-                id={`${formId}-alt_text`}
-                value={altText}
-                onChange={(e) => setAltText(e.target.value)}
-                placeholder="Logo description for accessibility"
-                required
-              />
-            </div>
 
             <div className="flex items-center justify-between rounded-lg border border-border p-3">
               <div>

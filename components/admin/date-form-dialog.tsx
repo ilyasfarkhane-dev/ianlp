@@ -2,9 +2,13 @@
 
 import { useEffect, useId, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { format, isValid, parse } from 'date-fns'
 import { toast } from 'sonner'
-import { Plus } from 'lucide-react'
+import { CalendarIcon, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
 import { FormLoadingOverlay } from '@/components/ui/form-loading-overlay'
 import { LoadingButton } from '@/components/ui/loading-button'
 import {
@@ -30,6 +34,26 @@ import {
 import { createImportantDate, updateImportantDate } from '@/app/admin/(dashboard)/dates/actions'
 import { buildTranslationsForAllLocales } from '@/lib/admin/translations'
 import type { DateTab, ImportantDateWithTranslations } from '@/types/database'
+
+const DATE_DISPLAY_FORMAT = 'MMMM d, yyyy'
+
+function parseDateDisplay(value: string): Date | undefined {
+  if (!value.trim()) return undefined
+
+  const direct = parse(value, DATE_DISPLAY_FORMAT, new Date())
+  if (isValid(direct)) return direct
+
+  const rangeMatch = value.match(/^(.+?)-\d+,\s*(\d{4})$/)
+  if (rangeMatch) {
+    const start = parse(`${rangeMatch[1]}, ${rangeMatch[2]}`, DATE_DISPLAY_FORMAT, new Date())
+    if (isValid(start)) return start
+  }
+
+  const iso = parse(value, 'yyyy-MM-dd', new Date())
+  if (isValid(iso)) return iso
+
+  return undefined
+}
 
 function getDateFields(date?: ImportantDateWithTranslations) {
   const translation =
@@ -61,7 +85,7 @@ export function DateFormDialog({
   const [loading, setLoading] = useState(false)
   const [sortOrder, setSortOrder] = useState(date?.sort_order ?? 0)
   const [tab, setTab] = useState<DateTab>(date?.tab ?? 'submission')
-  const [dateValue, setDateValue] = useState(date?.date_value ?? '')
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>()
   const [isPublished, setIsPublished] = useState(date?.is_published ?? true)
   const [label, setLabel] = useState('')
   const [description, setDescription] = useState('')
@@ -83,7 +107,7 @@ export function DateFormDialog({
     const fields = getDateFields(date)
     setSortOrder(date?.sort_order ?? 0)
     setTab(date?.tab ?? 'submission')
-    setDateValue(date?.date_value ?? '')
+    setSelectedDate(parseDateDisplay(date?.date_value ?? ''))
     setIsPublished(date?.is_published ?? true)
     setLabel(fields.label)
     setDescription(fields.description)
@@ -92,8 +116,8 @@ export function DateFormDialog({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    if (!label.trim() || !dateValue.trim()) {
-      toast.error('Label and date value are required')
+    if (!label.trim() || !selectedDate) {
+      toast.error('Label and date are required')
       return
     }
 
@@ -101,7 +125,7 @@ export function DateFormDialog({
     const payload = {
       sort_order: sortOrder,
       tab,
-      date_value: dateValue,
+      date_value: format(selectedDate, DATE_DISPLAY_FORMAT),
       is_published: isPublished,
       translations: buildTranslationsForAllLocales({ label, description }),
     }
@@ -170,12 +194,30 @@ export function DateFormDialog({
               </div>
               <div className="space-y-2">
                 <Label htmlFor={`${formId}-date_value`}>Date display</Label>
-                <Input
-                  id={`${formId}-date_value`}
-                  value={dateValue}
-                  onChange={(e) => setDateValue(e.target.value)}
-                  placeholder="June 13, 2026"
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      id={`${formId}-date_value`}
+                      type="button"
+                      variant="outline"
+                      className={cn(
+                        'w-full cursor-pointer justify-start text-left font-normal',
+                        !selectedDate && 'text-muted-foreground',
+                      )}
+                    >
+                      <CalendarIcon className="h-4 w-4" />
+                      {selectedDate ? format(selectedDate, DATE_DISPLAY_FORMAT) : 'Pick a date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      defaultMonth={selectedDate}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 

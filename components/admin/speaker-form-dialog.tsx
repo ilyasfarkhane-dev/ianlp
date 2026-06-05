@@ -20,17 +20,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { CloudinaryImageUpload } from '@/components/admin/cloudinary-image-upload'
 import { createSpeaker, updateSpeaker } from '@/app/admin/(dashboard)/speakers/actions'
 import { buildTranslationsForAllLocales } from '@/lib/admin/translations'
-import type { SpeakerCategory, SpeakerWithTranslations } from '@/types/database'
+import type { SpeakerWithTranslations } from '@/types/database'
 
 function getSpeakerFields(speaker?: SpeakerWithTranslations) {
   const translation =
@@ -63,7 +56,6 @@ export function SpeakerFormDialog({
   const [loading, setLoading] = useState(false)
   const [sortOrder, setSortOrder] = useState(speaker?.sort_order ?? 0)
   const [imagePath, setImagePath] = useState(speaker?.image_path ?? '')
-  const [category, setCategory] = useState<SpeakerCategory>(speaker?.category ?? 'keynote')
   const [isPublished, setIsPublished] = useState(speaker?.is_published ?? true)
   const [name, setName] = useState('')
   const [affiliation, setAffiliation] = useState('')
@@ -86,7 +78,6 @@ export function SpeakerFormDialog({
     const fields = getSpeakerFields(speaker)
     setSortOrder(speaker?.sort_order ?? 0)
     setImagePath(speaker?.image_path ?? '')
-    setCategory(speaker?.category ?? 'keynote')
     setIsPublished(speaker?.is_published ?? true)
     setName(fields.name)
     setAffiliation(fields.affiliation)
@@ -105,7 +96,7 @@ export function SpeakerFormDialog({
     const payload = {
       sort_order: sortOrder,
       image_path: imagePath,
-      category,
+      category: 'keynote' as const,
       is_published: isPublished,
       translations: buildTranslationsForAllLocales({ name, affiliation, bio }),
     }
@@ -147,28 +138,15 @@ export function SpeakerFormDialog({
           </DialogHeader>
 
           <div className="my-6 space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-sort_order`}>Sort order</Label>
-                <Input
-                  id={`${formId}-sort_order`}
-                  type="number"
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(Number(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-category`}>Category</Label>
-                <Select value={category} onValueChange={(v) => setCategory(v as SpeakerCategory)}>
-                  <SelectTrigger id={`${formId}-category`} className="cursor-pointer">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="keynote">Keynote</SelectItem>
-                    <SelectItem value="invited">Invited</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor={`${formId}-sort_order`}>Sort order</Label>
+              <Input
+                id={`${formId}-sort_order`}
+                type="number"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(Number(e.target.value))}
+                className="max-w-xs"
+              />
             </div>
 
             <CloudinaryImageUpload
