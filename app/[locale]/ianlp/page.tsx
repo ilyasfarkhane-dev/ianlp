@@ -14,6 +14,8 @@ import VenueTravel from '@/components/ianlp/venue-travel'
 import Pricing from '@/components/ianlp/pricing'
 import Contact from '@/components/ianlp/contact'
 import Footer from '@/components/ianlp/footer'
+import { getPartnersForLocale, getSpeakersForLocale } from '@/lib/data/content'
+import type { Locale } from '@/types/database'
 
 export const metadata: Metadata = {
   title: 'IANLP 2026 - 1st International Conference on AI for NLP',
@@ -26,6 +28,9 @@ export default async function IANLPPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
+  const speakers = await getSpeakersForLocale(locale as Locale)
+  const partners = await getPartnersForLocale(locale as Locale)
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -33,7 +38,7 @@ export default async function IANLPPage({ params }: Props) {
         <Hero />
         <ImportantDates />
         <QuickLinks />
-        <KeynoteSpeakers />
+        <KeynoteSpeakers speakers={speakers} />
         <Topics />
         <CFPSection />
         <Submission />
@@ -41,7 +46,7 @@ export default async function IANLPPage({ params }: Props) {
         <Committees />
         <VenueTravel />
         <Pricing />
-        <Contact />
+        <Contact partners={partners} />
       </main>
       <Footer />
     </div>

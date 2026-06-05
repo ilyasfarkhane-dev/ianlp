@@ -15,30 +15,20 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import type { PublicSpeaker } from '@/types/database'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const speakerIds = [1, 2, 3, 4] as const
-
-const speakerImages: Record<(typeof speakerIds)[number], string> = {
-  1: '/speakers/Jaouad DABOUNOU.jpeg',
-  2: '/speakers/Atanasova.jpeg',
-  3: '/speakers/speaker-3.jpg',
-  4: '/speakers/speaker-4.jpg',
-}
-
 function SpeakerCard({
-  id,
+  speaker,
   className,
 }: {
-  id: (typeof speakerIds)[number]
+  speaker: PublicSpeaker
   className?: string
 }) {
   const t = useTranslations('keynote')
   const [imgError, setImgError] = useState(false)
-  const name = t(`speaker${id}Name`)
-  const affiliation = t(`speaker${id}Affiliation`)
-  const bio = t(`speaker${id}Bio`)
+  const { name, affiliation, bio, imagePath } = speaker
   const university = affiliation.trim()
   const role = university.length > 0 ? university : t('keynoteRole')
 
@@ -51,9 +41,9 @@ function SpeakerCard({
         )}
       >
         <div className="relative mb-5 aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-white/15 max-lg:mb-4 max-lg:aspect-[3/4]">
-          {!imgError ? (
+          {!imgError && imagePath ? (
             <Image
-              src={speakerImages[id]}
+              src={imagePath}
               alt={name}
               fill
               className="object-cover object-top"
@@ -112,9 +102,9 @@ function SpeakerCard({
         <div className="max-h-[min(60vh,520px)] overflow-y-auto bg-white p-6 sm:p-8 max-sm:min-h-0 max-sm:flex-1 max-sm:overscroll-y-contain max-sm:p-5">
           <div className="grid items-start gap-6 sm:grid-cols-[160px_1fr] sm:gap-8 max-sm:gap-5">
             <div className="mx-auto w-full max-w-[160px] overflow-hidden rounded-2xl border border-border sm:mx-0 sm:max-w-none max-sm:max-w-[140px]">
-              {!imgError ? (
+              {!imgError && imagePath ? (
                 <Image
-                  src={speakerImages[id]}
+                  src={imagePath}
                   alt={name}
                   width={160}
                   height={200}
@@ -140,7 +130,11 @@ function SpeakerCard({
   )
 }
 
-export default function KeynoteSpeakers() {
+type KeynoteSpeakersProps = {
+  speakers: PublicSpeaker[]
+}
+
+export default function KeynoteSpeakers({ speakers }: KeynoteSpeakersProps) {
   const t = useTranslations('keynote')
   const sectionRef = useRef<HTMLElement>(null)
   const introRef = useRef<HTMLDivElement>(null)
@@ -184,7 +178,11 @@ export default function KeynoteSpeakers() {
     }, sectionRef)
 
     return () => ctx.revert()
-  }, [showAll])
+  }, [showAll, speakers.length])
+
+  if (speakers.length === 0) {
+    return null
+  }
 
   return (
     <section ref={sectionRef} id="speakers" className="section-light overflow-hidden bg-white">
@@ -207,10 +205,10 @@ export default function KeynoteSpeakers() {
 
             <div
               ref={cardsRef}
-              className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+              className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
             >
-              {speakerIds.map((id) => (
-                <SpeakerCard key={id} id={id} className="h-full w-full" />
+              {speakers.map((speaker) => (
+                <SpeakerCard key={speaker.id} speaker={speaker} className="h-full w-full" />
               ))}
             </div>
           </>
@@ -231,16 +229,15 @@ export default function KeynoteSpeakers() {
               </button>
             </div>
 
-            {/* Mobile & tablet: stacked grid. Desktop (lg+): original horizontal strip unchanged. */}
             <div
               ref={cardsRef}
               className="mt-10 min-w-0 flex-1 lg:mt-0 lg:flex lg:snap-x lg:snap-mandatory lg:gap-5 lg:overflow-x-visible lg:pb-2 lg:pr-[max(1rem,calc((100vw-80rem)/2+2rem))]"
             >
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:contents">
-                {speakerIds.map((id) => (
+                {speakers.map((speaker) => (
                   <SpeakerCard
-                    key={id}
-                    id={id}
+                    key={speaker.id}
+                    speaker={speaker}
                     className="h-full w-full lg:w-[320px] lg:flex-shrink-0 lg:snap-start"
                   />
                 ))}

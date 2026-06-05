@@ -7,21 +7,48 @@ import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Mail, MapPin, Phone, UserRound, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import type { PublicPartner } from '@/types/database'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const partners = [
-  { src: '/PARTNERS/UNIV.jpeg', alt: 'Hassan II University' },
-  { src: '/PARTNERS/FSBM.jpeg', alt: "Faculty of Sciences Ben M'Sick (FSBM)" },
-  { src: '/PARTNERS/MI.jpeg', alt: 'MI' },
-  { src: '/PARTNERS/LTIM.png', alt: 'LTIM' },
-  { src: '/PARTNERS/AM2I.jpeg', alt: 'AM2I' },
-  { src: '/PARTNERS/LIAS.jpeg', alt: 'LIAS' },
-  { src: '/PARTNERS/LAMS.jpeg', alt: 'LAMS' },
-]
+function PartnerLogo({ partner }: { partner: PublicPartner }) {
+  const image = (
+    <Image
+      src={partner.logoPath}
+      alt={partner.altText}
+      width={180}
+      height={90}
+      className="h-12 w-auto max-w-[120px] object-contain opacity-80 transition-opacity duration-200 group-hover:opacity-100 sm:h-14 sm:max-w-[140px] lg:h-16 lg:max-w-[160px]"
+    />
+  )
 
-function PartnersRow({ rowRef }: { rowRef: RefObject<HTMLDivElement | null> }) {
+  if (partner.url) {
+    return (
+      <a
+        href={partner.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="cursor-pointer"
+        aria-label={partner.altText}
+      >
+        {image}
+      </a>
+    )
+  }
+
+  return image
+}
+
+function PartnersRow({
+  partners,
+  rowRef,
+}: {
+  partners: PublicPartner[]
+  rowRef: RefObject<HTMLDivElement | null>
+}) {
   const lastIndex = partners.length - 1
+
+  if (partners.length === 0) return null
 
   return (
     <div className="lg:mx-0 lg:overflow-visible lg:px-0">
@@ -34,20 +61,14 @@ function PartnersRow({ rowRef }: { rowRef: RefObject<HTMLDivElement | null> }) {
       >
         {partners.map((partner, index) => (
           <div
-            key={partner.src}
+            key={partner.id}
             className={cn(
               'partner-logo group flex flex-shrink-0 items-center justify-center px-1 max-lg:min-h-[4.5rem]',
               index === lastIndex && partners.length % 2 === 1 && 'max-sm:col-span-2',
               index === lastIndex && partners.length % 3 === 1 && 'sm:max-lg:col-span-3'
             )}
           >
-            <Image
-              src={partner.src}
-              alt={partner.alt}
-              width={180}
-              height={90}
-              className="h-12 w-auto max-w-[120px] object-contain opacity-80 transition-opacity duration-200 group-hover:opacity-100 sm:h-14 sm:max-w-[140px] lg:h-16 lg:max-w-[160px]"
-            />
+            <PartnerLogo partner={partner} />
           </div>
         ))}
       </div>
@@ -55,7 +76,11 @@ function PartnersRow({ rowRef }: { rowRef: RefObject<HTMLDivElement | null> }) {
   )
 }
 
-export default function Contact() {
+type ContactProps = {
+  partners: PublicPartner[]
+}
+
+export default function Contact({ partners }: ContactProps) {
   const t = useTranslations('contact')
   const sectionRef = useRef<HTMLElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -168,7 +193,7 @@ export default function Contact() {
     }, sectionRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [partners.length])
 
   return (
     <section ref={sectionRef} id="contact" className="section-light border-t border-border bg-white">
@@ -262,7 +287,7 @@ export default function Contact() {
             <div className="mx-auto h-1 w-12 rounded-full bg-primary" aria-hidden />
           </div>
 
-          <PartnersRow rowRef={partnersRowRef} />
+          <PartnersRow partners={partners} rowRef={partnersRowRef} />
         </div>
       </div>
     </section>
