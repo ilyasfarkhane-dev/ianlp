@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { FormLoadingOverlay } from '@/components/ui/form-loading-overlay'
+import { LoadingButton } from '@/components/ui/loading-button'
 import {
   Dialog,
   DialogContent,
@@ -17,31 +19,19 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { LocaleFieldGroup } from '@/components/admin/locale-field-group'
 import { CloudinaryImageUpload } from '@/components/admin/cloudinary-image-upload'
 import { createPartner, updatePartner } from '@/app/admin/(dashboard)/partners/actions'
-import { LOCALES, type Locale, type PartnerWithTranslations } from '@/types/database'
+import { buildTranslationsForAllLocales } from '@/lib/admin/translations'
+import type { PartnerWithTranslations } from '@/types/database'
 
-type LocaleField = {
-  alt_text: string
-}
+function getPartnerFields(partner?: PartnerWithTranslations) {
+  const translation =
+    partner?.partner_translations.find((t) => t.locale === 'en') ??
+    partner?.partner_translations[0]
 
-function emptyTranslations(): Record<Locale, LocaleField> {
   return {
-    en: { alt_text: '' },
-    fr: { alt_text: '' },
-    ar: { alt_text: '' },
+    altText: translation?.alt_text ?? '',
   }
-}
-
-function partnerToTranslations(partner?: PartnerWithTranslations): Record<Locale, LocaleField> {
-  const base = emptyTranslations()
-  if (!partner) return base
-
-  for (const t of partner.partner_translations) {
-    base[t.locale] = { alt_text: t.alt_text }
-  }
-  return base
 }
 
 type PartnerFormDialogProps = {
@@ -51,28 +41,31 @@ type PartnerFormDialogProps = {
 
 export function PartnerFormDialog({ partner, trigger }: PartnerFormDialogProps) {
   const router = useRouter()
+  const formId = useId()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [sortOrder, setSortOrder] = useState(partner?.sort_order ?? 0)
   const [logoPath, setLogoPath] = useState(partner?.logo_path ?? '')
   const [url, setUrl] = useState(partner?.url ?? '')
   const [isPublished, setIsPublished] = useState(partner?.is_published ?? true)
-  const [translations, setTranslations] = useState<Record<Locale, LocaleField>>(() =>
-    partnerToTranslations(partner)
-  )
+  const [altText, setAltText] = useState('')
 
-  function handleLocaleChange(locale: Locale, field: string, value: string) {
-    setTranslations((prev) => ({
-      ...prev,
-      [locale]: { ...prev[locale], [field]: value },
-    }))
-  }
+  useEffect(() => {
+    if (!open) return
+
+    const fields = getPartnerFields(partner)
+    setSortOrder(partner?.sort_order ?? 0)
+    setLogoPath(partner?.logo_path ?? '')
+    setUrl(partner?.url ?? '')
+    setIsPublished(partner?.is_published ?? true)
+    setAltText(fields.altText)
+  }, [open, partner])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    if (!logoPath.trim() || !translations.en.alt_text.trim()) {
-      toast.error('Logo image and English alt text are required')
+    if (!logoPath.trim() || !altText.trim()) {
+      toast.error('Logo image and alt text are required')
       return
     }
 
@@ -82,10 +75,7 @@ export function PartnerFormDialog({ partner, trigger }: PartnerFormDialogProps) 
       logo_path: logoPath,
       url,
       is_published: isPublished,
-      translations: LOCALES.map((locale) => ({
-        locale,
-        alt_text: translations[locale].alt_text,
-      })),
+      translations: buildTranslationsForAllLocales({ alt_text: altText }),
     }
 
     const result = partner
@@ -115,24 +105,34 @@ export function PartnerFormDialog({ partner, trigger }: PartnerFormDialogProps) 
         )}
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="relative" aria-busy={loading}>
+          <FormLoadingOverlay loading={loading} label="Saving partner…" />
           <DialogHeader>
             <DialogTitle>{partner ? 'Edit partner' : 'Add partner'}</DialogTitle>
-            <DialogDescription>Manage sponsor and partner logos with multilingual alt text.</DialogDescription>
+            <DialogDescription>Manage sponsor and partner logos for the public website.</DialogDescription>
           </DialogHeader>
 
           <div className="my-6 space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="sort_order">Sort order</Label>
+                <Label htmlFor={`${formId}-sort_order`}>Sort order</Label>
                 <Input
-                  id="sort_order"
+                  id={`${formId}-sort_order`}
                   type="number"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(Number(e.target.value))}
                 />
               </div>
-             
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-url`}>Website URL (optional)</Label>
+                <Input
+                  id={`${formId}-url`}
+                  type="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="https://..."
+                />
+              </div>
             </div>
 
             <CloudinaryImageUpload
@@ -145,28 +145,48 @@ export function PartnerFormDialog({ partner, trigger }: PartnerFormDialogProps) 
               required
             />
 
-            <div className="flex items-center justify-between rounded-lg border border-border p-3">
-              <div>
-                <Label htmlFor="published">Published</Label>
-                <p className="text-xs text-muted-foreground">Visible on the public website</p>
-              </div>
-              <Switch id="published" checked={isPublished} onCheckedChange={setIsPublished} />
+            <div className="space-y-2">
+              <Label htmlFor={`${formId}-alt_text`}>Alt text</Label>
+              <Input
+                id={`${formId}-alt_text`}
+                value={altText}
+                onChange={(e) => setAltText(e.target.value)}
+                placeholder="Logo description for accessibility"
+                required
+              />
             </div>
 
-            <LocaleFieldGroup
-              values={translations}
-              onChange={handleLocaleChange}
-              fields={['alt_text']}
-            />
+            <div className="flex items-center justify-between rounded-lg border border-border p-3">
+              <div>
+                <Label htmlFor={`${formId}-published`}>Published</Label>
+                <p className="text-xs text-muted-foreground">Visible on the public website</p>
+              </div>
+              <Switch
+                id={`${formId}-published`}
+                checked={isPublished}
+                onCheckedChange={setIsPublished}
+              />
+            </div>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} className="cursor-pointer">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={loading}
+              className="cursor-pointer"
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="cursor-pointer">
-              {loading ? 'Saving…' : partner ? 'Save changes' : 'Create partner'}
-            </Button>
+            <LoadingButton
+              type="submit"
+              loading={loading}
+              loadingText={partner ? 'Saving…' : 'Creating…'}
+              className="cursor-pointer"
+            >
+              {partner ? 'Save changes' : 'Create partner'}
+            </LoadingButton>
           </DialogFooter>
         </form>
       </DialogContent>

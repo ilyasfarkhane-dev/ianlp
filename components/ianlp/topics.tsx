@@ -12,22 +12,23 @@ import {
   Sparkles,
   type LucideIcon,
 } from 'lucide-react'
+import type { FocusIcon, PublicTopic } from '@/types/database'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const topicKeys = [
-  'topic1', 'topic2', 'topic3', 'topic4', 'topic5', 'topic6',
-  'topic7', 'topic8', 'topic9', 'topic10', 'topic11', 'topic12',
-]
+const FOCUS_ICON_MAP: Record<FocusIcon, LucideIcon> = {
+  'brain-circuit': BrainCircuit,
+  sparkles: Sparkles,
+  'shield-check': ShieldCheck,
+  'building-2': Building2,
+}
 
-const focusAreas: { title: string; desc: string; icon: LucideIcon }[] = [
-  { title: 'coreNlp', desc: 'coreNlpDesc', icon: BrainCircuit },
-  { title: 'advancedModels', desc: 'advancedModelsDesc', icon: Sparkles },
-  { title: 'trustworthyAi', desc: 'trustworthyAiDesc', icon: ShieldCheck },
-  { title: 'realWorldApps', desc: 'realWorldAppsDesc', icon: Building2 },
-]
+type TopicsProps = {
+  mainTopics: PublicTopic[]
+  focusAreas: PublicTopic[]
+}
 
-export default function Topics() {
+export default function Topics({ mainTopics, focusAreas }: TopicsProps) {
   const t = useTranslations('topics')
   const containerRef = useRef<HTMLDivElement>(null)
   const focusRef = useRef<HTMLDivElement>(null)
@@ -93,59 +94,64 @@ export default function Topics() {
         </div>
 
         <div className="flex flex-wrap gap-3 justify-center mb-14">
-          {topicKeys.map((key) => (
+          {mainTopics.map((topic) => (
             <Badge
-              key={key}
+              key={topic.id}
               variant="outline"
               className="px-4 py-2 text-sm font-medium rounded-full border-border bg-white hover:bg-primary hover:border-primary hover:text-white transition-colors duration-200 cursor-default"
             >
-              {t(key)}
+              {topic.title}
             </Badge>
           ))}
         </div>
 
-        <div ref={focusRef} className="relative overflow-hidden bg-white">
-          <div
-            className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
-            aria-hidden
-          />
-
-          <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-stretch lg:gap-0 lg:p-0">
-            <div className="flex flex-col justify-center bg-primary/[0.04] px-6 py-8 sm:px-8 lg:w-[min(100%,340px)] lg:flex-shrink-0 lg:px-10 lg:py-10">
-              <p className="section-label mb-3 text-primary">{t('label')}</p>
-              <h3 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
-                {t('specialFocus')}
-              </h3>
-              <div className="mt-6 h-1 w-12 rounded-full bg-primary" aria-hidden />
-              <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
-                {t('specialFocusDesc')}
-              </p>
-            </div>
-
+        {focusAreas.length > 0 && (
+          <div ref={focusRef} className="relative overflow-hidden bg-white">
             <div
-              ref={focusCardsRef}
-              className="grid flex-1 gap-4 p-6 sm:grid-cols-2 sm:p-8 lg:p-8"
-            >
-              {focusAreas.map((item) => {
-                const Icon = item.icon
-                return (
-                  <article
-                    key={item.title}
-                    className="group flex h-full flex-col rounded-xl bg-slate-50/60 p-5 transition-colors duration-200 hover:bg-slate-50"
-                  >
-                    <div className="mb-5 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
-                      <Icon className="h-5 w-5" aria-hidden />
-                    </div>
-                    <h4 className="font-bold text-foreground">{t(item.title)}</h4>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                      {t(item.desc)}
-                    </p>
-                  </article>
-                )
-              })}
+              className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
+              aria-hidden
+            />
+
+            <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-stretch lg:gap-0 lg:p-0">
+              <div className="flex flex-col justify-center bg-primary/[0.04] px-6 py-8 sm:px-8 lg:w-[min(100%,340px)] lg:flex-shrink-0 lg:px-10 lg:py-10">
+                <p className="section-label mb-3 text-primary">{t('label')}</p>
+                <h3 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+                  {t('specialFocus')}
+                </h3>
+                <div className="mt-6 h-1 w-12 rounded-full bg-primary" aria-hidden />
+                <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
+                  {t('specialFocusDesc')}
+                </p>
+              </div>
+
+              <div
+                ref={focusCardsRef}
+                className="grid flex-1 gap-4 p-6 sm:grid-cols-2 sm:p-8 lg:p-8"
+              >
+                {focusAreas.map((item) => {
+                  const Icon = item.icon ? FOCUS_ICON_MAP[item.icon] : Sparkles
+
+                  return (
+                    <article
+                      key={item.id}
+                      className="group flex h-full flex-col rounded-xl bg-slate-50/60 p-5 transition-colors duration-200 hover:bg-slate-50"
+                    >
+                      <div className="mb-5 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
+                        <Icon className="h-5 w-5" aria-hidden />
+                      </div>
+                      <h4 className="font-bold text-foreground">{item.title}</h4>
+                      {item.description.trim().length > 0 && (
+                        <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                          {item.description}
+                        </p>
+                      )}
+                    </article>
+                  )
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   )

@@ -25,6 +25,20 @@ export default async function AdminSettingsPage() {
     venue: getString(conference.venue, "Faculty of Sciences Ben M'Sick (FSBM)"),
     email: getString(contact.email, 'omar.zahour@univh2c.ma'),
     phone: getString(contact.phone, '+212660082091'),
+    phoneDisplay: getString(contact.phoneDisplay, '+212 6 60 08 20 91'),
+    address: getString(
+      contact.address,
+      "Faculty of Sciences Ben M'Sick (FSBM), Hassan II University of Casablanca, Bd Commandant Driss Al Harti, Casablanca 20670, Morocco"
+    ),
+    generalChairName: getString(contact.generalChairName, 'Prof. Omar Zahour'),
+    chairAffiliationPrimary: getString(
+      contact.chairAffiliationPrimary,
+      "Faculty of Sciences Ben M'Sick (FSBM)"
+    ),
+    chairAffiliationSecondary: getString(
+      contact.chairAffiliationSecondary,
+      'Hassan II University of Casablanca'
+    ),
     easychair: getString(
       links.easychair,
       'https://easychair.org/conferences/?conf=ianlp2026'

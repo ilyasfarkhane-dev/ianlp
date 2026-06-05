@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { revalidatePublicSite } from '@/lib/revalidate-public'
 
 export async function updateSiteSettings(input: {
   countdownDate: string
@@ -9,6 +10,11 @@ export async function updateSiteSettings(input: {
   venue: string
   email: string
   phone: string
+  phoneDisplay: string
+  address: string
+  generalChairName: string
+  chairAffiliationPrimary: string
+  chairAffiliationSecondary: string
   easychair: string
   springerTemplate: string
 }) {
@@ -28,6 +34,11 @@ export async function updateSiteSettings(input: {
       value: {
         email: input.email,
         phone: input.phone,
+        phoneDisplay: input.phoneDisplay,
+        address: input.address,
+        generalChairName: input.generalChairName,
+        chairAffiliationPrimary: input.chairAffiliationPrimary,
+        chairAffiliationSecondary: input.chairAffiliationSecondary,
       },
     },
     {
@@ -52,5 +63,6 @@ export async function updateSiteSettings(input: {
 
   revalidatePath('/admin/settings')
   revalidatePath('/admin')
+  revalidatePublicSite()
   return { success: true }
 }

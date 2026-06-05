@@ -53,3 +53,42 @@ insert into public.partner_translations (partner_id, locale, alt_text) values
   ('33333333-3333-3333-3333-333333333306', 'en', 'LIAS'),
   ('33333333-3333-3333-3333-333333333307', 'en', 'LAMS')
 on conflict (partner_id, locale) do nothing;
+
+-- Topics (main thematic areas + special focus)
+insert into public.topics (id, sort_order, topic_type, icon, is_published) values
+  ('44444444-4444-4444-4444-444444444401', 1, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444402', 2, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444403', 3, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444404', 4, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444405', 5, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444406', 6, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444407', 7, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444408', 8, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444409', 9, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444410', 10, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444411', 11, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444412', 12, 'main', null, true),
+  ('44444444-4444-4444-4444-444444444413', 13, 'focus', 'brain-circuit', true),
+  ('44444444-4444-4444-4444-444444444414', 14, 'focus', 'sparkles', true),
+  ('44444444-4444-4444-4444-444444444415', 15, 'focus', 'shield-check', true),
+  ('44444444-4444-4444-4444-444444444416', 16, 'focus', 'building-2', true)
+on conflict (id) do nothing;
+
+insert into public.topic_translations (topic_id, locale, title, description) values
+  ('44444444-4444-4444-4444-444444444401', 'en', 'Artificial Intelligence and Machine Learning', ''),
+  ('44444444-4444-4444-4444-444444444402', 'en', 'Natural Language Processing and Large Language Models', ''),
+  ('44444444-4444-4444-4444-444444444403', 'en', 'Generative AI and Agentic Systems', ''),
+  ('44444444-4444-4444-4444-444444444404', 'en', 'Data Science and Knowledge Discovery', ''),
+  ('44444444-4444-4444-4444-444444444405', 'en', 'Computer Vision and Pattern Recognition', ''),
+  ('44444444-4444-4444-4444-444444444406', 'en', 'Responsible, Explainable and Trustworthy AI', ''),
+  ('44444444-4444-4444-4444-444444444407', 'en', 'Intelligent Information Systems', ''),
+  ('44444444-4444-4444-4444-444444444408', 'en', 'Digital Transformation and Smart Applications', ''),
+  ('44444444-4444-4444-4444-444444444409', 'en', 'IoT, Edge Intelligence and Smart Environments', ''),
+  ('44444444-4444-4444-4444-444444444410', 'en', 'Cybersecurity and AI for Security', ''),
+  ('44444444-4444-4444-4444-444444444411', 'en', 'AI for Education, Health, Industry and Society', ''),
+  ('44444444-4444-4444-4444-444444444412', 'en', 'Emerging Computing and Interdisciplinary Applications', ''),
+  ('44444444-4444-4444-4444-444444444413', 'en', 'Core NLP Tasks', 'Classification, Named Entity Recognition, Parsing, Summarization, Machine Translation'),
+  ('44444444-4444-4444-4444-444444444414', 'en', 'Advanced Models', 'LLMs, Transformers, Prompting, Instruction Tuning, Semantic Search'),
+  ('44444444-4444-4444-4444-444444444415', 'en', 'Trustworthy AI', 'Evaluation, Robustness, Bias Detection, Fairness, Explainability'),
+  ('44444444-4444-4444-4444-444444444416', 'en', 'Real-World Apps', 'Education, Healthcare, Legal Tech, Finance, Industry Applications')
+on conflict (topic_id, locale) do nothing;

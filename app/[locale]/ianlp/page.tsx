@@ -14,7 +14,7 @@ import VenueTravel from '@/components/ianlp/venue-travel'
 import Pricing from '@/components/ianlp/pricing'
 import Contact from '@/components/ianlp/contact'
 import Footer from '@/components/ianlp/footer'
-import { getPartnersForLocale, getSpeakersForLocale } from '@/lib/data/content'
+import { getCommitteesForLocale, getContactForLocale, getDatesForLocale, getPartnersForLocale, getPricingForLocale, getSpeakersForLocale, getTopicsForLocale } from '@/lib/data/content'
 import type { Locale } from '@/types/database'
 
 export const metadata: Metadata = {
@@ -28,27 +28,38 @@ export default async function IANLPPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  const speakers = await getSpeakersForLocale(locale as Locale)
-  const partners = await getPartnersForLocale(locale as Locale)
+  const [speakers, partners, dates, topics, committees, pricing, contact] = await Promise.all([
+    getSpeakersForLocale(locale as Locale),
+    getPartnersForLocale(locale as Locale),
+    getDatesForLocale(locale as Locale),
+    getTopicsForLocale(locale as Locale),
+    getCommitteesForLocale(locale as Locale),
+    getPricingForLocale(locale as Locale),
+    getContactForLocale(locale as Locale),
+  ])
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
       <main>
         <Hero />
-        <ImportantDates />
+        <ImportantDates dates={dates} />
         <QuickLinks />
         <KeynoteSpeakers speakers={speakers} />
-        <Topics />
+        <Topics mainTopics={topics.mainTopics} focusAreas={topics.focusAreas} />
         <CFPSection />
         <Submission />
         <ReviewProcess />
-        <Committees />
+        <Committees
+          pcChairs={committees.pcChairs}
+          reviewers={committees.reviewers}
+          organizing={committees.organizing}
+        />
         <VenueTravel />
-        <Pricing />
-        <Contact partners={partners} />
+        <Pricing tiers={pricing} />
+        <Contact partners={partners} contact={contact} />
       </main>
-      <Footer />
+      <Footer contact={contact} />
     </div>
   )
 }

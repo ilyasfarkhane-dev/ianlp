@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react'
+import type { PublicContactInfo } from '@/types/database'
 
 const footerLinks = [
   { labelKey: 'callForPapers', href: '#cfp' },
@@ -19,7 +20,11 @@ const legalLinks = [
   { labelKey: 'codeOfConduct', href: '#contact' },
 ] as const
 
-export default function Footer() {
+type FooterProps = {
+  contact: PublicContactInfo
+}
+
+export default function Footer({ contact }: FooterProps) {
   const t = useTranslations('footer')
   const tNav = useTranslations('nav')
   const tCommon = useTranslations('common')
@@ -87,25 +92,25 @@ export default function Footer() {
             <ul className="space-y-4 text-sm">
               <li>
                 <a
-                  href="mailto:omar.zahour@univh2c.ma"
+                  href={`mailto:${contact.email}`}
                   className="group flex cursor-pointer items-start gap-3 text-white/70 transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary"
                 >
                   <Mail className="mt-0.5 h-4 w-4 flex-shrink-0 text-secondary" aria-hidden />
-                  <span>omar.zahour@univh2c.ma</span>
+                  <span>{contact.email}</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="tel:+212660082091"
+                  href={`tel:${contact.phone.replace(/\s/g, '')}`}
                   className="group flex cursor-pointer items-start gap-3 text-white/70 transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary"
                 >
                   <Phone className="mt-0.5 h-4 w-4 flex-shrink-0 text-secondary" aria-hidden />
-                  <span>+212 6 60 08 20 91</span>
+                  <span>{contact.phoneDisplay}</span>
                 </a>
               </li>
               <li className="flex items-start gap-3 text-white/70">
                 <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-secondary" aria-hidden />
-                <span className="leading-relaxed">{t('organizedByAddress')}</span>
+                <span className="leading-relaxed">{contact.address}</span>
               </li>
             </ul>
           </div>

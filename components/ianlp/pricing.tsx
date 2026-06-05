@@ -5,44 +5,15 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
+import type { PublicPricingTier } from '@/types/database'
 
 gsap.registerPlugin(ScrollTrigger)
 
-type PricingTier = {
-  id: string
-  nameKey: string
-  price: string
-  featureKeys: string[]
-  featured?: boolean
+type PricingProps = {
+  tiers: PublicPricingTier[]
 }
 
-const tiers: PricingTier[] = [
-  {
-    id: 'inPerson',
-    nameKey: 'inPersonName',
-    price: '300',
-    featured: true,
-    featureKeys: [
-      'inPersonFeature1',
-      'inPersonFeature2',
-      'inPersonFeature3',
-      'inPersonFeature4',
-      'inPersonFeature5',
-      'inPersonFeature6',
-      'inPersonFeature7',
-      'inPersonFeature8',
-      'inPersonFeature9',
-    ],
-  },
-  {
-    id: 'distance',
-    nameKey: 'distanceName',
-    price: '150',
-    featureKeys: ['distanceFeature1', 'distanceFeature2', 'distanceFeature3'],
-  },
-]
-
-export default function Pricing() {
+export default function Pricing({ tiers }: PricingProps) {
   const t = useTranslations('pricing')
   const sectionRef = useRef<HTMLElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -113,21 +84,21 @@ export default function Pricing() {
               key={tier.id}
               className={cn(
                 'registration-card relative flex flex-col bg-white px-6 pb-6 pt-8 text-center shadow-[0_4px_24px_rgba(37,99,235,0.1)] sm:px-7 sm:pb-7',
-                tier.featured && 'sm:pt-10'
+                tier.isFeatured && 'sm:pt-10'
               )}
             >
-              {tier.featured ? (
+              {tier.isFeatured ? (
                 <span className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 bg-primary px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-primary-foreground">
                   {t('bestPlanBadge')}
                 </span>
               ) : null}
 
               <h3 className="text-base font-bold uppercase tracking-[0.12em] text-foreground sm:text-lg">
-                {t(tier.nameKey)}
+                {tier.name}
               </h3>
 
               <div className="mt-5 flex items-baseline justify-center gap-2">
-                <span className="text-sm font-medium text-muted-foreground">MAD</span>
+                <span className="text-sm font-medium text-muted-foreground">{tier.currency}</span>
                 <span className="text-4xl font-bold leading-none text-primary sm:text-5xl">
                   {tier.price}
                 </span>
@@ -136,15 +107,12 @@ export default function Pricing() {
               <div className="my-6 border-t border-border" aria-hidden />
 
               <ul className="mb-8 flex flex-1 flex-col gap-2.5 text-left sm:mx-auto sm:max-w-[17rem]">
-                {tier.featureKeys.map((key) => (
-                  <li
-                    key={key}
-                    className="flex gap-2 text-sm leading-snug text-foreground"
-                  >
+                {tier.features.map((feature) => (
+                  <li key={feature} className="flex gap-2 text-sm leading-snug text-foreground">
                     <span className="flex-shrink-0 text-muted-foreground" aria-hidden>
                       –
                     </span>
-                    <span>{t(key)}</span>
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>

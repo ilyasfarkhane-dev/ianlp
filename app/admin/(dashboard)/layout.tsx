@@ -5,6 +5,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/components/theme-provider'
+import { NavigationProgress } from '@/components/ui/navigation-progress'
 
 export const metadata: Metadata = {
   title: 'IANLP Admin',
@@ -28,6 +29,7 @@ export default async function AdminDashboardLayout({
 
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <NavigationProgress scope="admin" />
       <SidebarProvider>
         <AdminSidebar />
         <SidebarInset className="min-h-svh bg-muted/30">

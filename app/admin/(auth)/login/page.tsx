@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
+import { FormLoadingOverlay } from '@/components/ui/form-loading-overlay'
+import { LoadingButton } from '@/components/ui/loading-button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { Loader2, LockKeyhole } from 'lucide-react'
+import { LockKeyhole } from 'lucide-react'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -45,7 +46,8 @@ export default function AdminLoginPage() {
           <CardDescription>Sign in to manage conference website content</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="relative space-y-4" aria-busy={loading}>
+            <FormLoadingOverlay loading={loading} label="Signing in…" />
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -70,20 +72,14 @@ export default function AdminLoginPage() {
                 placeholder="••••••••"
               />
             </div>
-            <Button
+            <LoadingButton
               type="submit"
-              className="w-full cursor-pointer transition-colors duration-200"
-              disabled={loading}
+              loading={loading}
+              loadingText="Signing in…"
+              className="w-full cursor-pointer"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing in…
-                </>
-              ) : (
-                'Sign in'
-              )}
-            </Button>
+              Sign in
+            </LoadingButton>
           </form>
         </CardContent>
       </Card>

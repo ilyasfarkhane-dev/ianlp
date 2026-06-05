@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { FormLoadingOverlay } from '@/components/ui/form-loading-overlay'
+import { LoadingButton } from '@/components/ui/loading-button'
 import {
   Dialog,
   DialogContent,
@@ -17,6 +19,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -24,67 +27,73 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { LocaleFieldGroup } from '@/components/admin/locale-field-group'
 import { createImportantDate, updateImportantDate } from '@/app/admin/(dashboard)/dates/actions'
-import {
-  LOCALES,
-  type DateTab,
-  type ImportantDateWithTranslations,
-  type Locale,
-} from '@/types/database'
+import { buildTranslationsForAllLocales } from '@/lib/admin/translations'
+import type { DateTab, ImportantDateWithTranslations } from '@/types/database'
 
-type LocaleField = {
-  label: string
-  description: string
-}
+function getDateFields(date?: ImportantDateWithTranslations) {
+  const translation =
+    date?.important_date_translations.find((t) => t.locale === 'en') ??
+    date?.important_date_translations[0]
 
-function emptyTranslations(): Record<Locale, LocaleField> {
   return {
-    en: { label: '', description: '' },
-    fr: { label: '', description: '' },
-    ar: { label: '', description: '' },
+    label: translation?.label ?? '',
+    description: translation?.description ?? '',
   }
-}
-
-function dateToTranslations(date?: ImportantDateWithTranslations): Record<Locale, LocaleField> {
-  const base = emptyTranslations()
-  if (!date) return base
-
-  for (const t of date.important_date_translations) {
-    base[t.locale] = { label: t.label, description: t.description }
-  }
-  return base
 }
 
 type DateFormDialogProps = {
   date?: ImportantDateWithTranslations
   trigger?: React.ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function DateFormDialog({ date, trigger }: DateFormDialogProps) {
+export function DateFormDialog({
+  date,
+  trigger,
+  open: controlledOpen,
+  onOpenChange,
+}: DateFormDialogProps) {
   const router = useRouter()
-  const [open, setOpen] = useState(false)
+  const formId = useId()
+  const [internalOpen, setInternalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [sortOrder, setSortOrder] = useState(date?.sort_order ?? 0)
   const [tab, setTab] = useState<DateTab>(date?.tab ?? 'submission')
   const [dateValue, setDateValue] = useState(date?.date_value ?? '')
   const [isPublished, setIsPublished] = useState(date?.is_published ?? true)
-  const [translations, setTranslations] = useState<Record<Locale, LocaleField>>(() =>
-    dateToTranslations(date)
-  )
+  const [label, setLabel] = useState('')
+  const [description, setDescription] = useState('')
 
-  function handleLocaleChange(locale: Locale, field: string, value: string) {
-    setTranslations((prev) => ({
-      ...prev,
-      [locale]: { ...prev[locale], [field]: value },
-    }))
+  const isControlled = controlledOpen !== undefined
+  const open = isControlled ? controlledOpen : internalOpen
+
+  function setOpen(nextOpen: boolean) {
+    if (isControlled) {
+      onOpenChange?.(nextOpen)
+    } else {
+      setInternalOpen(nextOpen)
+    }
   }
+
+  useEffect(() => {
+    if (!open) return
+
+    const fields = getDateFields(date)
+    setSortOrder(date?.sort_order ?? 0)
+    setTab(date?.tab ?? 'submission')
+    setDateValue(date?.date_value ?? '')
+    setIsPublished(date?.is_published ?? true)
+    setLabel(fields.label)
+    setDescription(fields.description)
+  }, [open, date])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    if (!translations.en.label.trim() || !dateValue.trim()) {
-      toast.error('English label and date value are required')
+    if (!label.trim() || !dateValue.trim()) {
+      toast.error('Label and date value are required')
       return
     }
 
@@ -94,11 +103,7 @@ export function DateFormDialog({ date, trigger }: DateFormDialogProps) {
       tab,
       date_value: dateValue,
       is_published: isPublished,
-      translations: LOCALES.map((locale) => ({
-        locale,
-        label: translations[locale].label,
-        description: translations[locale].description,
-      })),
+      translations: buildTranslationsForAllLocales({ label, description }),
     }
 
     const result = date
@@ -119,16 +124,19 @@ export function DateFormDialog({ date, trigger }: DateFormDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger ?? (
+      {trigger ? (
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
+      ) : !isControlled ? (
+        <DialogTrigger asChild>
           <Button className="cursor-pointer">
             <Plus className="h-4 w-4" />
             Add date
           </Button>
-        )}
-      </DialogTrigger>
+        </DialogTrigger>
+      ) : null}
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="relative" aria-busy={loading}>
+          <FormLoadingOverlay loading={loading} label="Saving date…" />
           <DialogHeader>
             <DialogTitle>{date ? 'Edit date' : 'Add important date'}</DialogTitle>
             <DialogDescription>
@@ -139,18 +147,18 @@ export function DateFormDialog({ date, trigger }: DateFormDialogProps) {
           <div className="my-6 space-y-4">
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="sort_order">Sort order</Label>
+                <Label htmlFor={`${formId}-sort_order`}>Sort order</Label>
                 <Input
-                  id="sort_order"
+                  id={`${formId}-sort_order`}
                   type="number"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(Number(e.target.value))}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="tab">Tab</Label>
+                <Label htmlFor={`${formId}-tab`}>Tab</Label>
                 <Select value={tab} onValueChange={(v) => setTab(v as DateTab)}>
-                  <SelectTrigger id="tab" className="cursor-pointer">
+                  <SelectTrigger id={`${formId}-tab`} className="cursor-pointer">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -161,9 +169,9 @@ export function DateFormDialog({ date, trigger }: DateFormDialogProps) {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="date_value">Date display</Label>
+                <Label htmlFor={`${formId}-date_value`}>Date display</Label>
                 <Input
-                  id="date_value"
+                  id={`${formId}-date_value`}
                   value={dateValue}
                   onChange={(e) => setDateValue(e.target.value)}
                   placeholder="June 13, 2026"
@@ -171,28 +179,59 @@ export function DateFormDialog({ date, trigger }: DateFormDialogProps) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between rounded-lg border border-border p-3">
-              <div>
-                <Label htmlFor="published">Published</Label>
-                <p className="text-xs text-muted-foreground">Visible on the public website</p>
-              </div>
-              <Switch id="published" checked={isPublished} onCheckedChange={setIsPublished} />
+            <div className="space-y-2">
+              <Label htmlFor={`${formId}-label`}>Label</Label>
+              <Input
+                id={`${formId}-label`}
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                placeholder="e.g. Paper Submission Deadline"
+                required
+              />
             </div>
 
-            <LocaleFieldGroup
-              values={translations}
-              onChange={handleLocaleChange}
-              fields={['label', 'description']}
-            />
+            <div className="space-y-2">
+              <Label htmlFor={`${formId}-description`}>Description</Label>
+              <Textarea
+                id={`${formId}-description`}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Additional details"
+                rows={3}
+              />
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border border-border p-3">
+              <div>
+                <Label htmlFor={`${formId}-published`}>Published</Label>
+                <p className="text-xs text-muted-foreground">Visible on the public website</p>
+              </div>
+              <Switch
+                id={`${formId}-published`}
+                checked={isPublished}
+                onCheckedChange={setIsPublished}
+              />
+            </div>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} className="cursor-pointer">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={loading}
+              className="cursor-pointer"
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="cursor-pointer">
-              {loading ? 'Saving…' : date ? 'Save changes' : 'Create date'}
-            </Button>
+            <LoadingButton
+              type="submit"
+              loading={loading}
+              loadingText={date ? 'Saving…' : 'Creating…'}
+              className="cursor-pointer"
+            >
+              {date ? 'Save changes' : 'Create date'}
+            </LoadingButton>
           </DialogFooter>
         </form>
       </DialogContent>

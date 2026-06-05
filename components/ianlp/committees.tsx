@@ -12,14 +12,17 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react'
+import type { CommitteeIcon, PublicCommitteeMember, PublicCommitteesContent } from '@/types/database'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const PC_CHAIR_COUNT = 6
-const REVIEWER_COUNT = 12
+const ORG_ICON_MAP: Record<CommitteeIcon, LucideIcon> = {
+  'user-round': UserRound,
+  'building-2': Building2,
+}
 
 function getInitial(name: string) {
-  const cleaned = name.replace(/^(Prof\.?|Dr\.?|Pr\.?)\s+/i, '').trim()
+  const cleaned = name.replace(/^(Prof\.?|Dr\.?|Pr\.?|أ\.د\.)\s+/i, '').trim()
   return cleaned.charAt(0).toUpperCase() || '?'
 }
 
@@ -31,7 +34,9 @@ function MemberAvatar({ name }: { name: string }) {
   )
 }
 
-export default function Committees() {
+type CommitteesProps = PublicCommitteesContent
+
+export default function Committees({ pcChairs, reviewers, organizing }: CommitteesProps) {
   const t = useTranslations('committees')
   const tContact = useTranslations('contact')
   const sectionRef = useRef<HTMLElement>(null)
@@ -131,137 +136,139 @@ export default function Committees() {
           <p className="section-subheading mx-auto max-w-2xl">{t('subtitle')}</p>
         </div>
 
-        <div ref={pcRef} className="relative mb-14 overflow-hidden bg-white">
-          <div
-            className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
-            aria-hidden
-          />
-
-          <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-stretch lg:gap-0 lg:p-0">
-            <div className="flex flex-col justify-center bg-primary/[0.04] px-6 py-8 sm:px-8 lg:w-[min(100%,320px)] lg:flex-shrink-0 lg:px-10 lg:py-10">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <Users className="h-5 w-5" aria-hidden />
-              </div>
-              <h3 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
-                {t('pcChairs')}
-              </h3>
-              <div className="mt-5 h-1 w-12 rounded-full bg-primary" aria-hidden />
-              <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-                {t('pcChairsSub')}
-              </p>
-            </div>
-
+        {pcChairs.length > 0 && (
+          <div ref={pcRef} className="relative mb-14 overflow-hidden bg-white">
             <div
-              ref={pcCardsRef}
-              className="grid flex-1 gap-4 p-6 sm:grid-cols-2 sm:p-8 lg:p-8"
-            >
-              {Array.from({ length: PC_CHAIR_COUNT }, (_, i) => i + 1).map((i) => {
-                const name = t(`pcChair${i}`)
-                const affiliation = t(`pcChair${i}Aff`)
-                return (
+              className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
+              aria-hidden
+            />
+
+            <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-stretch lg:gap-0 lg:p-0">
+              <div className="flex flex-col justify-center bg-primary/[0.04] px-6 py-8 sm:px-8 lg:w-[min(100%,320px)] lg:flex-shrink-0 lg:px-10 lg:py-10">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Users className="h-5 w-5" aria-hidden />
+                </div>
+                <h3 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+                  {t('pcChairs')}
+                </h3>
+                <div className="mt-5 h-1 w-12 rounded-full bg-primary" aria-hidden />
+                <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
+                  {t('pcChairsSub')}
+                </p>
+              </div>
+
+              <div
+                ref={pcCardsRef}
+                className="grid flex-1 gap-4 p-6 sm:grid-cols-2 sm:p-8 lg:p-8"
+              >
+                {pcChairs.map((member) => (
                   <article
-                    key={`pc-chair-${i}`}
+                    key={member.id}
                     className="group flex gap-4 rounded-xl bg-slate-50/60 p-5 transition-colors duration-200 hover:bg-slate-50"
                   >
-                    <MemberAvatar name={name} />
+                    <MemberAvatar name={member.name} />
                     <div className="min-w-0">
-                      <p className="font-bold text-foreground">{name}</p>
-                      <p className="mt-2 flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
-                        <GraduationCap
-                          className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
-                          aria-hidden
-                        />
-                        <span>{affiliation}</span>
-                      </p>
+                      <p className="font-bold text-foreground">{member.name}</p>
+                      {member.affiliation.trim().length > 0 && (
+                        <p className="mt-2 flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+                          <GraduationCap
+                            className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                            aria-hidden
+                          />
+                          <span>{member.affiliation}</span>
+                        </p>
+                      )}
                     </div>
                   </article>
-                )
-              })}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        <div className="mb-14">
-          <div className="mb-8 flex items-end justify-between gap-4">
-            <div>
-              <p className="section-label mb-2">{t('label')}</p>
-              <h3 className="text-2xl font-bold text-foreground sm:text-3xl">
-                {t('externalReviewers')}
-              </h3>
+        {reviewers.length > 0 && (
+          <div className="mb-14">
+            <div className="mb-8 flex items-end justify-between gap-4">
+              <div>
+                <p className="section-label mb-2">{t('label')}</p>
+                <h3 className="text-2xl font-bold text-foreground sm:text-3xl">
+                  {t('externalReviewers')}
+                </h3>
+              </div>
             </div>
-          </div>
 
-          <div
-            ref={reviewersRef}
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {Array.from({ length: REVIEWER_COUNT }, (_, i) => i + 1).map((i) => {
-              const name = t(`reviewer${i}Name`)
-              const affiliation = t(`reviewer${i}Aff`)
-              return (
+            <div ref={reviewersRef} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {reviewers.map((member) => (
                 <article
-                  key={`reviewer-${i}`}
+                  key={member.id}
                   className="group flex flex-col rounded-xl bg-white p-5 transition-colors duration-200 hover:bg-slate-50"
                 >
                   <div className="flex items-center gap-3">
-                    <MemberAvatar name={name} />
-                    <p className="min-w-0 font-semibold text-foreground">{name}</p>
+                    <MemberAvatar name={member.name} />
+                    <p className="min-w-0 font-semibold text-foreground">{member.name}</p>
                   </div>
-                  <p className="mt-4 flex items-start gap-2 border-t border-border/60 pt-4 text-sm leading-relaxed text-muted-foreground">
-                    <GraduationCap
-                      className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
-                      aria-hidden
-                    />
-                    <span>{affiliation}</span>
-                  </p>
+                  {member.affiliation.trim().length > 0 && (
+                    <p className="mt-4 flex items-start gap-2 border-t border-border/60 pt-4 text-sm leading-relaxed text-muted-foreground">
+                      <GraduationCap
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                        aria-hidden
+                      />
+                      <span>{member.affiliation}</span>
+                    </p>
+                  )}
                 </article>
-              )
-            })}
-          </div>
-        </div>
-
-        <div ref={orgRef} className="relative overflow-hidden bg-white">
-          <div
-            className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
-            aria-hidden
-          />
-
-          <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-stretch lg:gap-0 lg:p-0">
-            <div className="flex flex-col justify-center bg-primary/[0.04] px-6 py-8 sm:px-8 lg:w-[min(100%,300px)] lg:flex-shrink-0 lg:px-10 lg:py-10">
-              <p className="section-label mb-3 text-primary">{t('label')}</p>
-              <h3 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
-                {t('organizingCommittee')}
-              </h3>
-              <div className="mt-6 h-1 w-12 rounded-full bg-primary" aria-hidden />
-            </div>
-
-            <div className="grid flex-1 gap-4 p-6 sm:grid-cols-2 sm:p-8 lg:p-8">
-              <OrgCard
-                icon={UserRound}
-                label={t('generalChair')}
-                title={t('profOmar')}
-                lines={[t('fsbmH2c')]}
-                footer={
-                  <a
-                    href="mailto:omar.zahour@univh2c.ma"
-                    className="mt-3 inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-primary transition-colors duration-200 hover:text-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-                  >
-                    <Mail className="h-4 w-4" aria-hidden />
-                    <span>
-                      {tContact('email')}: omar.zahour@univh2c.ma
-                    </span>
-                  </a>
-                }
-              />
-              <OrgCard
-                icon={Building2}
-                label={t('organizingInstitution')}
-                title={t('am2iFsbm')}
-                lines={[t('h2cAddress')]}
-              />
+              ))}
             </div>
           </div>
-        </div>
+        )}
+
+        {organizing.length > 0 && (
+          <div ref={orgRef} className="relative overflow-hidden bg-white">
+            <div
+              className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
+              aria-hidden
+            />
+
+            <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-stretch lg:gap-0 lg:p-0">
+              <div className="flex flex-col justify-center bg-primary/[0.04] px-6 py-8 sm:px-8 lg:w-[min(100%,300px)] lg:flex-shrink-0 lg:px-10 lg:py-10">
+                <p className="section-label mb-3 text-primary">{t('label')}</p>
+                <h3 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+                  {t('organizingCommittee')}
+                </h3>
+                <div className="mt-6 h-1 w-12 rounded-full bg-primary" aria-hidden />
+              </div>
+
+              <div className="grid flex-1 gap-4 p-6 sm:grid-cols-2 sm:p-8 lg:p-8">
+                {organizing.map((member) => {
+                  const Icon = member.icon ? ORG_ICON_MAP[member.icon] : UserRound
+
+                  return (
+                    <OrgCard
+                      key={member.id}
+                      icon={Icon}
+                      label={member.roleLabel}
+                      title={member.name}
+                      lines={member.affiliation.trim() ? [member.affiliation] : []}
+                      footer={
+                        member.email ? (
+                          <a
+                            href={`mailto:${member.email}`}
+                            className="mt-3 inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-primary transition-colors duration-200 hover:text-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                          >
+                            <Mail className="h-4 w-4" aria-hidden />
+                            <span>
+                              {tContact('email')}: {member.email}
+                            </span>
+                          </a>
+                        ) : undefined
+                      }
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   )
@@ -285,7 +292,9 @@ function OrgCard({
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
         <Icon className="h-4 w-4" aria-hidden />
       </div>
-      <p className="text-xs font-semibold uppercase tracking-widest text-primary">{label}</p>
+      {label.trim().length > 0 && (
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">{label}</p>
+      )}
       <p className="mt-2 font-bold text-foreground">{title}</p>
       {lines.map((line) => (
         <p key={line} className="mt-2 text-sm leading-relaxed text-muted-foreground">

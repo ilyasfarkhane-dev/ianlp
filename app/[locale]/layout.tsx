@@ -4,6 +4,7 @@ import { hasLocale } from 'next-intl'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import LocaleDir from '@/components/ianlp/locale-dir'
+import { SiteNavigationProgress } from '@/components/ianlp/site-navigation-progress'
 
 type Props = {
   children: React.ReactNode
@@ -24,6 +25,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <NextIntlClientProvider messages={messages}>
+      <SiteNavigationProgress />
       <LocaleDir locale={locale} />
       {children}
     </NextIntlClientProvider>

@@ -2,15 +2,38 @@ import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
 import type {
+  CommitteeIcon,
+  CommitteeMemberWithTranslations,
+  FocusIcon,
   ImportantDateWithTranslations,
+  Json,
   Locale,
   PartnerWithTranslations,
+  PricingTierWithTranslations,
+  PublicCommitteeMember,
+  PublicCommitteesContent,
+  PublicContactInfo,
+  PublicImportantDate,
   PublicPartner,
+  PublicPricingTier,
   PublicSpeaker,
+  PublicTopic,
+  PublicTopicsContent,
   SpeakerWithTranslations,
+  TopicWithTranslations,
 } from '@/types/database'
 
-export type { PublicPartner, PublicSpeaker }
+export type {
+  PublicCommitteeMember,
+  PublicCommitteesContent,
+  PublicContactInfo,
+  PublicImportantDate,
+  PublicPartner,
+  PublicPricingTier,
+  PublicSpeaker,
+  PublicTopic,
+  PublicTopicsContent,
+}
 
 const STATIC_PARTNERS: Omit<PublicPartner, 'id'>[] = [
   { logoPath: '/PARTNERS/UNIV.jpeg', altText: 'Hassan II University', url: null },
@@ -107,6 +130,408 @@ function getStaticPartners(): PublicPartner[] {
   }))
 }
 
+export function mapDateToPublic(
+  date: ImportantDateWithTranslations,
+  locale: Locale
+): PublicImportantDate | null {
+  const translation =
+    date.important_date_translations.find((t) => t.locale === locale) ??
+    date.important_date_translations.find((t) => t.locale === 'en') ??
+    date.important_date_translations[0]
+
+  if (!translation) return null
+
+  return {
+    id: date.id,
+    tab: date.tab,
+    dateValue: date.date_value,
+    label: translation.label,
+    description: translation.description,
+  }
+}
+
+async function getStaticDates(locale: Locale): Promise<PublicImportantDate[]> {
+  const t = await getTranslations({ locale, namespace: 'dates' })
+
+  return [
+    {
+      id: 'static-1',
+      tab: 'submission',
+      dateValue: t('paperDate'),
+      label: t('paperDeadline'),
+      description: t('paperDesc'),
+    },
+    {
+      id: 'static-2',
+      tab: 'review',
+      dateValue: t('notificationDate'),
+      label: t('notification'),
+      description: t('notificationDesc'),
+    },
+    {
+      id: 'static-3',
+      tab: 'review',
+      dateValue: t('cameraReadyDate'),
+      label: t('cameraReady'),
+      description: t('cameraReadyDesc'),
+    },
+    {
+      id: 'static-4',
+      tab: 'conference',
+      dateValue: t('conferenceDate'),
+      label: t('conferenceDates'),
+      description: t('conferenceDesc'),
+    },
+  ]
+}
+
+export async function getDatesForLocale(locale: Locale): Promise<PublicImportantDate[]> {
+  if (!isSupabaseConfigured()) {
+    return getStaticDates(locale)
+  }
+
+  const { data, error } = await getPublishedDates()
+
+  if (error || data.length === 0) {
+    return getStaticDates(locale)
+  }
+
+  return data
+    .map((date) => mapDateToPublic(date, locale))
+    .filter((date): date is PublicImportantDate => date !== null)
+}
+
+function parseFocusIcon(icon: string | null): FocusIcon | null {
+  if (
+    icon === 'brain-circuit' ||
+    icon === 'sparkles' ||
+    icon === 'shield-check' ||
+    icon === 'building-2'
+  ) {
+    return icon
+  }
+
+  return null
+}
+
+export function mapTopicToPublic(topic: TopicWithTranslations, locale: Locale): PublicTopic | null {
+  const translation =
+    topic.topic_translations.find((t) => t.locale === locale) ??
+    topic.topic_translations.find((t) => t.locale === 'en') ??
+    topic.topic_translations[0]
+
+  if (!translation) return null
+
+  return {
+    id: topic.id,
+    title: translation.title,
+    description: translation.description,
+    icon: topic.topic_type === 'focus' ? parseFocusIcon(topic.icon) ?? 'sparkles' : null,
+  }
+}
+
+async function getStaticTopics(locale: Locale): Promise<PublicTopicsContent> {
+  const t = await getTranslations({ locale, namespace: 'topics' })
+  const mainKeys = [
+    'topic1', 'topic2', 'topic3', 'topic4', 'topic5', 'topic6',
+    'topic7', 'topic8', 'topic9', 'topic10', 'topic11', 'topic12',
+  ] as const
+
+  const focusItems = [
+    { titleKey: 'coreNlp', descKey: 'coreNlpDesc', icon: 'brain-circuit' as FocusIcon },
+    { titleKey: 'advancedModels', descKey: 'advancedModelsDesc', icon: 'sparkles' as FocusIcon },
+    { titleKey: 'trustworthyAi', descKey: 'trustworthyAiDesc', icon: 'shield-check' as FocusIcon },
+    { titleKey: 'realWorldApps', descKey: 'realWorldAppsDesc', icon: 'building-2' as FocusIcon },
+  ] as const
+
+  return {
+    mainTopics: mainKeys.map((key, index) => ({
+      id: `static-main-${index + 1}`,
+      title: t(key),
+      description: '',
+      icon: null,
+    })),
+    focusAreas: focusItems.map((item, index) => ({
+      id: `static-focus-${index + 1}`,
+      title: t(item.titleKey),
+      description: t(item.descKey),
+      icon: item.icon,
+    })),
+  }
+}
+
+export async function getTopicsForLocale(locale: Locale): Promise<PublicTopicsContent> {
+  if (!isSupabaseConfigured()) {
+    return getStaticTopics(locale)
+  }
+
+  const { data, error } = await getPublishedTopics()
+
+  if (error || data.length === 0) {
+    return getStaticTopics(locale)
+  }
+
+  const mainTopics: PublicTopic[] = []
+  const focusAreas: PublicTopic[] = []
+
+  for (const topic of data) {
+    const mapped = mapTopicToPublic(topic, locale)
+    if (!mapped) continue
+
+    if (topic.topic_type === 'main') {
+      mainTopics.push(mapped)
+    } else {
+      focusAreas.push(mapped)
+    }
+  }
+
+  if (mainTopics.length === 0 && focusAreas.length === 0) {
+    return getStaticTopics(locale)
+  }
+
+  return { mainTopics, focusAreas }
+}
+
+function parseCommitteeIcon(icon: string | null): CommitteeIcon | null {
+  if (icon === 'user-round' || icon === 'building-2') {
+    return icon
+  }
+
+  return null
+}
+
+export function mapCommitteeMemberToPublic(
+  member: CommitteeMemberWithTranslations,
+  locale: Locale
+): PublicCommitteeMember | null {
+  const translation =
+    member.committee_member_translations.find((t) => t.locale === locale) ??
+    member.committee_member_translations.find((t) => t.locale === 'en') ??
+    member.committee_member_translations[0]
+
+  if (!translation) return null
+
+  return {
+    id: member.id,
+    name: translation.name,
+    affiliation: translation.affiliation,
+    roleLabel: translation.role_label,
+    email: member.email,
+    icon:
+      member.committee_type === 'organizing'
+        ? parseCommitteeIcon(member.icon) ?? 'user-round'
+        : null,
+  }
+}
+
+async function getStaticCommittees(locale: Locale): Promise<PublicCommitteesContent> {
+  const t = await getTranslations({ locale, namespace: 'committees' })
+
+  const pcChairs = Array.from({ length: 6 }, (_, index) => {
+    const i = index + 1
+    return {
+      id: `static-pc-${i}`,
+      name: t(`pcChair${i}`),
+      affiliation: t(`pcChair${i}Aff`),
+      roleLabel: '',
+      email: null,
+      icon: null,
+    }
+  })
+
+  const reviewers = Array.from({ length: 12 }, (_, index) => {
+    const i = index + 1
+    return {
+      id: `static-reviewer-${i}`,
+      name: t(`reviewer${i}Name`),
+      affiliation: t(`reviewer${i}Aff`),
+      roleLabel: '',
+      email: null,
+      icon: null,
+    }
+  })
+
+  const organizing: PublicCommitteeMember[] = [
+    {
+      id: 'static-org-1',
+      name: t('profOmar'),
+      affiliation: t('fsbmH2c'),
+      roleLabel: t('generalChair'),
+      email: 'omar.zahour@univh2c.ma',
+      icon: 'user-round',
+    },
+    {
+      id: 'static-org-2',
+      name: t('am2iFsbm'),
+      affiliation: t('h2cAddress'),
+      roleLabel: t('organizingInstitution'),
+      email: null,
+      icon: 'building-2',
+    },
+  ]
+
+  return { pcChairs, reviewers, organizing }
+}
+
+export async function getCommitteesForLocale(locale: Locale): Promise<PublicCommitteesContent> {
+  if (!isSupabaseConfigured()) {
+    return getStaticCommittees(locale)
+  }
+
+  const { data, error } = await getPublishedCommitteeMembers()
+
+  if (error || data.length === 0) {
+    return getStaticCommittees(locale)
+  }
+
+  const pcChairs: PublicCommitteeMember[] = []
+  const reviewers: PublicCommitteeMember[] = []
+  const organizing: PublicCommitteeMember[] = []
+
+  for (const member of data) {
+    const mapped = mapCommitteeMemberToPublic(member, locale)
+    if (!mapped) continue
+
+    if (member.committee_type === 'pc_chair') {
+      pcChairs.push(mapped)
+    } else if (member.committee_type === 'reviewer') {
+      reviewers.push(mapped)
+    } else {
+      organizing.push(mapped)
+    }
+  }
+
+  if (pcChairs.length === 0 && reviewers.length === 0 && organizing.length === 0) {
+    return getStaticCommittees(locale)
+  }
+
+  return { pcChairs, reviewers, organizing }
+}
+
+function parseFeatures(value: Json | undefined): string[] {
+  if (!Array.isArray(value)) return []
+  return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+}
+
+export function mapPricingTierToPublic(
+  tier: PricingTierWithTranslations,
+  locale: Locale
+): PublicPricingTier | null {
+  const translation =
+    tier.pricing_tier_translations.find((t) => t.locale === locale) ??
+    tier.pricing_tier_translations.find((t) => t.locale === 'en') ??
+    tier.pricing_tier_translations[0]
+
+  if (!translation) return null
+
+  return {
+    id: tier.id,
+    name: translation.name,
+    price: tier.price,
+    currency: tier.currency,
+    features: parseFeatures(translation.features),
+    isFeatured: tier.is_featured,
+  }
+}
+
+async function getStaticPricing(locale: Locale): Promise<PublicPricingTier[]> {
+  const t = await getTranslations({ locale, namespace: 'pricing' })
+
+  return [
+    {
+      id: 'static-in-person',
+      name: t('inPersonName'),
+      price: '300',
+      currency: 'MAD',
+      isFeatured: true,
+      features: Array.from({ length: 9 }, (_, i) => t(`inPersonFeature${i + 1}`)),
+    },
+    {
+      id: 'static-distance',
+      name: t('distanceName'),
+      price: '150',
+      currency: 'MAD',
+      isFeatured: false,
+      features: Array.from({ length: 3 }, (_, i) => t(`distanceFeature${i + 1}`)),
+    },
+  ]
+}
+
+export async function getPricingForLocale(locale: Locale): Promise<PublicPricingTier[]> {
+  if (!isSupabaseConfigured()) {
+    return getStaticPricing(locale)
+  }
+
+  const { data, error } = await getPublishedPricingTiers()
+
+  if (error || data.length === 0) {
+    return getStaticPricing(locale)
+  }
+
+  const mapped = data
+    .map((tier) => mapPricingTierToPublic(tier, locale))
+    .filter((tier): tier is PublicPricingTier => tier !== null)
+
+  return mapped.length > 0 ? mapped : getStaticPricing(locale)
+}
+
+function getStringSetting(value: unknown, fallback = ''): string {
+  return typeof value === 'string' ? value : fallback
+}
+
+async function getStaticContact(locale: Locale): Promise<PublicContactInfo> {
+  const t = await getTranslations({ locale, namespace: 'contact' })
+
+  return {
+    email: 'omar.zahour@univh2c.ma',
+    phone: '+212660082091',
+    phoneDisplay: '+212 6 60 08 20 91',
+    address: t('addressValue'),
+    generalChairName: 'Prof. Omar Zahour',
+    chairAffiliationPrimary: "Faculty of Sciences Ben M'Sick (FSBM)",
+    chairAffiliationSecondary: 'Hassan II University of Casablanca',
+  }
+}
+
+function mapContactSettings(
+  contact: Record<string, unknown> | undefined,
+  fallback: PublicContactInfo
+): PublicContactInfo {
+  if (!contact) return fallback
+
+  return {
+    email: getStringSetting(contact.email, fallback.email),
+    phone: getStringSetting(contact.phone, fallback.phone),
+    phoneDisplay: getStringSetting(contact.phoneDisplay, fallback.phoneDisplay),
+    address: getStringSetting(contact.address, fallback.address),
+    generalChairName: getStringSetting(contact.generalChairName, fallback.generalChairName),
+    chairAffiliationPrimary: getStringSetting(
+      contact.chairAffiliationPrimary,
+      fallback.chairAffiliationPrimary
+    ),
+    chairAffiliationSecondary: getStringSetting(
+      contact.chairAffiliationSecondary,
+      fallback.chairAffiliationSecondary
+    ),
+  }
+}
+
+export async function getContactForLocale(locale: Locale): Promise<PublicContactInfo> {
+  const fallback = await getStaticContact(locale)
+
+  if (!isSupabaseConfigured()) {
+    return fallback
+  }
+
+  const { data, error } = await getSiteSettings()
+
+  if (error || !data.contact) {
+    return fallback
+  }
+
+  return mapContactSettings(data.contact as Record<string, unknown>, fallback)
+}
+
 export async function getPartnersForLocale(locale: Locale): Promise<PublicPartner[]> {
   if (!isSupabaseConfigured()) {
     return getStaticPartners()
@@ -157,6 +582,42 @@ export async function getPublishedPartners() {
 
   if (error) return { data: [] as PartnerWithTranslations[], error }
   return { data: (data ?? []) as PartnerWithTranslations[], error: null }
+}
+
+export async function getPublishedTopics() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('topics')
+    .select('*, topic_translations(*)')
+    .eq('is_published', true)
+    .order('sort_order', { ascending: true })
+
+  if (error) return { data: [] as TopicWithTranslations[], error }
+  return { data: (data ?? []) as TopicWithTranslations[], error: null }
+}
+
+export async function getPublishedCommitteeMembers() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('committee_members')
+    .select('*, committee_member_translations(*)')
+    .eq('is_published', true)
+    .order('sort_order', { ascending: true })
+
+  if (error) return { data: [] as CommitteeMemberWithTranslations[], error }
+  return { data: (data ?? []) as CommitteeMemberWithTranslations[], error: null }
+}
+
+export async function getPublishedPricingTiers() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('pricing_tiers')
+    .select('*, pricing_tier_translations(*)')
+    .eq('is_published', true)
+    .order('sort_order', { ascending: true })
+
+  if (error) return { data: [] as PricingTierWithTranslations[], error }
+  return { data: (data ?? []) as PricingTierWithTranslations[], error: null }
 }
 
 export async function getSiteSettings() {

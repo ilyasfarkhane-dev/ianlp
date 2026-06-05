@@ -3,7 +3,8 @@
 import { useRef, useState } from 'react'
 import Image from 'next/image'
 import { toast } from 'sonner'
-import { ImagePlus, Loader2, Trash2, Upload } from 'lucide-react'
+import { ImagePlus, Trash2, Upload } from 'lucide-react'
+import { Spinner } from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -100,7 +101,7 @@ export function CloudinaryImageUpload({
                 className="cursor-pointer"
               >
                 {uploading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Spinner className="size-4" />
                 ) : (
                   <Upload className="h-4 w-4" />
                 )}
@@ -132,7 +133,7 @@ export function CloudinaryImageUpload({
         >
           {uploading ? (
             <>
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <Spinner className="size-8 text-primary" />
               <span className="text-sm text-muted-foreground">Uploading to Cloudinary…</span>
             </>
           ) : (

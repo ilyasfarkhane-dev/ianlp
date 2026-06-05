@@ -3,11 +3,14 @@
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { DeleteConfirmDialog } from '@/components/admin/delete-confirm-dialog'
+import { deleteCommitteeMember } from '@/app/admin/(dashboard)/committees/actions'
 import { deleteImportantDate } from '@/app/admin/(dashboard)/dates/actions'
 import { deletePartner } from '@/app/admin/(dashboard)/partners/actions'
+import { deletePricingTier } from '@/app/admin/(dashboard)/pricing/actions'
 import { deleteSpeaker } from '@/app/admin/(dashboard)/speakers/actions'
+import { deleteTopic } from '@/app/admin/(dashboard)/topics/actions'
 
-type DeleteAction = 'speaker' | 'date' | 'partner'
+type DeleteAction = 'speaker' | 'date' | 'partner' | 'topic' | 'committee' | 'pricing'
 
 const deleteActions: Record<
   DeleteAction,
@@ -16,6 +19,9 @@ const deleteActions: Record<
   speaker: deleteSpeaker,
   date: deleteImportantDate,
   partner: deletePartner,
+  topic: deleteTopic,
+  committee: deleteCommitteeMember,
+  pricing: deletePricingTier,
 }
 
 type DeleteItemButtonProps = {

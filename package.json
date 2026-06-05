@@ -7,6 +7,8 @@
     "dev": "next dev",
     "lint": "eslint .",
     "test:cloudinary": "node --env-file=.env.local scripts/test-cloudinary.mjs",
+    "migrate:committees": "node scripts/generate-committees-migration.mjs",
+    "migrate:pricing": "node scripts/generate-pricing-migration.mjs",
     "start": "next start"
   },
   "dependencies": {

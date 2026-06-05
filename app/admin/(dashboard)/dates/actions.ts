@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { revalidatePublicSite } from '@/lib/revalidate-public'
 import { createClient } from '@/lib/supabase/server'
 import type { DateTab, Locale } from '@/types/database'
 
@@ -49,6 +50,7 @@ export async function createImportantDate(input: {
 
   revalidatePath('/admin/dates')
   revalidatePath('/admin')
+  revalidatePublicSite()
   return { success: true }
 }
 
@@ -96,6 +98,7 @@ export async function updateImportantDate(
 
   revalidatePath('/admin/dates')
   revalidatePath('/admin')
+  revalidatePublicSite()
   return { success: true }
 }
 
@@ -109,5 +112,6 @@ export async function deleteImportantDate(id: string) {
 
   revalidatePath('/admin/dates')
   revalidatePath('/admin')
+  revalidatePublicSite()
   return { success: true }
 }

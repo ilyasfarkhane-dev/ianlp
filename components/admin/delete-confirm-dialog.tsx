@@ -1,8 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import { LoadingButton } from '@/components/ui/loading-button'
 import { Trash2 } from 'lucide-react'
 
 type DeleteConfirmDialogProps = {
@@ -27,8 +28,21 @@ export function DeleteConfirmDialog({
   onConfirm,
   disabled,
 }: DeleteConfirmDialogProps) {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  async function handleConfirm() {
+    setLoading(true)
+    try {
+      await onConfirm()
+      setOpen(false)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button
           variant="ghost"
@@ -46,13 +60,17 @@ export function DeleteConfirmDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={onConfirm}
-            className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          <AlertDialogCancel disabled={loading} className="cursor-pointer">
+            Cancel
+          </AlertDialogCancel>
+          <LoadingButton
+            loading={loading}
+            loadingText="Deleting…"
+            onClick={handleConfirm}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             Delete
-          </AlertDialogAction>
+          </LoadingButton>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

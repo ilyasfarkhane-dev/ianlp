@@ -1,20 +1,9 @@
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { AdminHeader } from '@/components/admin/admin-header'
 import { SpeakerFormDialog } from '@/components/admin/speaker-form-dialog'
-import { DeleteItemButton } from '@/components/admin/delete-item-button'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { SpeakersTable } from '@/components/admin/speakers-table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Pencil, User } from 'lucide-react'
+import { User } from 'lucide-react'
 import type { SpeakerWithTranslations } from '@/types/database'
 
 export default async function AdminSpeakersPage() {
@@ -57,78 +46,7 @@ export default async function AdminSpeakersPage() {
                 <p className="text-sm text-muted-foreground">No speakers yet. Add your first speaker.</p>
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-16">Photo</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Order</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {speakerList.map((speaker) => {
-                    const enTranslation =
-                      speaker.speaker_translations.find((t) => t.locale === 'en') ??
-                      speaker.speaker_translations[0]
-
-                    return (
-                      <TableRow key={speaker.id} className="transition-colors duration-200 hover:bg-muted/50">
-                        <TableCell>
-                          {speaker.image_path ? (
-                            <div className="relative h-10 w-10 overflow-hidden rounded-full ring-1 ring-border">
-                              <Image
-                                src={speaker.image_path}
-                                alt={enTranslation?.name ?? 'Speaker'}
-                                fill
-                                className="object-cover object-top"
-                                sizes="40px"
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                              <User className="h-4 w-4 text-muted-foreground" />
-                            </div>
-                          )}
-                        </TableCell>
-                        <TableCell className="font-medium">{enTranslation?.name ?? '—'}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="capitalize">
-                            {speaker.category}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{speaker.sort_order}</TableCell>
-                        <TableCell>
-                          <Badge variant={speaker.is_published ? 'default' : 'outline'}>
-                            {speaker.is_published ? 'Published' : 'Draft'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <SpeakerFormDialog
-                              speaker={speaker}
-                              trigger={
-                                <Button variant="ghost" size="icon" className="cursor-pointer">
-                                  <Pencil className="h-4 w-4" />
-                                  <span className="sr-only">Edit</span>
-                                </Button>
-                              }
-                            />
-                            <DeleteItemButton
-                              action="speaker"
-                              id={speaker.id}
-                              title="Delete speaker?"
-                              description="This will permanently remove the speaker and all translations."
-                            />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
+              <SpeakersTable speakers={speakerList} />
             )}
           </CardContent>
         </Card>

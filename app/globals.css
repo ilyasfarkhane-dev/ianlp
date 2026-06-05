@@ -208,3 +208,24 @@
   border-color: var(--secondary);
   box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
 }
+
+@keyframes navigation-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.navigation-progress-bar {
+  animation: navigation-progress 1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navigation-progress-bar {
+    animation: none;
+    width: 100%;
+    opacity: 0.7;
+  }
+}

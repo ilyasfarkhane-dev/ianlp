@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Mail, MapPin, Phone, UserRound, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { PublicPartner } from '@/types/database'
+import type { PublicContactInfo, PublicPartner } from '@/types/database'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -78,9 +78,10 @@ function PartnersRow({
 
 type ContactProps = {
   partners: PublicPartner[]
+  contact: PublicContactInfo
 }
 
-export default function Contact({ partners }: ContactProps) {
+export default function Contact({ partners, contact }: ContactProps) {
   const t = useTranslations('contact')
   const sectionRef = useRef<HTMLElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -98,19 +99,19 @@ export default function Contact({ partners }: ContactProps) {
     {
       icon: Mail,
       label: t('email'),
-      value: 'omar.zahour@univh2c.ma',
-      href: 'mailto:omar.zahour@univh2c.ma',
+      value: contact.email,
+      href: `mailto:${contact.email}`,
     },
     {
       icon: Phone,
       label: t('phone'),
-      value: '+212 6 60 08 20 91',
-      href: 'tel:+212660082091',
+      value: contact.phoneDisplay,
+      href: `tel:${contact.phone.replace(/\s/g, '')}`,
     },
     {
       icon: MapPin,
       label: t('address'),
-      value: t('addressValue'),
+      value: contact.address,
     },
   ]
 
@@ -262,19 +263,15 @@ export default function Contact({ partners }: ContactProps) {
                 <p className="text-xs font-semibold uppercase tracking-widest text-primary">
                   {t('name')}
                 </p>
-                <p className="mt-2 text-lg font-bold text-foreground">Prof. Omar Zahour</p>
+                <p className="mt-2 text-lg font-bold text-foreground">{contact.generalChairName}</p>
               </div>
 
               <div className="py-6">
                 <p className="text-xs font-semibold uppercase tracking-widest text-primary">
                   {t('affiliation')}
                 </p>
-                <p className="mt-2 font-semibold text-foreground">
-                  Faculty of Sciences Ben M&apos;Sick (FSBM)
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Hassan II University of Casablanca
-                </p>
+                <p className="mt-2 font-semibold text-foreground">{contact.chairAffiliationPrimary}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{contact.chairAffiliationSecondary}</p>
               </div>
             </div>
           </div>

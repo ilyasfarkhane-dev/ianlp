@@ -4,10 +4,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   CalendarDays,
+  CreditCard,
   ExternalLink,
   LayoutDashboard,
   Mic2,
   Settings,
+  Tags,
+  UserCheck,
   Users,
 } from 'lucide-react'
 import {
@@ -28,6 +31,9 @@ const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/admin/speakers', label: 'Speakers', icon: Mic2 },
   { href: '/admin/dates', label: 'Important Dates', icon: CalendarDays },
+  { href: '/admin/topics', label: 'Topics', icon: Tags },
+  { href: '/admin/committees', label: 'Committees', icon: UserCheck },
+  { href: '/admin/pricing', label: 'Registration Fees', icon: CreditCard },
   { href: '/admin/partners', label: 'Partners', icon: Users },
   { href: '/admin/settings', label: 'Site Settings', icon: Settings },
 ]
