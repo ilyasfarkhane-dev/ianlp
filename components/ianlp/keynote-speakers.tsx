@@ -5,8 +5,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import { User } from 'lucide-react'
-import { Card } from '@/components/ui/card'
+import { ArrowRight, GraduationCap, User } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -15,152 +14,240 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const keynoteTopicKeys = ['topic1', 'topic2', 'topic3', 'topic4', 'topic5', 'topic6']
 const speakerIds = [1, 2, 3, 4] as const
 
 const speakerImages: Record<(typeof speakerIds)[number], string> = {
   1: '/speakers/Jaouad DABOUNOU.jpeg',
-  2: '/speakers/speaker-2.jpg',
+  2: '/speakers/Atanasova.jpeg',
   3: '/speakers/speaker-3.jpg',
   4: '/speakers/speaker-4.jpg',
 }
 
-function SpeakerCard({ id }: { id: (typeof speakerIds)[number] }) {
+function SpeakerCard({
+  id,
+  className,
+}: {
+  id: (typeof speakerIds)[number]
+  className?: string
+}) {
   const t = useTranslations('keynote')
   const [imgError, setImgError] = useState(false)
   const name = t(`speaker${id}Name`)
   const affiliation = t(`speaker${id}Affiliation`)
   const bio = t(`speaker${id}Bio`)
-  const hasAffiliation = affiliation.trim().length > 0
+  const university = affiliation.trim()
+  const role = university.length > 0 ? university : t('keynoteRole')
 
   return (
-    <Card className="overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm hover:border-primary/40 transition-colors">
-      <div className="w-full bg-primary/10">
-        {!imgError ? (
-          <Image
-            src={speakerImages[id]}
-            alt={name}
-            width={400}
-            height={400}
-            className="w-full h-auto object-contain"
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <div className="flex min-h-48 items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/30">
-              <User className="h-12 w-12 text-primary" />
+    <Dialog>
+      <article
+        className={cn(
+          'speaker-editorial-card group flex flex-col rounded-3xl p-5 text-left max-lg:p-4',
+          className
+        )}
+      >
+        <div className="relative mb-5 aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-white/15 max-lg:mb-4 max-lg:aspect-[3/4]">
+          {!imgError ? (
+            <Image
+              src={speakerImages[id]}
+              alt={name}
+              fill
+              className="object-cover object-top"
+              sizes="(max-width: 1024px) 100vw, 320px"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center bg-white/10">
+              <User className="h-12 w-12 text-white/40" />
             </div>
-          </div>
-        )}
-      </div>
-      <div className="p-6 space-y-2 text-center">
-        <h3 className="text-lg font-bold text-foreground">{name}</h3>
-        {hasAffiliation && (
-          <p className="text-sm font-medium text-primary">{affiliation}</p>
-        )}
-        <Dialog>
+          )}
+        </div>
+
+        <h3 className="text-lg font-bold leading-snug text-primary-foreground max-lg:text-base">{name}</h3>
+
+        {university ? (
+          <span className="mt-3 inline-flex w-full max-w-full items-start gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-medium text-primary-foreground max-lg:mt-2">
+            <GraduationCap className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary-foreground" aria-hidden />
+            <span className="leading-snug whitespace-normal">{university}</span>
+          </span>
+        ) : null}
+
+        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-white/75 max-lg:mt-2">{bio}</p>
+
+        <div className="mt-5 max-lg:mt-4">
           <DialogTrigger asChild>
             <button
               type="button"
-              className="text-sm font-medium text-primary hover:underline underline-offset-4"
+              className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-primary-foreground underline-offset-4 transition-all duration-200 hover:gap-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-foreground max-lg:min-h-11"
             >
               {t('seeBiography')}
+              <ArrowRight className="h-4 w-4" aria-hidden />
             </button>
           </DialogTrigger>
-          <DialogContent className="max-h-[85vh] overflow-y-auto border-white/10 bg-background sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{name}</DialogTitle>
-              {hasAffiliation && (
-                <p className="text-sm font-medium text-primary">{affiliation}</p>
+        </div>
+      </article>
+
+      <DialogContent
+        className="gap-0 overflow-hidden rounded-3xl border-0 p-0 sm:max-w-2xl max-sm:flex max-sm:max-h-[90dvh] max-sm:flex-col [&_[data-slot=dialog-close]]:top-5 [&_[data-slot=dialog-close]]:right-5 [&_[data-slot=dialog-close]]:rounded-full [&_[data-slot=dialog-close]]:text-primary-foreground [&_[data-slot=dialog-close]]:opacity-90 [&_[data-slot=dialog-close]]:hover:bg-white/15 [&_[data-slot=dialog-close]]:hover:opacity-100 max-sm:[&_[data-slot=dialog-close]]:top-4 max-sm:[&_[data-slot=dialog-close]]:right-4 max-sm:[&_[data-slot=dialog-close]]:flex max-sm:[&_[data-slot=dialog-close]]:min-h-11 max-sm:[&_[data-slot=dialog-close]]:min-w-11 max-sm:[&_[data-slot=dialog-close]]:items-center max-sm:[&_[data-slot=dialog-close]]:justify-center"
+        showCloseButton
+      >
+        <div className="bg-primary px-6 pb-6 pt-8 text-primary-foreground sm:px-8 max-sm:flex-shrink-0 max-sm:px-5 max-sm:pb-5 max-sm:pt-7">
+          <DialogHeader className="gap-3 pr-10 text-left max-sm:pr-12">
+            <DialogTitle className="text-2xl font-bold leading-tight max-sm:text-xl">{name}</DialogTitle>
+            {university ? (
+              <span className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-medium">
+                <GraduationCap className="h-3.5 w-3.5 flex-shrink-0" aria-hidden />
+                <span className="leading-snug">{university}</span>
+              </span>
+            ) : (
+              <p className="text-sm font-medium text-primary-foreground/90">{role}</p>
+            )}
+          </DialogHeader>
+        </div>
+
+        <div className="max-h-[min(60vh,520px)] overflow-y-auto bg-white p-6 sm:p-8 max-sm:min-h-0 max-sm:flex-1 max-sm:overscroll-y-contain max-sm:p-5">
+          <div className="grid items-start gap-6 sm:grid-cols-[160px_1fr] sm:gap-8 max-sm:gap-5">
+            <div className="mx-auto w-full max-w-[160px] overflow-hidden rounded-2xl border border-border sm:mx-0 sm:max-w-none max-sm:max-w-[140px]">
+              {!imgError ? (
+                <Image
+                  src={speakerImages[id]}
+                  alt={name}
+                  width={160}
+                  height={200}
+                  className="block h-auto w-full"
+                />
+              ) : (
+                <div className="flex aspect-[4/5] items-center justify-center bg-muted">
+                  <User className="h-10 w-10 text-muted-foreground/40" />
+                </div>
               )}
-            </DialogHeader>
-            <DialogDescription className="text-sm leading-relaxed text-muted-foreground text-justify">
-              {bio}
-            </DialogDescription>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </Card>
+            </div>
+
+            <div className="min-w-0">
+              <p className="section-label mb-3 text-left">{t('bioLabel')}</p>
+              <DialogDescription className="text-justify text-base leading-relaxed text-muted-foreground max-sm:text-left">
+                {bio}
+              </DialogDescription>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 
 export default function KeynoteSpeakers() {
   const t = useTranslations('keynote')
-  const containerRef = useRef<HTMLDivElement>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const introRef = useRef<HTMLDivElement>(null)
+  const cardsRef = useRef<HTMLDivElement>(null)
+  const [showAll, setShowAll] = useState(false)
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches
-
-    if (prefersReducedMotion) {
-      gsap.set(contentRef.current, { opacity: 1, y: 0 })
-      return
-    }
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion || !sectionRef.current) return
 
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        contentRef.current,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 70%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      )
-    }, containerRef)
+      if (introRef.current) {
+        gsap.fromTo(
+          introRef.current,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: sectionRef.current, start: 'top 78%' },
+          }
+        )
+      }
+
+      const cards = cardsRef.current?.querySelectorAll('.speaker-editorial-card')
+      if (cards && cards.length > 0) {
+        gsap.fromTo(
+          cards,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.45,
+            stagger: 0.08,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: cardsRef.current, start: 'top 85%' },
+          }
+        )
+      }
+    }, sectionRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [showAll])
 
   return (
-    <section
-      ref={containerRef}
-      className="py-20 px-4 sm:px-6 lg:px-8"
-    >
+    <section ref={sectionRef} id="speakers" className="section-light overflow-hidden bg-white">
       <div className="mx-auto max-w-7xl">
-        <div
-          ref={contentRef}
-          className="text-center mb-12"
-        >
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            {t('title')}
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t('subtitle')}
-          </p>
-        </div>
+        {showAll ? (
+          <>
+            <div ref={introRef} className="mx-auto mb-12 max-w-2xl text-center">
+              <p className="section-label">{t('label')}</p>
+              <h2 className="section-heading">{t('title')}</h2>
+              <p className="section-subheading">{t('subtitle')}</p>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {keynoteTopicKeys.map((key) => (
+              <button
+                type="button"
+                onClick={() => setShowAll(false)}
+                className="mt-8 cursor-pointer text-sm font-semibold text-primary transition-colors duration-200 hover:text-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary max-lg:min-h-11"
+              >
+                {t('backToOverview')}
+              </button>
+            </div>
+
             <div
-              key={key}
-              className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors"
+              ref={cardsRef}
+              className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
             >
-              <div className="flex items-center gap-3">
-                <div className="h-3 w-3 rounded-full bg-primary" />
-                <p className="font-semibold text-foreground">{t(key)}</p>
+              {speakerIds.map((id) => (
+                <SpeakerCard key={id} id={id} className="h-full w-full" />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="lg:flex lg:items-start lg:gap-10 xl:gap-14">
+            <div ref={introRef} className="lg:w-[38%] lg:max-w-md lg:flex-shrink-0 xl:w-[34%]">
+              <p className="section-label">{t('label')}</p>
+              <h2 className="section-heading">{t('title')}</h2>
+              <p className="section-subheading mb-8 max-w-md">{t('subtitle')}</p>
+
+              <button
+                type="button"
+                onClick={() => setShowAll(true)}
+                className="btn-outline-dark inline-flex w-fit cursor-pointer items-center gap-2 px-6 py-2.5 text-sm max-lg:w-full max-lg:min-h-11 max-lg:justify-center max-lg:py-3"
+              >
+                {t('seeAllKeynote')}
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </button>
+            </div>
+
+            {/* Mobile & tablet: stacked grid. Desktop (lg+): original horizontal strip unchanged. */}
+            <div
+              ref={cardsRef}
+              className="mt-10 min-w-0 flex-1 lg:mt-0 lg:flex lg:snap-x lg:snap-mandatory lg:gap-5 lg:overflow-x-visible lg:pb-2 lg:pr-[max(1rem,calc((100vw-80rem)/2+2rem))]"
+            >
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:contents">
+                {speakerIds.map((id) => (
+                  <SpeakerCard
+                    key={id}
+                    id={id}
+                    className="h-full w-full lg:w-[320px] lg:flex-shrink-0 lg:snap-start"
+                  />
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {speakerIds.map((id) => (
-            <SpeakerCard key={id} id={id} />
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   )

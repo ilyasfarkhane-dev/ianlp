@@ -10,163 +10,169 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import {
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  ClipboardCheck,
+  Gavel,
+  ShieldCheck,
+  Users,
+  type LucideIcon,
+} from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const accordionKeys: {
+  title: string
+  desc: string
+  items: string[]
+  icon: LucideIcon
+}[] = [
+  {
+    title: 'accordion1Title',
+    desc: 'accordion1Desc',
+    items: ['accordion1a', 'accordion1b', 'accordion1c'],
+    icon: ClipboardCheck,
+  },
+  {
+    title: 'accordion2Title',
+    desc: 'accordion2Desc',
+    items: ['accordion2a', 'accordion2b', 'accordion2c'],
+    icon: Users,
+  },
+  {
+    title: 'accordion3Title',
+    desc: 'accordion3Desc',
+    items: ['accordion3a', 'accordion3b', 'accordion3c'],
+    icon: ShieldCheck,
+  },
+  {
+    title: 'accordion4Title',
+    desc: 'accordion4Desc',
+    items: ['accordion4a', 'accordion4b', 'accordion4c'],
+    icon: Gavel,
+  },
+  {
+    title: 'accordion5Title',
+    desc: 'accordion5Desc',
+    items: ['accordion5a', 'accordion5b', 'accordion5c'],
+    icon: BookOpen,
+  },
+]
+
 export default function ReviewProcess() {
   const t = useTranslations('review')
-  const containerRef = useRef<HTMLDivElement>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const introRef = useRef<HTMLDivElement>(null)
+  const accordionRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches
-
-    if (prefersReducedMotion) {
-      gsap.set(contentRef.current, { opacity: 1, y: 0 })
-      return
-    }
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion || !sectionRef.current) return
 
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        contentRef.current,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 70%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      )
-    }, containerRef)
+      if (introRef.current) {
+        gsap.fromTo(
+          introRef.current,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: sectionRef.current, start: 'top 78%' },
+          }
+        )
+      }
+
+      if (accordionRef.current) {
+        const items = accordionRef.current.querySelectorAll('[data-slot="accordion-item"]')
+        gsap.fromTo(
+          items,
+          { opacity: 0, y: 16 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            stagger: 0.07,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: accordionRef.current, start: 'top 85%' },
+          }
+        )
+      }
+    }, sectionRef)
 
     return () => ctx.revert()
   }, [])
 
   return (
-    <section
-      ref={containerRef}
-      id="review"
-      className="py-20 px-4 sm:px-6 lg:px-8"
-    >
+    <section ref={sectionRef} id="review" className="section-dark">
       <div className="mx-auto max-w-7xl">
-        <div
-          ref={contentRef}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            {t('title')}
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t('subtitle')}
-          </p>
-        </div>
+        <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-24">
+          <div ref={introRef}>
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-secondary">
+              {t('label')}
+            </p>
+            <h2 className="mb-6 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+              {t('faqTitle')}
+            </h2>
+            <p className="mb-8 max-w-md leading-relaxed text-white/70">{t('subtitle')}</p>
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          <div className="space-y-6">
-            <div className="p-6 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
-              <h3 className="font-bold text-lg text-foreground mb-4">{t('keyPrinciples')}</h3>
-              <ul className="space-y-3">
-                {['principle1', 'principle2', 'principle3', 'principle4', 'principle5'].map((key) => (
-                  <li key={key} className="flex gap-3 text-foreground">
-                    <span className="text-primary font-bold">✓</span>
-                    <span>{t(key)}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="p-6 rounded-xl bg-primary/10 border border-primary/20">
-              <h3 className="font-bold text-lg text-foreground mb-4">
-                {t('evaluationCriteria')}
-              </h3>
-              <ul className="space-y-2 text-sm text-foreground/80">
-                {['crit1', 'crit2', 'crit3', 'crit4', 'crit5'].map((key, i) => (
-                  <li key={key} className="flex gap-2">
-                    <span className="text-primary font-semibold">{i + 1}.</span>
-                    <span>{t(key)}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <a
+              href="#contact"
+              className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-secondary transition-all duration-200 hover:gap-3 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary rounded-sm"
+            >
+              {t('haveQuestion')}
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </a>
           </div>
 
-          <Accordion type="single" collapsible className="space-y-3">
-            <AccordionItem value="item-1" className="border border-white/10 rounded-xl px-6 bg-white/5 backdrop-blur-sm">
-              <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
-                {t('accordion1Title')}
-              </AccordionTrigger>
-              <AccordionContent className="text-foreground/80 space-y-2">
-                <p>{t('accordion1Desc')}</p>
-                <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>{t('accordion1a')}</li>
-                  <li>{t('accordion1b')}</li>
-                  <li>{t('accordion1c')}</li>
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
+          <div ref={accordionRef}>
+            <Accordion type="single" collapsible className="divide-y divide-white/10">
+              {accordionKeys.map((item, i) => {
+                const Icon = item.icon
+                const step = String(i + 1).padStart(2, '0')
 
-            <AccordionItem value="item-2" className="border border-white/10 rounded-xl px-6 bg-white/5 backdrop-blur-sm">
-              <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
-                {t('accordion2Title')}
-              </AccordionTrigger>
-              <AccordionContent className="text-foreground/80 space-y-2">
-                <p>{t('accordion2Desc')}</p>
-                <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>{t('accordion2a')}</li>
-                  <li>{t('accordion2c')}</li>
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
+                return (
+                  <AccordionItem
+                    key={item.title}
+                    value={`item-${i}`}
+                    className="group border-0 px-0 transition-colors duration-200 data-[state=open]:bg-white/[0.04]"
+                  >
+                    <AccordionTrigger className="cursor-pointer gap-4 py-5 text-left hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary [&>svg]:text-white/50 group-hover:[&>svg]:text-secondary">
+                      <span className="flex min-w-0 flex-1 items-start gap-4 px-5">
+                        <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/10 text-secondary transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground group-data-[state=open]:bg-primary group-data-[state=open]:text-primary-foreground">
+                          <Icon className="h-4 w-4" aria-hidden />
+                        </span>
+                        <span className="min-w-0 pt-1">
+                         
+                          <span className="block text-base font-semibold text-white sm:text-lg">
+                            {t(item.title)}
+                          </span>
+                        </span>
+                      </span>
+                    </AccordionTrigger>
 
-            <AccordionItem value="item-3" className="border border-white/10 rounded-xl px-6 bg-white/5 backdrop-blur-sm">
-              <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
-                {t('accordion3Title')}
-              </AccordionTrigger>
-              <AccordionContent className="text-foreground/80 space-y-2">
-                <p>{t('accordion3Desc')}</p>
-                <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>{t('accordion3a')}</li>
-                  <li>{t('accordion3b')}</li>
-                  <li>{t('accordion3c')}</li>
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-4" className="border border-white/10 rounded-xl px-6 bg-white/5 backdrop-blur-sm">
-              <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
-                {t('accordion4Title')}
-              </AccordionTrigger>
-              <AccordionContent className="text-foreground/80 space-y-2">
-                <p>{t('accordion4Desc')}</p>
-                <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>{t('accordion4a')}</li>
-                  <li>{t('accordion4b')}</li>
-                  <li>{t('accordion4c')}</li>
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-5" className="border border-white/10 rounded-xl px-6 bg-white/5 backdrop-blur-sm">
-              <AccordionTrigger className="font-bold text-foreground hover:text-primary transition-colors">
-                {t('accordion5Title')}
-              </AccordionTrigger>
-              <AccordionContent className="text-foreground/80 space-y-2">
-                <p>{t('accordion5Desc')}</p>
-                <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>{t('accordion5a')}</li>
-                  <li>{t('accordion5b')}</li>
-                  <li>{t('accordion5c')}</li>
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+                    <AccordionContent className="pb-5 pl-14 text-white/75">
+                      <p className="leading-relaxed">{t(item.desc)}</p>
+                      <ul className="mt-4 space-y-2.5">
+                        {item.items.map((key) => (
+                          <li key={key} className="flex items-start gap-2.5 text-sm leading-relaxed">
+                            <CheckCircle2
+                              className="mt-0.5 h-4 w-4 flex-shrink-0 text-secondary"
+                              aria-hidden
+                            />
+                            <span>{t(key)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                )
+              })}
+            </Accordion>
+          </div>
         </div>
       </div>
     </section>

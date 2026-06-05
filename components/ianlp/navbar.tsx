@@ -1,15 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { Menu, X } from 'lucide-react'
 import LanguageSwitcher from './language-switcher'
-
-gsap.registerPlugin(ScrollTrigger)
 
 const EASYCHAIR_SUBMIT_URL =
   'https://easychair.org/conferences/?conf=ianlp2026'
@@ -26,38 +22,20 @@ const navLinks = [
   { labelKey: 'review', href: '#review' },
   { labelKey: 'committees', href: '#committees' },
   { labelKey: 'venue', href: '#venue' },
+  { labelKey: 'pricing', href: '#pricing' },
   { labelKey: 'contact', href: '#contact' },
 ]
 
 export default function Navbar() {
   const t = useTranslations('nav')
-  const navRef = useRef<HTMLElement>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [onHero, setOnHero] = useState(true)
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches
-
-    if (prefersReducedMotion) {
-      gsap.set(navRef.current, { className: '+=blur-active' })
-      return
-    }
-
-    ScrollTrigger.create({
-      onUpdate: (self) => {
-        const velocity = typeof self.getVelocity === 'function' ? self.getVelocity() : 0
-        if (velocity > 500) {
-          gsap.to(navRef.current, { className: '+=blur-active' })
-        } else {
-          gsap.to(navRef.current, { className: '-=blur-active' })
-        }
-      },
-    })
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
-    }
+    const onScroll = () => setOnHero(window.scrollY < 500)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   const handleNavClick = (href: string) => {
@@ -68,58 +46,51 @@ export default function Navbar() {
     }
   }
 
-  return (
-    <nav
-      ref={navRef}
-      className="fixed top-0 z-50 w-full border-b border-white/10 bg-background/90 backdrop-blur-md transition-all duration-300"
-    >
-      <div className="mx-auto flex max-w-9xl items-center justify-between px-4 py-3  ">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => handleNavClick('#overview')}
-            className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
-            aria-label="IANLP 2026"
-          >
-            <Image
-              src="/ianlp-logo.png"
-              alt="IANLP 2026"
-              width={400}
-              height={120}
-              className="h-20 w-auto min-w-[200px] object-contain sm:h-28 sm:min-w-[280px]"
-              priority
-            />
-          </button>
-        </div>
+  const lightNav = !onHero
 
-        {/* Desktop Navigation */}
+  return (
+    <nav className={`nav-glass ${lightNav ? 'nav-glass-scrolled' : ''}`}>
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3">
+        <button
+          type="button"
+          onClick={() => handleNavClick('#overview')}
+          className="flex items-center cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg"
+          aria-label="IANLP 2026"
+        >
+          <Image
+            src="/ianlp-logo.png"
+            alt="IANLP 2026"
+            width={400}
+            height={120}
+            className={`h-12 w-auto min-w-[120px] object-contain sm:h-14 sm:min-w-[160px] transition-all duration-300 ${
+              lightNav ? '' : 'brightness-0 invert'
+            }`}
+            priority
+          />
+        </button>
+
         <div className="hidden lg:flex items-center gap-1">
           {navLinks.map((link) => (
             <button
               key={link.href}
               onClick={() => handleNavClick(link.href)}
-              className="px-3 py-2 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+              className={`px-3 py-2 text-sm font-medium transition-colors duration-200 cursor-pointer rounded-lg ${
+                lightNav
+                  ? 'text-muted-foreground hover:text-primary hover:bg-primary/5'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
             >
               {t(link.labelKey)}
             </button>
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-2">
-          <LanguageSwitcher />
-          <Button asChild variant="outline" size="sm">
-            <a
-              href={LNCS_GUIDELINES_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t('lncsTemplate')}
-            </a>
-          </Button>
+        <div className="hidden md:flex items-center gap-3">
+          <LanguageSwitcher variant={lightNav ? 'light' : 'dark'} />
           <Button
             asChild
             size="sm"
-            className="btn-gradient text-white border-0"
+            className="btn-primary rounded-full px-6 py-2 h-auto text-sm border-0"
           >
             <a
               href={EASYCHAIR_SUBMIT_URL}
@@ -131,56 +102,47 @@ export default function Navbar() {
           </Button>
         </div>
 
-        <div className="flex items-center gap-1 lg:hidden">
-          <LanguageSwitcher />
+        <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher variant={lightNav ? 'light' : 'dark'} />
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-2 text-foreground hover:bg-muted rounded-lg transition-colors"
+            className={`flex items-center gap-2 p-2 rounded-lg transition-colors duration-200 cursor-pointer ${
+              lightNav ? 'text-foreground hover:bg-muted' : 'text-white hover:bg-white/10'
+            }`}
             aria-label={t('toggleMenu')}
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            <span className="text-xs font-semibold uppercase tracking-wider hidden sm:inline">
+              Menu
+            </span>
+            {isOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
       {isOpen && (
-        <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-4 py-4 space-y-2">
+        <div className={`lg:hidden nav-glass-menu ${lightNav ? 'nav-glass-menu-scrolled' : ''}`}>
+          <div className="px-4 py-4 space-y-1">
             {navLinks.map((link) => (
               <button
                 key={link.href}
                 onClick={() => handleNavClick(link.href)}
-                className="block w-full text-left px-4 py-2 text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                className={`block w-full text-left px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 cursor-pointer ${
+                  lightNav
+                    ? 'text-muted-foreground hover:text-primary hover:bg-primary/5'
+                    : 'text-white/80 hover:text-white hover:bg-white/10'
+                }`}
               >
                 {t(link.labelKey)}
               </button>
             ))}
-            <div className="pt-2 flex flex-col gap-2">
-              <Button
-                asChild
-                variant="outline"
-                className="w-full bg-transparent"
-                size="sm"
-              >
-                <a
-                  href={LNCS_GUIDELINES_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+            <div className="pt-3 flex flex-col gap-2">
+              <Button asChild variant="outline" className="w-full cursor-pointer" size="sm">
+                <a href={LNCS_GUIDELINES_URL} target="_blank" rel="noopener noreferrer">
                   {t('lncsTemplate')}
                 </a>
               </Button>
-              <Button
-                asChild
-                className="w-full btn-gradient text-white border-0"
-                size="sm"
-              >
-                <a
-                  href={EASYCHAIR_SUBMIT_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+              <Button asChild className="w-full btn-primary border-0 rounded-full" size="sm">
+                <a href={EASYCHAIR_SUBMIT_URL} target="_blank" rel="noopener noreferrer">
                   {t('submitPaper')}
                 </a>
               </Button>

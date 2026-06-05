@@ -1,178 +1,298 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTranslations } from 'next-intl'
-import { Card } from '@/components/ui/card'
-import { Globe } from 'lucide-react'
+import {
+  Building2,
+  GraduationCap,
+  Mail,
+  UserRound,
+  Users,
+  type LucideIcon,
+} from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const PC_CHAIR_COUNT = 6
 const REVIEWER_COUNT = 12
+
+function getInitial(name: string) {
+  const cleaned = name.replace(/^(Prof\.?|Dr\.?|Pr\.?)\s+/i, '').trim()
+  return cleaned.charAt(0).toUpperCase() || '?'
+}
+
+function MemberAvatar({ name }: { name: string }) {
+  return (
+    <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-sm font-bold text-primary">
+      {getInitial(name)}
+    </div>
+  )
+}
 
 export default function Committees() {
   const t = useTranslations('committees')
-  const containerRef = useRef<HTMLDivElement>(null)
-  const headingRef = useRef<HTMLDivElement>(null)
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([])
+  const tContact = useTranslations('contact')
+  const sectionRef = useRef<HTMLElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
+  const pcRef = useRef<HTMLDivElement>(null)
+  const pcCardsRef = useRef<HTMLDivElement>(null)
+  const reviewersRef = useRef<HTMLDivElement>(null)
+  const orgRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches
-
-    if (prefersReducedMotion) {
-      gsap.set([headingRef.current, ...cardsRef.current.filter((c) => c !== null)], {
-        opacity: 1,
-        y: 0,
-      })
-      return
-    }
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion || !sectionRef.current) return
 
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headingRef.current,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 70%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      )
+      if (headerRef.current) {
+        gsap.fromTo(
+          headerRef.current,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: sectionRef.current, start: 'top 78%' },
+          }
+        )
+      }
 
-      gsap.fromTo(
-        cardsRef.current.filter((c) => c !== null),
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.08,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 65%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      )
-    }, containerRef)
+      if (pcRef.current) {
+        gsap.fromTo(
+          pcRef.current,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: pcRef.current, start: 'top 82%' },
+          }
+        )
+      }
+
+      if (pcCardsRef.current) {
+        gsap.fromTo(
+          pcCardsRef.current.children,
+          { opacity: 0, y: 16 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            stagger: 0.06,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: pcCardsRef.current, start: 'top 85%' },
+          }
+        )
+      }
+
+      if (reviewersRef.current) {
+        gsap.fromTo(
+          reviewersRef.current.children,
+          { opacity: 0, y: 14 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.38,
+            stagger: 0.04,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: reviewersRef.current, start: 'top 88%' },
+          }
+        )
+      }
+
+      if (orgRef.current) {
+        gsap.fromTo(
+          orgRef.current,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: orgRef.current, start: 'top 90%' },
+          }
+        )
+      }
+    }, sectionRef)
 
     return () => ctx.revert()
   }, [])
 
   return (
-    <section
-      ref={containerRef}
-      id="committees"
-      className="py-20 px-4 sm:px-6 lg:px-8"
-    >
+    <section ref={sectionRef} id="committees" className="section-light bg-muted/30">
       <div className="mx-auto max-w-7xl">
-        <div
-          ref={headingRef}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            {t('title')}
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t('subtitle')}
-          </p>
+        <div ref={headerRef} className="mb-14 text-center">
+          <p className="section-label">{t('label')}</p>
+          <h2 className="section-heading">{t('title')}</h2>
+          <p className="section-subheading mx-auto max-w-2xl">{t('subtitle')}</p>
         </div>
 
-        <div className="mb-16 p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
-          <h3 className="text-2xl font-bold text-foreground mb-4">
-            {t('pcChairs')}
-          </h3>
-          <p className="text-muted-foreground mb-6">{t('pcChairsSub')}</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2].map((i) => (
-              <div key={i}>
-                <p className="font-bold text-foreground">{t(`pcChair${i}`)}</p>
-                <p className="text-sm text-muted-foreground">{t(`pcChair${i}Aff`)}</p>
+        <div ref={pcRef} className="relative mb-14 overflow-hidden bg-white">
+          <div
+            className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
+            aria-hidden
+          />
+
+          <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-stretch lg:gap-0 lg:p-0">
+            <div className="flex flex-col justify-center bg-primary/[0.04] px-6 py-8 sm:px-8 lg:w-[min(100%,320px)] lg:flex-shrink-0 lg:px-10 lg:py-10">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <Users className="h-5 w-5" aria-hidden />
               </div>
-            ))}
+              <h3 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+                {t('pcChairs')}
+              </h3>
+              <div className="mt-5 h-1 w-12 rounded-full bg-primary" aria-hidden />
+              <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
+                {t('pcChairsSub')}
+              </p>
+            </div>
+
+            <div
+              ref={pcCardsRef}
+              className="grid flex-1 gap-4 p-6 sm:grid-cols-2 sm:p-8 lg:p-8"
+            >
+              {Array.from({ length: PC_CHAIR_COUNT }, (_, i) => i + 1).map((i) => {
+                const name = t(`pcChair${i}`)
+                const affiliation = t(`pcChair${i}Aff`)
+                return (
+                  <article
+                    key={`pc-chair-${i}`}
+                    className="group flex gap-4 rounded-xl bg-slate-50/60 p-5 transition-colors duration-200 hover:bg-slate-50"
+                  >
+                    <MemberAvatar name={name} />
+                    <div className="min-w-0">
+                      <p className="font-bold text-foreground">{name}</p>
+                      <p className="mt-2 flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+                        <GraduationCap
+                          className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                          aria-hidden
+                        />
+                        <span>{affiliation}</span>
+                      </p>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
           </div>
         </div>
 
-        <div>
-          <h3 className="text-2xl font-bold text-foreground mb-8">
-            {t('externalReviewers')}
-          </h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: REVIEWER_COUNT }, (_, i) => i + 1).map((i, index) => {
+        <div className="mb-14">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <p className="section-label mb-2">{t('label')}</p>
+              <h3 className="text-2xl font-bold text-foreground sm:text-3xl">
+                {t('externalReviewers')}
+              </h3>
+            </div>
+          </div>
+
+          <div
+            ref={reviewersRef}
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {Array.from({ length: REVIEWER_COUNT }, (_, i) => i + 1).map((i) => {
               const name = t(`reviewer${i}Name`)
+              const affiliation = t(`reviewer${i}Aff`)
               return (
-                <div
+                <article
                   key={`reviewer-${i}`}
-                  ref={(el) => {
-                    cardsRef.current[index] = el
-                  }}
+                  className="group flex flex-col rounded-xl bg-white p-5 transition-colors duration-200 hover:bg-slate-50"
                 >
-                  <Card className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-all hover:shadow-lg hover:shadow-primary/10 h-full">
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-bold">
-                        {name.charAt(0)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-foreground truncate">
-                          {name}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2 mt-3 pt-3 border-t border-border">
-                      <Globe className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-muted-foreground">
-                        {t(`reviewer${i}Aff`)}
-                      </p>
-                    </div>
-                  </Card>
-                </div>
+                  <div className="flex items-center gap-3">
+                    <MemberAvatar name={name} />
+                    <p className="min-w-0 font-semibold text-foreground">{name}</p>
+                  </div>
+                  <p className="mt-4 flex items-start gap-2 border-t border-border/60 pt-4 text-sm leading-relaxed text-muted-foreground">
+                    <GraduationCap
+                      className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                      aria-hidden
+                    />
+                    <span>{affiliation}</span>
+                  </p>
+                </article>
               )
             })}
           </div>
         </div>
 
-      
+        <div ref={orgRef} className="relative overflow-hidden bg-white">
+          <div
+            className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
+            aria-hidden
+          />
 
-        <div className="mt-16 p-8 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
-          <h3 className="text-2xl font-bold text-foreground mb-6">
-            {t('organizingCommittee')}
-          </h3>
-          <div className="grid sm:grid-cols-2 gap-8">
-            <div>
-              <p className="font-bold text-primary mb-2">{t('generalChair')}</p>
-              <p className="text-foreground font-semibold">{t('profOmar')}</p>
-              <p className="text-sm text-muted-foreground">
-                {t('fsbmH2c')}
-              </p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Email:{' '}
-                <a
-                  href="mailto:omar.zahour@univh2c.ma"
-                  className="text-primary hover:underline"
-                >
-                  omar.zahour@univh2c.ma
-                </a>
-              </p>
+          <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-stretch lg:gap-0 lg:p-0">
+            <div className="flex flex-col justify-center bg-primary/[0.04] px-6 py-8 sm:px-8 lg:w-[min(100%,300px)] lg:flex-shrink-0 lg:px-10 lg:py-10">
+              <p className="section-label mb-3 text-primary">{t('label')}</p>
+              <h3 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+                {t('organizingCommittee')}
+              </h3>
+              <div className="mt-6 h-1 w-12 rounded-full bg-primary" aria-hidden />
             </div>
-            <div>
-              <p className="font-bold text-accent mb-2">{t('organizingInstitution')}</p>
-              <p className="text-foreground font-semibold">{t('am2iFsbm')}</p>
-              <p className="text-sm text-muted-foreground">
-                {t('h2cAddress')}
-              </p>
+
+            <div className="grid flex-1 gap-4 p-6 sm:grid-cols-2 sm:p-8 lg:p-8">
+              <OrgCard
+                icon={UserRound}
+                label={t('generalChair')}
+                title={t('profOmar')}
+                lines={[t('fsbmH2c')]}
+                footer={
+                  <a
+                    href="mailto:omar.zahour@univh2c.ma"
+                    className="mt-3 inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-primary transition-colors duration-200 hover:text-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  >
+                    <Mail className="h-4 w-4" aria-hidden />
+                    <span>
+                      {tContact('email')}: omar.zahour@univh2c.ma
+                    </span>
+                  </a>
+                }
+              />
+              <OrgCard
+                icon={Building2}
+                label={t('organizingInstitution')}
+                title={t('am2iFsbm')}
+                lines={[t('h2cAddress')]}
+              />
             </div>
           </div>
         </div>
       </div>
     </section>
+  )
+}
+
+function OrgCard({
+  icon: Icon,
+  label,
+  title,
+  lines,
+  footer,
+}: {
+  icon: LucideIcon
+  label: string
+  title: string
+  lines: string[]
+  footer?: ReactNode
+}) {
+  return (
+    <article className="group flex h-full flex-col rounded-xl bg-slate-50/60 p-6 transition-colors duration-200 hover:bg-slate-50">
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
+        <Icon className="h-4 w-4" aria-hidden />
+      </div>
+      <p className="text-xs font-semibold uppercase tracking-widest text-primary">{label}</p>
+      <p className="mt-2 font-bold text-foreground">{title}</p>
+      {lines.map((line) => (
+        <p key={line} className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {line}
+        </p>
+      ))}
+      {footer}
+    </article>
   )
 }

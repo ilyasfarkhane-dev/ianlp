@@ -3,55 +3,26 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { useTranslations } from 'next-intl'
-import { Card } from '@/components/ui/card'
-import { ArrowRight } from 'lucide-react'
+import Countdown from './countdown'
+
+const EASYCHAIR_SUBMIT_URL =
+  'https://easychair.org/conferences/?conf=ianlp2026'
 
 export default function Hero() {
   const t = useTranslations('hero')
-  const tCommon = useTranslations('common')
   const containerRef = useRef<HTMLDivElement>(null)
-  const titleRef = useRef<HTMLHeadingElement>(null)
-  const subtitleRef = useRef<HTMLParagraphElement>(null)
-  const descRef = useRef<HTMLParagraphElement>(null)
-  const cardRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches
-
-    if (prefersReducedMotion) {
-      gsap.set([titleRef.current, subtitleRef.current, descRef.current, cardRef.current], {
-        opacity: 1,
-        y: 0,
-      })
-      return
-    }
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion || !contentRef.current) return
 
     const ctx = gsap.context(() => {
-      gsap.timeline().fromTo(
-        titleRef.current,
-        { opacity: 0, y: 30 },
+      gsap.fromTo(
+        contentRef.current,
+        { opacity: 0, y: 40 },
         { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
       )
-        .fromTo(
-          subtitleRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
-          '-=0.4'
-        )
-        .fromTo(
-          descRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
-          '-=0.4'
-        )
-        .fromTo(
-          cardRef.current,
-          { opacity: 0, scale: 0.95 },
-          { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out' },
-          '-=0.4'
-        )
     }, containerRef)
 
     return () => ctx.revert()
@@ -61,134 +32,55 @@ export default function Hero() {
     <section
       ref={containerRef}
       id="overview"
-      className="relative min-h-screen pt-24 px-4 sm:px-6 lg:px-8 flex items-center"
+      className="relative flex min-h-screen flex-col bg-navy text-white"
     >
-      <div className="mx-auto max-w-7xl w-full">
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
-          <div>
-            <div className="inline-block mb-4 px-3 py-1 rounded-full border border-primary/30 bg-primary/10">
-              <span className="text-sm font-semibold text-primary">
-                {t('badge')}
-              </span>
-            </div>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div className="absolute inset-0 bg-gradient-to-br from-navy via-navy to-[#0d2040]" />
+        <div className="absolute top-0 right-0 h-[600px] w-[600px] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-secondary/5 blur-[100px]" />
+      </div>
 
-            <h1
-              ref={titleRef}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
-            >
-              <span className="gradient-text">{t('title')}</span>
+      <div className="relative flex flex-1 items-center pt-32 sm:pt-36 lg:pt-40 pb-16 sm:pb-20">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div
+            ref={contentRef}
+            className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16"
+          >
+          <div>
+            <p className="mb-6 text-sm font-semibold uppercase tracking-[0.2em] text-secondary">
+              {t('badge')}
+            </p>
+
+            <h1 className="mb-6 text-4xl font-bold leading-[1.1] sm:text-5xl lg:text-[3.25rem]">
+              {t('subtitle')}
             </h1>
 
-            <p
-              ref={subtitleRef}
-              className="text-xl sm:text-2xl text-muted-foreground mb-6 font-semibold"
-            >
-              {t('subtitle')}
-            </p>
-
-            <div className="mb-6 rounded-xl border border-primary/30 bg-primary/10 px-4 py-4 sm:px-5">
-              <p className="text-sm font-semibold text-primary mb-2">
-                {t('themeLabel')}
-              </p>
-              <p className="text-base sm:text-lg font-semibold leading-snug text-foreground">
-                {t('themeValue')}
+            <div className="mb-8 space-y-2">
+              <p className="text-lg font-medium text-white/90 sm:text-xl">{t('datesValue')}</p>
+              <p className="text-base text-white/60">
+                {t('venueValue')}, {t('venueSub')}
               </p>
             </div>
 
-            <p
-              ref={descRef}
-              className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-2xl"
-            >
-              {t('description')}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row">
               <a
-                href="#cfp"
-                className="btn-gradient inline-flex items-center justify-center px-6 py-3 text-white font-semibold rounded-lg transition-all shadow-lg"
+                href={EASYCHAIR_SUBMIT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
               >
-                {t('callForPapers')} <ArrowRight className="ml-2 h-5 w-5 rtl:ml-0 rtl:mr-2" />
+                {t('callForPapers')}
               </a>
-              <a
-                href="#dates"
-                className="inline-flex items-center justify-center px-6 py-3 border border-primary/50 rounded-lg font-semibold hover:bg-primary/10 transition-colors text-foreground"
-              >
+              <a href="#dates" className="btn-outline-light">
                 {t('importantDates')}
               </a>
             </div>
           </div>
 
-          {/* Conference Snapshot Card */}
-          <div ref={cardRef} className="relative">
-            <Card className="p-8 rounded-xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-sm">
-              <div className="space-y-6">
-                <div>
-                  
-                  <h3 className="text-2xl font-bold text-foreground">
-                    {t('conferenceSnapshot')}
-                  </h3>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                      <span className="text-primary font-bold">📅</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-muted-foreground">
-                        {t('dates')}
-                      </p>
-                      <p className="text-foreground font-semibold">
-                        {t('datesValue')}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                      <span className="text-accent font-bold">📍</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-muted-foreground">
-                        {t('venue')}
-                      </p>
-                      <p className="text-foreground font-semibold">
-                        {t('venueValue')}
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {t('venueSub')}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                      <span className="text-secondary font-bold">📚</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-muted-foreground">
-                        {t('publication')}
-                      </p>
-                      <p className="text-foreground font-semibold">
-                        {t('publicationValue')}
-                      </p>
-                     
-                     
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-border">
-                  <p className="text-sm text-muted-foreground italic">
-                    {t('quote')}
-                  </p>
-                </div>
-              </div>
-            </Card>
-
-            {/* Decorative gradient blur */}
-            <div className="absolute -top-20 -right-20 h-40 w-40 bg-primary/30 rounded-full blur-3xl -z-10" />
+          <div className="lg:pt-4">
+            <Countdown variant="hero" />
           </div>
+        </div>
         </div>
       </div>
     </section>

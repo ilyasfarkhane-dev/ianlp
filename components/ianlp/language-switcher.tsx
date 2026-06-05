@@ -18,7 +18,7 @@ const locales = [
   { code: 'ar', label: 'العربية' },
 ] as const
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ variant = 'light' }: { variant?: 'light' | 'dark' }) {
   const t = useTranslations('common')
   const locale = useLocale()
   const router = useRouter()
@@ -33,7 +33,11 @@ export default function LanguageSwitcher() {
         <Button
           variant="ghost"
           size="sm"
-          className="gap-2 text-foreground/80 hover:text-foreground"
+          className={`gap-2 cursor-pointer ${
+            variant === 'dark'
+              ? 'text-white/80 hover:text-white hover:bg-white/10'
+              : 'text-foreground/80 hover:text-foreground'
+          }`}
           aria-label={t('language')}
         >
           <Languages className="h-4 w-4" />

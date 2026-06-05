@@ -1,111 +1,169 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTranslations } from 'next-intl'
-import { Card } from '@/components/ui/card'
+import Image from 'next/image'
+import { ArrowRight } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const dateKeys = [
-  { labelKey: 'paperDeadline', dateKey: 'paperDate', descKey: 'paperDesc' },
-  { labelKey: 'notification', dateKey: 'notificationDate', descKey: 'notificationDesc' },
-  { labelKey: 'cameraReady', dateKey: 'cameraReadyDate', descKey: 'cameraReadyDesc' },
-  { labelKey: 'conferenceDates', dateKey: 'conferenceDate', descKey: 'conferenceDesc' },
+type AgendaItem = {
+  labelKey: string
+  dateKey: string
+  descKey: string
+  showDesc?: boolean
+}
+
+const tabAgendas: AgendaItem[][] = [
+  [
+    {
+      labelKey: 'paperDeadline',
+      dateKey: 'paperDate',
+      descKey: 'paperDesc',
+      showDesc: true,
+    },
+  ],
+  [
+    {
+      labelKey: 'notification',
+      dateKey: 'notificationDate',
+      descKey: 'notificationDesc',
+      showDesc: true,
+    },
+    {
+      labelKey: 'cameraReady',
+      dateKey: 'cameraReadyDate',
+      descKey: 'cameraReadyDesc',
+    },
+  ],
+  [
+    {
+      labelKey: 'conferenceDates',
+      dateKey: 'conferenceDate',
+      descKey: 'conferenceDesc',
+      showDesc: true,
+    },
+  ],
 ]
 
 export default function ImportantDates() {
   const t = useTranslations('dates')
-  const containerRef = useRef<HTMLDivElement>(null)
-  const timelineRef = useRef<(HTMLDivElement | null)[]>([])
+  const sectionRef = useRef<HTMLElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [activeTab, setActiveTab] = useState(0)
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches
-
-    if (prefersReducedMotion) {
-      gsap.set(timelineRef.current.filter((t) => t !== null), {
-        opacity: 1,
-        x: 0,
-      })
-      return
-    }
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion || !contentRef.current) return
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        timelineRef.current.filter((t) => t !== null),
-        {
-          opacity: 0,
-          x: (index) => (index % 2 === 0 ? -30 : 30),
-        },
+        contentRef.current,
+        { opacity: 0, y: 32 },
         {
           opacity: 1,
-          x: 0,
+          y: 0,
           duration: 0.6,
-          stagger: 0.2,
           ease: 'power2.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 70%',
-            toggleActions: 'play none none reverse',
-          },
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 78%' },
         }
       )
-    }, containerRef)
+    }, sectionRef)
 
     return () => ctx.revert()
   }, [])
 
+  const tabs = [
+    { id: 0, label: t('tabSubmission'), date: t('paperDate') },
+    { id: 1, label: t('tabReview'), date: t('tabReviewDate') },
+    { id: 2, label: t('tabConference'), date: t('conferenceDate') },
+  ]
+
+  const visibleItems = tabAgendas[activeTab] ?? tabAgendas[0]
+
   return (
     <section
-      ref={containerRef}
+      ref={sectionRef}
       id="dates"
-      className="py-20 px-4 sm:px-6 lg:px-8"
+      className="bg-white px-4 py-24 sm:px-6 lg:px-8 lg:py-42"
     >
-      <div className="mx-auto max-w-7xl">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            {t('title')}
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            {t('subtitle')}
-          </p>
-        </div>
+      <div ref={contentRef} className="mx-auto max-w-7xl">
+        <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-24">
+          {/* Left — intro + images */}
+          <div>
+            <p className="section-label">{t('label')}</p>
+            <h2 className="section-heading">{t('title')}</h2>
+            <p className="section-subheading mb-6 max-w-md">{t('subtitle')}</p>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {dateKeys.map((item, index) => (
-            <div
-              key={item.labelKey}
-              ref={(el) => {
-                timelineRef.current[index] = el
-              }}
+            <a
+              href="#cfp"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-all duration-200 hover:gap-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
             >
-              <Card className="p-6 h-full rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent text-white font-bold">
-                      {index + 1}
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                      {t(item.labelKey)}
-                    </p>
-                    <p className="text-2xl font-bold text-foreground mb-2">
-                      {t(item.dateKey)}
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                      {t(item.descKey)}
-                    </p>
+              {t('learnMore')}
+              <ArrowRight className="h-4 w-4" />
+            </a>
+
+          
+          </div>
+
+          {/* Right — tabs + agenda */}
+          <div>
+            <div
+              className="mb-8 flex gap-6 border-b border-border sm:gap-10"
+              role="tablist"
+              aria-label={t('label')}
+            >
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative cursor-pointer pb-4 text-left transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${
+                    activeTab === tab.id
+                      ? 'text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <span className="block text-sm font-semibold sm:text-base">{tab.label}</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">{tab.date}</span>
+                  {activeTab === tab.id && (
+                    <span
+                      className="absolute -bottom-px left-0 right-0 h-0.5 bg-primary"
+                      aria-hidden
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div role="tabpanel" className="space-y-0">
+              {visibleItems.map((item, index) => (
+                <div
+                  key={item.labelKey}
+                  className={`flex gap-6 sm:gap-10 py-6 ${
+                    index !== visibleItems.length - 1 ? 'border-b border-border' : ''
+                  }`}
+                >
+                  <p className="w-28 flex-shrink-0 text-sm font-bold text-muted-foreground sm:w-32 sm:text-base">
+                    {t(item.dateKey)}
+                  </p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-foreground">{t(item.labelKey)}</p>
+                    {item.showDesc && (
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        {t(item.descKey)}
+                      </p>
+                    )}
                   </div>
                 </div>
-              </Card>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
-
       </div>
     </section>
   )

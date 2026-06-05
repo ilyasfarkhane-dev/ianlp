@@ -8,6 +8,7 @@
     "review": "Review",
     "committees": "Committees",
     "venue": "Venue",
+    "pricing": "Pricing",
     "contact": "Contact",
     "lncsTemplate": "SPRINGER Template",
     "submitPaper": "Submit Paper",
@@ -36,15 +37,21 @@
     "quote": "Gathering researchers, academics, and practitioners to share advances in NLP, Transformers, LLMs, and trustworthy AI."
   },
   "quickLinks": {
+    "label": "Navigate",
     "title": "Quick Links",
-    "subtitle": "Navigate to key conference sections",
+    "subtitle": "Jump to the sections you need — from call for papers to submission and committees.",
     "callForPapers": "Call for Papers",
+    "callForPapersDesc": "Topics, scope, and guidelines for your submission.",
     "importantDates": "Important Dates",
+    "importantDatesDesc": "Paper deadlines, notifications, and conference dates.",
     "submitPaper": "Submit Paper",
-    "committees": "Committees"
+    "submitPaperDesc": "Platform, format, and key submission requirements.",
+    "committees": "Committees",
+    "committeesDesc": "Organizing, program, and scientific committee members."
   },
   "topics": {
-    "title": "MAIN THEMATIC AREAS",
+    "label": "Topics",
+    "title": "Main Thematic Areas",
     "subtitle": "Non-exhaustive list of research areas and topics we welcome at IANLP 2026",
     "topic1": "Artificial Intelligence and Machine Learning",
     "topic2": "Natural Language Processing and Large Language Models",
@@ -59,6 +66,7 @@
     "topic11": "AI for Education, Health, Industry and Society",
     "topic12": "Emerging Computing and Interdisciplinary Applications",
     "specialFocus": "Special Focus Areas",
+    "specialFocusDesc": "Beyond the broad thematic areas above, IANLP 2026 highlights four research tracks where submissions are especially encouraged.",
     "coreNlp": "Core NLP Tasks",
     "coreNlpDesc": "Classification, Named Entity Recognition, Parsing, Summarization, Machine Translation",
     "advancedModels": "Advanced Models",
@@ -69,6 +77,7 @@
     "realWorldAppsDesc": "Education, Healthcare, Legal Tech, Finance, Industry Applications"
   },
   "cfp": {
+    "label": "Call for Papers",
     "title": "Call for Papers",
     "intro": "IANLP 2026 invites original and unpublished research contributions in Artificial Intelligence for Natural Language Processing. Submissions must present novel scientific results and be written in English.",
     "submitResearch": "Submit Your Research",
@@ -85,8 +94,15 @@
     "submitEasyChair": "Submit Paper on EasyChair"
   },
   "dates": {
-    "title": "Important Dates",
-    "subtitle": "Key milestones for IANLP 2026",
+    "label": "Schedule",
+    "title": "Important Dates & Agenda",
+    "subtitle": "Key milestones for paper submission, review, and the IANLP 2026 conference in Casablanca.",
+    "learnMore": "Learn More",
+    "tabSubmission": "Submission",
+    "tabReview": "Review",
+    "tabReviewDate": "June 20–25, 2026",
+    "tabConference": "Conference",
+    "imageAltLogo": "IANLP 2026",
     "paperDeadline": "Paper Submission Deadline",
     "paperDate": "June 13, 2026",
     "paperDesc": "Submit your original research papers",
@@ -101,6 +117,7 @@
     "conferenceDesc": "IANLP 2026 takes place in Casablanca"
   },
   "submission": {
+    "label": "Submission",
     "title": "Submission Guidelines",
     "subtitle": "Everything you need to know about submitting your research to IANLP 2026",
     "platform": "Submission Platform",
@@ -133,6 +150,9 @@
     "plag5": "Conflict-of-interest management"
   },
   "review": {
+    "label": "Review",
+    "faqTitle": "Frequently Asked Questions",
+    "haveQuestion": "I have a question",
     "title": "Review Process",
     "subtitle": "IANLP 2026 applies a strict double-blind peer-review process (minimum 3 reviewers per paper) ",
     "keyPrinciples": "Key Principles",
@@ -174,6 +194,7 @@
     "accordion5c": "Online and print publication"
   },
   "committees": {
+    "label": "Committees",
     "title": "Committee Members",
     "subtitle": "Distinguished researchers and academics guiding IANLP 2026",
     "pcChairs": "Program Committee Chairs",
@@ -233,7 +254,8 @@
     "h2cAddress": "Hassan II University of Casablanca, Bd Commandant Driss Al Harti, Casablanca 20670, Morocco"
   },
   "keynote": {
-    "title": "Keynote Speakers",
+    "label": "Speakers",
+    "title": "We Invite Amazing Speakers",
     "subtitle": "Keynote speakers will be announced soon. IANLP 2026 will invite internationally recognized speakers in emerging topics such as:",
     "topic1": "Large Language Models (LLMs)",
     "topic2": "Transformer Architectures",
@@ -242,12 +264,20 @@
     "topic5": "Trustworthy & Explainable AI",
     "topic6": "Prompt Engineering",
     "seeBiography": "See biography",
+    "bioLabel": "Biography",
+    "categoryKeynote": "Keynote Speaker",
+    "categoryInvited": "Invited Speaker",
+    "seeAllKeynote": "See all speakers",
+    "seeAllInvited": "See all invited speakers",
+    "backToOverview": "Back to overview",
+    "keynoteRole": "Keynote Speaker",
+    "invitedComingSoon": "Invited speakers will be announced soon.",
     "speaker1Name": "Pr. Jaouad DABOUNOU",
-    "speaker1Affiliation": "",
+    "speaker1Affiliation": "Hassan 1st University, FST Settat",
     "speaker1Bio": "Jaouad DABOUNOU is Professor at Hassan 1st University (FST of Settat) since 1994. Doctorate in Modeling of Solids and Structures (UTC, France 1994). Leads research in Applied Mathematics and Artificial Intelligence, with a focus on AI applications in various domains. Is Director of the Artificial Intelligence Research and Applications (AIRA) laboratory. Coordinates projects on territorial information systems. Member of Institute of Iconomy (Paris). AI expert for the startup OneUp and ArcelorMittal. President of Association of Artificial Intelligence Development in Africa (AAIDA), and chairs the International Conference on Artificial Intelligence Advanced Topics and Societal Innovation (AIATSI).",
-    "speaker2Name": "To be announced",
-    "speaker2Affiliation": "",
-    "speaker2Bio": "Biography will be published soon.",
+    "speaker2Name": "Dr. Pepa Atanasova",
+    "speaker2Affiliation": "University of Copenhagen, NLP Section",
+    "speaker2Bio": "Pepa Atanasova is Assistant Professor (Tenure Track) in the Department of Computer Science, NLP Section at the University of Copenhagen, and co-leads the CopeNLU group. Her research focuses on trustworthy NLP, including explainability, factuality, and accountable reasoning for tasks such as fact checking and question answering. She develops systematic methods to test and improve the faithfulness of model explanations and LLM-driven verification. Her PhD dissertation received awards from ELLIS and Informatics Europe, and she serves as Industry Track Chair for EMNLP 2026.",
     "speaker3Name": "To be announced",
     "speaker3Affiliation": "",
     "speaker3Bio": "Biography will be published soon.",
@@ -256,6 +286,7 @@
     "speaker4Bio": "Biography will be published soon."
   },
   "venue": {
+    "label": "Venue",
     "title": "Venue & Travel",
     "subtitle": "Information about our conference location and travel arrangements",
     "venue": "Venue",
@@ -275,8 +306,31 @@
     "mapTitle": "Conference Map & Venue Details",
     "mapDesc": "Interactive map and detailed venue information coming soon. Maps and directions will be available in the conference registration portal."
   },
+  "pricing": {
+    "label": "Registration",
+    "title": "Conference Registration Fees",
+    "subtitle": "Choose your registration type for IANLP 2026.",
+    "bestPlanBadge": "Best Plan",
+    "registerNow": "Register",
+    "inPersonName": "In-Person",
+    "distanceName": "Distance",
+    "inPersonFeature1": "Communication Certificate",
+    "inPersonFeature2": "Certificate of Participation",
+    "inPersonFeature3": "Conference Materials",
+    "inPersonFeature4": "Access to Exhibitions",
+    "inPersonFeature5": "Lunch and Tea/Coffee Breaks",
+    "inPersonFeature6": "Conference Documents",
+    "inPersonFeature7": "Briefcase | Proceedings Report",
+    "inPersonFeature8": "Notebook | Pen",
+    "inPersonFeature9": "Badge | Brochure | Program",
+    "distanceFeature1": "Communication Certificate",
+    "distanceFeature2": "Certificate of Participation",
+    "distanceFeature3": "Conference Documents"
+  },
   "contact": {
+    "label": "Contact",
     "title": "Get in Touch",
+    "partnersLabel": "Our Partners",
     "subtitle": "Have questions? Contact the IANLP 2026 organizing committee",
     "email": "Email",
     "phone": "Phone",
@@ -314,10 +368,13 @@
     "codeOfConduct": "Code of Conduct"
   },
   "countdown": {
+    "timeRemaining": "Time Remaining :",
     "days": "Days",
     "hours": "Hours",
     "minutes": "Minutes",
-    "seconds": "Seconds"
+    "minutesShort": "Min",
+    "seconds": "Seconds",
+    "secondsShort": "Sec"
   },
   "common": {
     "language": "Language",

@@ -8,6 +8,7 @@
     "review": "Évaluation",
     "committees": "Comités",
     "venue": "Lieu",
+    "pricing": "Tarifs",
     "contact": "Contact",
     "lncsTemplate": "Modèle SPRINGER",
     "submitPaper": "Soumettre un article",
@@ -36,15 +37,21 @@
     "quote": "Rassemblant chercheurs, universitaires et praticiens pour partager les avancées en TALN, Transformers, LLM et IA fiable."
   },
   "quickLinks": {
+    "label": "Navigation",
     "title": "Liens rapides",
-    "subtitle": "Accédez aux sections clés de la conférence",
+    "subtitle": "Accédez rapidement aux sections clés — de l'appel à communications à la soumission et aux comités.",
     "callForPapers": "Appel à communications",
+    "callForPapersDesc": "Thèmes, périmètre et consignes pour votre soumission.",
     "importantDates": "Dates importantes",
+    "importantDatesDesc": "Échéances, notifications et dates de la conférence.",
     "submitPaper": "Soumettre un article",
-    "committees": "Comités"
+    "submitPaperDesc": "Plateforme, format et exigences de soumission.",
+    "committees": "Comités",
+    "committeesDesc": "Membres des comités d'organisation, de programme et scientifique."
   },
   "topics": {
-    "title": "PRINCIPALES DOMAINES THÉMATIQUES",
+    "label": "Thèmes",
+    "title": "Principales domaines thématiques",
     "subtitle": "Liste non exhaustive des domaines et thèmes accueillis à IANLP 2026",
     "topic1": "Intelligence artificielle et apprentissage automatique",
     "topic2": "Traitement du langage naturel et grands modèles de langage",
@@ -59,6 +66,7 @@
     "topic11": "IA pour l'éducation, la santé, l'industrie et la société",
     "topic12": "Informatique émergente et applications interdisciplinaires",
     "specialFocus": "Domaines d'intérêt particuliers",
+    "specialFocusDesc": "Au-delà des grands thèmes ci-dessus, IANLP 2026 met en avant quatre axes de recherche pour lesquels les soumissions sont particulièrement encouragées.",
     "coreNlp": "Tâches TALN fondamentales",
     "coreNlpDesc": "Classification, reconnaissance d'entités, parsing, résumé, traduction automatique",
     "advancedModels": "Modèles avancés",
@@ -69,6 +77,7 @@
     "realWorldAppsDesc": "Éducation, santé, legal tech, finance, applications industrielles"
   },
   "cfp": {
+    "label": "Appel à communications",
     "title": "Appel à communications",
     "intro": "IANLP 2026 invite des contributions de recherche originales et inédites en intelligence artificielle pour le traitement du langage naturel. Les soumissions doivent présenter des résultats scientifiques novateurs et être rédigées en anglais.",
     "submitResearch": "Soumettre votre recherche",
@@ -85,8 +94,15 @@
     "submitEasyChair": "Soumettre sur EasyChair"
   },
   "dates": {
-    "title": "Dates importantes",
-    "subtitle": "Jalons clés pour IANLP 2026",
+    "label": "Programme",
+    "title": "Dates importantes et agenda",
+    "subtitle": "Jalons clés pour la soumission, l'évaluation et la conférence IANLP 2026 à Casablanca.",
+    "learnMore": "En savoir plus",
+    "tabSubmission": "Soumission",
+    "tabReview": "Évaluation",
+    "tabReviewDate": "20–25 juin 2026",
+    "tabConference": "Conférence",
+    "imageAltLogo": "IANLP 2026",
     "paperDeadline": "Date limite de soumission",
     "paperDate": "15 juin 2026",
     "paperDesc": "Soumettez vos articles de recherche originaux",
@@ -101,6 +117,7 @@
     "conferenceDesc": "IANLP 2026 se tient à Casablanca"
   },
   "submission": {
+    "label": "Soumission",
     "title": "Instructions de soumission",
     "subtitle": "Tout ce qu'il faut savoir pour soumettre votre recherche à IANLP 2026",
     "platform": "Plateforme de soumission",
@@ -133,6 +150,9 @@
     "plag5": "Gestion des conflits d'intérêt"
   },
   "review": {
+    "label": "Évaluation",
+    "faqTitle": "Questions fréquemment posées",
+    "haveQuestion": "J'ai une question",
     "title": "Processus d'évaluation",
     "subtitle": "IANLP 2026 applique une évaluation par les pairs en double aveugle stricte (minimum 3 évaluateurs par article)",
     "keyPrinciples": "Principes clés",
@@ -174,6 +194,7 @@
     "accordion5c": "Publication en ligne et imprimée"
   },
   "committees": {
+    "label": "Comités",
     "title": "Membres des comités",
     "subtitle": "Chercheurs et universitaires distingués encadrant IANLP 2026",
     "pcChairs": "Présidents du comité de programme",
@@ -233,7 +254,8 @@
     "h2cAddress": "Université Hassan II de Casablanca, Bd Commandant Driss Al Harti, Casablanca 20670, Maroc"
   },
   "keynote": {
-    "title": "Conférenciers invités",
+    "label": "Intervenants",
+    "title": "Nous invitons des intervenants de renom",
     "subtitle": "Les conférenciers invités seront annoncés prochainement. IANLP 2026 invitera des intervenants de renommée internationale sur des thèmes émergents tels que :",
     "topic1": "Grands modèles de langage (LLM)",
     "topic2": "Architectures Transformer",
@@ -242,12 +264,20 @@
     "topic5": "IA fiable et explicable",
     "topic6": "Ingénierie des prompts",
     "seeBiography": "Voir la biographie",
-    "speaker1Name": "À annoncer",
-    "speaker1Affiliation": "",
-    "speaker1Bio": "La biographie sera publiée prochainement.",
-    "speaker2Name": "À annoncer",
-    "speaker2Affiliation": "",
-    "speaker2Bio": "La biographie sera publiée prochainement.",
+    "bioLabel": "Biographie",
+    "categoryKeynote": "Conférencier principal",
+    "categoryInvited": "Intervenant invité",
+    "seeAllKeynote": "Voir tous les conférenciers",
+    "seeAllInvited": "Voir tous les intervenants invités",
+    "backToOverview": "Retour à l'aperçu",
+    "keynoteRole": "Conférencier principal",
+    "invitedComingSoon": "Les intervenants invités seront annoncés prochainement.",
+    "speaker1Name": "Pr. Jaouad DABOUNOU",
+    "speaker1Affiliation": "Université Hassan Ier, FST Settat",
+    "speaker1Bio": "Jaouad DABOUNOU est professeur à l'Université Hassan Ier (FST de Settat) depuis 1994. Docteur en modélisation des solides et structures (UTC, France, 1994). Il dirige des recherches en mathématiques appliquées et intelligence artificielle, avec un focus sur les applications de l'IA. Directeur du laboratoire AIRA (Artificial Intelligence Research and Applications). Président de l'AAIDA et président de la conférence AIATSI.",
+    "speaker2Name": "Dr. Pepa Atanasova",
+    "speaker2Affiliation": "Université de Copenhague, section TALN",
+    "speaker2Bio": "Pepa Atanasova est professeure adjointe (tenure track) au Département d'informatique, section TALN de l'Université de Copenhague, et co-dirige le groupe CopeNLU. Ses recherches portent sur le TALN de confiance, notamment l'explicabilité, la factualité et le raisonnement responsable pour des tâches comme la vérification de faits et la réponse aux questions. Elle développe des méthodes systématiques pour tester et améliorer la fidélité des explications de modèles et de la vérification par LLM. Sa thèse de doctorat a reçu des prix de l'ELLIS et d'Informatics Europe, et elle est Industry Track Chair d'EMNLP 2026.",
     "speaker3Name": "À annoncer",
     "speaker3Affiliation": "",
     "speaker3Bio": "La biographie sera publiée prochainement.",
@@ -256,6 +286,7 @@
     "speaker4Bio": "La biographie sera publiée prochainement."
   },
   "venue": {
+    "label": "Lieu",
     "title": "Lieu et déplacements",
     "subtitle": "Informations sur le lieu de la conférence et les déplacements",
     "venue": "Lieu",
@@ -275,8 +306,31 @@
     "mapTitle": "Plan et lieu de la conférence",
     "mapDesc": "Carte interactive et informations détaillées à venir. Plans et itinéraires seront disponibles sur le portail d'inscription."
   },
+  "pricing": {
+    "label": "Inscription",
+    "title": "Tarifs d'inscription",
+    "subtitle": "Choisissez votre type d'inscription pour IANLP 2026.",
+    "bestPlanBadge": "Meilleur plan",
+    "registerNow": "Inscription",
+    "inPersonName": "Présentiel",
+    "distanceName": "À distance",
+    "inPersonFeature1": "Certificat de communication",
+    "inPersonFeature2": "Certificat de participation",
+    "inPersonFeature3": "Matériel de conférence",
+    "inPersonFeature4": "Accès aux expositions",
+    "inPersonFeature5": "Déjeuner et pauses thé/café",
+    "inPersonFeature6": "Documents de conférence",
+    "inPersonFeature7": "Mallette | Rapport des actes",
+    "inPersonFeature8": "Carnet | Stylo",
+    "inPersonFeature9": "Badge | Brochure | Programme",
+    "distanceFeature1": "Certificat de communication",
+    "distanceFeature2": "Certificat de participation",
+    "distanceFeature3": "Documents de conférence"
+  },
   "contact": {
+    "label": "Contact",
     "title": "Nous contacter",
+    "partnersLabel": "Nos partenaires",
     "subtitle": "Des questions ? Contactez le comité d'organisation IANLP 2026",
     "email": "E-mail",
     "phone": "Téléphone",
@@ -314,10 +368,13 @@
     "codeOfConduct": "Code de conduite"
   },
   "countdown": {
+    "timeRemaining": "Temps restant :",
     "days": "Jours",
     "hours": "Heures",
     "minutes": "Minutes",
-    "seconds": "Secondes"
+    "minutesShort": "Min",
+    "seconds": "Secondes",
+    "secondsShort": "Sec"
   },
   "common": {
     "language": "Langue",

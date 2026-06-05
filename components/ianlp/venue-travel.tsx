@@ -4,211 +4,180 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTranslations } from 'next-intl'
-import { Card } from '@/components/ui/card'
-import { MapPin, Plane, Hotel, Info } from 'lucide-react'
+import { Hotel, Info, MapPin, Plane, type LucideIcon } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const travelItems: { icon: LucideIcon; title: string; desc: string }[] = [
+  { icon: Plane, title: 'gettingThere', desc: 'gettingThereDesc' },
+  { icon: Hotel, title: 'accommodation', desc: 'accommodationDesc' },
+  { icon: Info, title: 'moreInfo', desc: 'moreInfoDesc' },
+]
+
 export default function VenueTravel() {
   const t = useTranslations('venue')
-  const containerRef = useRef<HTMLDivElement>(null)
-  const headingRef = useRef<HTMLDivElement>(null)
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([])
+  const sectionRef = useRef<HTMLElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const travelRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches
-
-    if (prefersReducedMotion) {
-      gsap.set([headingRef.current, ...cardsRef.current.filter((c) => c !== null)], {
-        opacity: 1,
-        y: 0,
-      })
-      return
-    }
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion || !sectionRef.current) return
 
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headingRef.current,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 70%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      )
+      if (headerRef.current) {
+        gsap.fromTo(
+          headerRef.current,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: sectionRef.current, start: 'top 78%' },
+          }
+        )
+      }
 
-      gsap.fromTo(
-        cardsRef.current.filter((c) => c !== null),
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 65%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      )
-    }, containerRef)
+      if (contentRef.current) {
+        gsap.fromTo(
+          contentRef.current,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: contentRef.current, start: 'top 82%' },
+          }
+        )
+      }
+
+      if (travelRef.current) {
+        gsap.fromTo(
+          travelRef.current.children,
+          { opacity: 0, y: 14 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            stagger: 0.08,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: travelRef.current, start: 'top 85%' },
+          }
+        )
+      }
+
+      if (mapRef.current) {
+        gsap.fromTo(
+          mapRef.current,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: mapRef.current, start: 'top 90%' },
+          }
+        )
+      }
+    }, sectionRef)
 
     return () => ctx.revert()
   }, [])
 
   return (
-    <section
-      ref={containerRef}
-      id="venue"
-      className="py-20 px-4 sm:px-6 lg:px-8"
-    >
+    <section ref={sectionRef} id="venue" className="section-light border-y border-border bg-muted/30">
       <div className="mx-auto max-w-7xl">
+        <div ref={headerRef} className="mb-14 text-center">
+          <p className="section-label">{t('label')}</p>
+          <h2 className="section-heading">{t('title')}</h2>
+          <p className="section-subheading mx-auto max-w-2xl">{t('subtitle')}</p>
+        </div>
+
         <div
-          ref={headingRef}
-          className="text-center mb-16"
+          ref={contentRef}
+          className="relative mb-14 overflow-hidden bg-white lg:grid lg:grid-cols-2"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            {t('title')}
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t('subtitle')}
-          </p>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-8 mb-12">
-          {/* Venue Card */}
           <div
-            ref={(el) => {
-              cardsRef.current[0] = el
-            }}
-          >
-            <Card className="p-8 h-full rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center">
-                  <MapPin size={24} />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground">{t('venue')}</h3>
+            className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
+            aria-hidden
+          />
+
+          <div className="border-border px-6 py-8 sm:px-8 lg:border-r lg:py-10 lg:pl-10 lg:pr-12">
+            <div className="mb-8 flex items-center gap-4">
+              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <MapPin className="h-5 w-5" aria-hidden />
+              </div>
+              <h3 className="text-2xl font-bold text-foreground">{t('venue')}</h3>
+            </div>
+
+            <div className="divide-y divide-border">
+              <div className="pb-6">
+                <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+                  {t('hostInstitution')}
+                </p>
+                <p className="mt-2 font-bold text-foreground">{t('fsbm')}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t('h2c')}</p>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                    {t('hostInstitution')}
-                  </p>
-                  <p className="text-lg font-semibold text-foreground">
-                    {t('fsbm')}
-                  </p>
-                  <p className="text-foreground/80 mt-1">
-                    {t('h2c')}
-                  </p>
-                </div>
-
-                <div className="pt-4 border-t border-border">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                    {t('address')}
-                  </p>
-                  <p className="text-foreground">
-                    {t('addressValue')}
-                  </p>
-                </div>
-
-                <div className="pt-4 border-t border-border">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    {t('aboutCasablanca')}
-                  </p>
-                  <p className="text-foreground/80">
-                    {t('aboutCasablancaDesc')}
-                  </p>
-                </div>
+              <div className="py-6">
+                <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+                  {t('address')}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground">{t('addressValue')}</p>
               </div>
-            </Card>
+
+              <div className="pt-6">
+                <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+                  {t('aboutCasablanca')}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {t('aboutCasablancaDesc')}
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Travel Info */}
-          <div className="space-y-6">
-            <div
-              ref={(el) => {
-                cardsRef.current[1] = el
-              }}
-            >
-              <Card className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
-            <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
-                    <Plane size={20} />
-                  </div>
-                  <h4 className="font-bold text-foreground">{t('gettingThere')}</h4>
+          <div ref={travelRef} className="divide-y divide-border px-6 py-8 sm:px-8 lg:py-10 lg:pl-12 lg:pr-10">
+            {travelItems.map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="flex gap-5 py-6 first:pt-0 last:pb-0">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Icon className="h-4 w-4" aria-hidden />
                 </div>
-                <p className="text-foreground/80 text-sm">
-                  {t('gettingThereDesc')}
-                </p>
-              </Card>
-            </div>
-
-            <div
-              ref={(el) => {
-                cardsRef.current[2] = el
-              }}
-            >
-              <Card className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
-            <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
-                    <Hotel size={20} />
-                  </div>
-                  <h4 className="font-bold text-foreground">{t('accommodation')}</h4>
+                <div className="min-w-0">
+                  <h4 className="font-bold text-foreground">{t(title)}</h4>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t(desc)}</p>
                 </div>
-                <p className="text-foreground/80 text-sm">
-                  {t('accommodationDesc')}
-                </p>
-              </Card>
-            </div>
-
-            <div
-              ref={(el) => {
-                cardsRef.current[3] = el
-              }}
-            >
-              <Card className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 backdrop-blur-sm transition-colors">
-            <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
-                    <Info size={20} />
-                  </div>
-                  <h4 className="font-bold text-foreground">{t('moreInfo')}</h4>
-                </div>
-                <p className="text-foreground/80 text-sm">
-                  {t('moreInfoDesc')}
-                </p>
-              </Card>
-            </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <Card className="p-8 border border-border/50 bg-gradient-to-br from-primary to-accent/5 overflow-hidden">
-          <p className="text-lg font-semibold text-foreground mb-4">
-            {t('mapTitle')}
+        <div ref={mapRef}>
+          <p className="font-bold text-foreground">{t('mapTitle')}</p>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            {t('mapDesc')}
           </p>
-          <div className="relative w-full rounded-lg overflow-hidden border border-border/50" style={{ aspectRatio: '16/10', minHeight: '384px' }}>
+
+          <div
+            className="relative mt-6 w-full overflow-hidden rounded-xl"
+            style={{ aspectRatio: '16/10', minHeight: '320px' }}
+          >
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3324.4905454412437!2d-7.544054523992428!3d33.56661057334374!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda633261bbe100f%3A0xe48b03dd8c6794a0!2sFacult%C3%A9%20des%20Sciences%20Ben%20M%E2%80%99Sick!5e0!3m2!1sfr!2sma!4v1772934740958!5m2!1sfr!2sma"
               width="100%"
               height="100%"
-              style={{ border: 0, position: 'absolute', inset: 0 }}
+              className="absolute inset-0 border-0"
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               title={t('mapTitle')}
             />
           </div>
-        </Card>
+        </div>
       </div>
     </section>
   )

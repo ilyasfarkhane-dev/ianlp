@@ -1,14 +1,20 @@
 import React from "react"
 import type { Metadata } from 'next'
-import { Aldrich } from 'next/font/google'
+import { Outfit, Work_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const aldrich = Aldrich({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-aldrich",
-  weight: "400",
-});
+  variable: "--font-outfit",
+  weight: ["400", "500", "600", "700"],
+})
+
+const workSans = Work_Sans({
+  subsets: ["latin"],
+  variable: "--font-work-sans",
+  weight: ["300", "400", "500", "600", "700"],
+})
 
 export const metadata: Metadata = {
   title: 'IANLP 2026 - 1st International Conference on AI for NLP',
@@ -30,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html suppressHydrationWarning className={aldrich.variable}>
+    <html suppressHydrationWarning className={`${outfit.variable} ${workSans.variable}`}>
       <body className="font-sans antialiased">
         {children}
         <Analytics />
