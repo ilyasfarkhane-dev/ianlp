@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { recordAdminLogin } from '@/app/admin/(dashboard)/auth-audit/actions'
+import { markPendingLoginAudit } from '@/components/admin/login-audit-recorder'
 import { FormLoadingOverlay } from '@/components/ui/form-loading-overlay'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { Input } from '@/components/ui/input'
@@ -34,9 +34,7 @@ export default function AdminLoginPage() {
         return
       }
 
-      await recordAdminLogin().catch(() => {
-        // Audit logging is best-effort; don't block sign-in if it fails.
-      })
+      markPendingLoginAudit()
       toast.success('Signed in successfully')
       router.push('/admin')
       router.refresh()

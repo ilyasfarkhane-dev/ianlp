@@ -6,6 +6,7 @@ import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/components/theme-provider'
 import { NavigationProgress } from '@/components/ui/navigation-progress'
+import { LoginAuditRecorder } from '@/components/admin/login-audit-recorder'
 
 export const metadata: Metadata = {
   title: 'IANLP Admin',
@@ -30,6 +31,7 @@ export default async function AdminDashboardLayout({
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       <NavigationProgress scope="admin" />
+      <LoginAuditRecorder />
       <SidebarProvider>
         <AdminSidebar email={user.email} />
         <SidebarInset className="min-h-svh bg-muted/20">
