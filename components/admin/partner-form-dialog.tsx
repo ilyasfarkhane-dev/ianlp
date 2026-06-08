@@ -10,7 +10,6 @@ import { LoadingButton } from '@/components/ui/loading-button'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -30,34 +29,81 @@ function deriveAltTextFromLogo(logoPath: string): string {
   return cleaned || 'Partner'
 }
 
-function getExistingAltText(partner?: PartnerWithTranslations): string {
+function getPartnerFields(partner?: PartnerWithTranslations) {
   const translation =
     partner?.partner_translations.find((t) => t.locale === 'en') ??
     partner?.partner_translations[0]
 
-  return translation?.alt_text ?? ''
+  return {
+    altText: translation?.alt_text ?? '',
+  }
+}
+
+function FormSection({
+  title,
+  description,
+  children,
+}: {
+  title: string
+  description?: string
+  children: React.ReactNode
+}) {
+  return (
+    <section className="space-y-3">
+      <div>
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        {description ? (
+          <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  )
 }
 
 type PartnerFormDialogProps = {
   partner?: PartnerWithTranslations
+  defaultSortOrder?: number
   trigger?: React.ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function PartnerFormDialog({ partner, trigger }: PartnerFormDialogProps) {
+export function PartnerFormDialog({
+  partner,
+  defaultSortOrder = 0,
+  trigger,
+  open: controlledOpen,
+  onOpenChange,
+}: PartnerFormDialogProps) {
   const router = useRouter()
   const formId = useId()
-  const [open, setOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [sortOrder, setSortOrder] = useState(partner?.sort_order ?? 0)
   const [logoPath, setLogoPath] = useState(partner?.logo_path ?? '')
+  const [url, setUrl] = useState(partner?.url ?? '')
   const [isPublished, setIsPublished] = useState(partner?.is_published ?? true)
+  const [altText, setAltText] = useState('')
+
+  const isControlled = controlledOpen !== undefined
+  const open = isControlled ? controlledOpen : internalOpen
+
+  function setOpen(nextOpen: boolean) {
+    if (isControlled) {
+      onOpenChange?.(nextOpen)
+    } else {
+      setInternalOpen(nextOpen)
+    }
+  }
 
   useEffect(() => {
     if (!open) return
 
-    setSortOrder(partner?.sort_order ?? 0)
+    const fields = getPartnerFields(partner)
     setLogoPath(partner?.logo_path ?? '')
+    setUrl(partner?.url ?? '')
     setIsPublished(partner?.is_published ?? true)
+    setAltText(fields.altText)
   }, [open, partner])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -68,20 +114,22 @@ export function PartnerFormDialog({ partner, trigger }: PartnerFormDialogProps) 
       return
     }
 
-    const altText = getExistingAltText(partner).trim() || deriveAltTextFromLogo(logoPath)
+    const resolvedAltText = altText.trim() || deriveAltTextFromLogo(logoPath)
 
     setLoading(true)
-    const payload = {
-      sort_order: sortOrder,
+    const sharedPayload = {
       logo_path: logoPath,
-      url: partner?.url ?? '',
+      url: url.trim(),
       is_published: isPublished,
-      translations: buildTranslationsForAllLocales({ alt_text: altText }),
+      translations: buildTranslationsForAllLocales({ alt_text: resolvedAltText }),
     }
 
     const result = partner
-      ? await updatePartner(partner.id, payload)
-      : await createPartner(payload)
+      ? await updatePartner(partner.id, sharedPayload)
+      : await createPartner({
+          sort_order: defaultSortOrder,
+          ...sharedPayload,
+        })
 
     setLoading(false)
 
@@ -97,58 +145,83 @@ export function PartnerFormDialog({ partner, trigger }: PartnerFormDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger ?? (
+      {trigger ? (
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
+      ) : !isControlled ? (
+        <DialogTrigger asChild>
           <Button className="cursor-pointer">
             <Plus className="h-4 w-4" />
             Add partner
           </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-        <form onSubmit={handleSubmit} className="relative" aria-busy={loading}>
+        </DialogTrigger>
+      ) : null}
+      <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl">
+        <form onSubmit={handleSubmit} className="relative flex min-h-0 flex-1 flex-col" aria-busy={loading}>
           <FormLoadingOverlay loading={loading} label="Saving partner…" />
-          <DialogHeader>
+          <DialogHeader className="shrink-0 border-b border-border px-6 pt-6 pb-4">
             <DialogTitle>{partner ? 'Edit partner' : 'Add partner'}</DialogTitle>
-            <DialogDescription>Manage sponsor and partner logos for the public website.</DialogDescription>
           </DialogHeader>
 
-          <div className="my-6 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-sort_order`}>Sort order</Label>
-              <Input
-                id={`${formId}-sort_order`}
-                type="number"
-                value={sortOrder}
-                onChange={(e) => setSortOrder(Number(e.target.value))}
-                className="max-w-xs"
-              />
-            </div>
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+              <FormSection
+                title="Basics"
+                description="Logo and visibility settings for the partners section."
+              >
+                <CloudinaryImageUpload
+                  value={logoPath}
+                  onChange={setLogoPath}
+                  folder="ianlp/partners"
+                  label="Partner logo"
+                  description="Upload a logo with transparent or white background. Stored on Cloudinary."
+                  previewClassName="h-20 w-40"
+                  required
+                />
 
-            <CloudinaryImageUpload
-              value={logoPath}
-              onChange={setLogoPath}
-              folder="ianlp/partners"
-              label="Partner logo"
-              description="Upload a logo with transparent or white background. Stored on Cloudinary."
-              previewClassName="h-20 w-40"
-              required
-            />
+                <div className="flex items-center justify-between rounded-lg border border-border p-3">
+                  <div>
+                    <Label htmlFor={`${formId}-published`}>Published</Label>
+                    <p className="text-xs text-muted-foreground">Visible on the public website</p>
+                  </div>
+                  <Switch
+                    id={`${formId}-published`}
+                    checked={isPublished}
+                    onCheckedChange={setIsPublished}
+                  />
+                </div>
+              </FormSection>
 
-            <div className="flex items-center justify-between rounded-lg border border-border p-3">
-              <div>
-                <Label htmlFor={`${formId}-published`}>Published</Label>
-                <p className="text-xs text-muted-foreground">Visible on the public website</p>
+              <div className="lg:border-l lg:border-border lg:pl-8">
+                <FormSection title="Details" description="Accessibility label and optional website link.">
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-alt_text`}>Alt text</Label>
+                    <Input
+                      id={`${formId}-alt_text`}
+                      value={altText}
+                      onChange={(e) => setAltText(e.target.value)}
+                      placeholder="Partner organization name"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Leave blank to derive from the logo filename.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-url`}>Website URL</Label>
+                    <Input
+                      id={`${formId}-url`}
+                      type="url"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="https://example.com"
+                    />
+                  </div>
+                </FormSection>
               </div>
-              <Switch
-                id={`${formId}-published`}
-                checked={isPublished}
-                onCheckedChange={setIsPublished}
-              />
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="shrink-0 border-t border-border px-6 py-4">
             <Button
               type="button"
               variant="outline"

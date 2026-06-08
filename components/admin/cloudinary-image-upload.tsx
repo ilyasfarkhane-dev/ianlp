@@ -84,7 +84,8 @@ export function CloudinaryImageUpload({
               fill
               className={cn(
                 'object-cover',
-                folder === 'ianlp/partners' && 'object-contain p-2'
+                folder === 'ianlp/partners' && 'object-contain p-2',
+                folder === 'ianlp/workshops' && 'object-top'
               )}
               sizes="128px"
             />

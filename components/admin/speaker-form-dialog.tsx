@@ -10,7 +10,6 @@ import { LoadingButton } from '@/components/ui/loading-button'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -37,8 +36,31 @@ function getSpeakerFields(speaker?: SpeakerWithTranslations) {
   }
 }
 
+function FormSection({
+  title,
+  description,
+  children,
+}: {
+  title: string
+  description?: string
+  children: React.ReactNode
+}) {
+  return (
+    <section className="space-y-3">
+      <div>
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        {description ? (
+          <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  )
+}
+
 type SpeakerFormDialogProps = {
   speaker?: SpeakerWithTranslations
+  defaultSortOrder?: number
   trigger?: React.ReactNode
   open?: boolean
   onOpenChange?: (open: boolean) => void
@@ -46,6 +68,7 @@ type SpeakerFormDialogProps = {
 
 export function SpeakerFormDialog({
   speaker,
+  defaultSortOrder = 0,
   trigger,
   open: controlledOpen,
   onOpenChange,
@@ -54,7 +77,6 @@ export function SpeakerFormDialog({
   const formId = useId()
   const [internalOpen, setInternalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [sortOrder, setSortOrder] = useState(speaker?.sort_order ?? 0)
   const [imagePath, setImagePath] = useState(speaker?.image_path ?? '')
   const [isPublished, setIsPublished] = useState(speaker?.is_published ?? true)
   const [name, setName] = useState('')
@@ -76,7 +98,6 @@ export function SpeakerFormDialog({
     if (!open) return
 
     const fields = getSpeakerFields(speaker)
-    setSortOrder(speaker?.sort_order ?? 0)
     setImagePath(speaker?.image_path ?? '')
     setIsPublished(speaker?.is_published ?? true)
     setName(fields.name)
@@ -93,8 +114,7 @@ export function SpeakerFormDialog({
     }
 
     setLoading(true)
-    const payload = {
-      sort_order: sortOrder,
+    const sharedPayload = {
       image_path: imagePath,
       category: 'keynote' as const,
       is_published: isPublished,
@@ -102,8 +122,11 @@ export function SpeakerFormDialog({
     }
 
     const result = speaker
-      ? await updateSpeaker(speaker.id, payload)
-      : await createSpeaker(payload)
+      ? await updateSpeaker(speaker.id, sharedPayload)
+      : await createSpeaker({
+          sort_order: defaultSortOrder,
+          ...sharedPayload,
+        })
 
     setLoading(false)
 
@@ -129,81 +152,83 @@ export function SpeakerFormDialog({
           </Button>
         </DialogTrigger>
       ) : null}
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-        <form onSubmit={handleSubmit} className="relative" aria-busy={loading}>
+      <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl">
+        <form onSubmit={handleSubmit} className="relative flex min-h-0 flex-1 flex-col" aria-busy={loading}>
           <FormLoadingOverlay loading={loading} label="Saving speaker…" />
-          <DialogHeader>
+          <DialogHeader className="shrink-0 border-b border-border px-6 pt-6 pb-4">
             <DialogTitle>{speaker ? 'Edit speaker' : 'Add speaker'}</DialogTitle>
-            <DialogDescription>Manage speaker details for the public website.</DialogDescription>
           </DialogHeader>
 
-          <div className="my-6 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-sort_order`}>Sort order</Label>
-              <Input
-                id={`${formId}-sort_order`}
-                type="number"
-                value={sortOrder}
-                onChange={(e) => setSortOrder(Number(e.target.value))}
-                className="max-w-xs"
-              />
-            </div>
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+              <FormSection
+                title="Basics"
+                description="Photo and visibility settings for the speakers section."
+              >
+                <CloudinaryImageUpload
+                  value={imagePath}
+                  onChange={setImagePath}
+                  folder="ianlp/speakers"
+                  label="Speaker photo"
+                  description="Upload a portrait photo. Stored on Cloudinary."
+                  previewClassName="h-40 w-32"
+                />
 
-            <CloudinaryImageUpload
-              value={imagePath}
-              onChange={setImagePath}
-              folder="ianlp/speakers"
-              label="Speaker photo"
-              description="Upload a portrait photo. Stored on Cloudinary."
-              previewClassName="h-40 w-32"
-            />
+                <div className="flex items-center justify-between rounded-lg border border-border p-3">
+                  <div>
+                    <Label htmlFor={`${formId}-published`}>Published</Label>
+                    <p className="text-xs text-muted-foreground">Visible on the public website</p>
+                  </div>
+                  <Switch
+                    id={`${formId}-published`}
+                    checked={isPublished}
+                    onCheckedChange={setIsPublished}
+                  />
+                </div>
+              </FormSection>
 
-            <div className="flex items-center justify-between rounded-lg border border-border p-3">
-              <div>
-                <Label htmlFor={`${formId}-published`}>Published</Label>
-                <p className="text-xs text-muted-foreground">Visible on the public website</p>
+              <div className="lg:border-l lg:border-border lg:pl-8">
+                <FormSection title="Profile" description="Name, affiliation, and biography shown on the card.">
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-name`}>
+                      Name
+                      <span className="ml-1 text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id={`${formId}-name`}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Speaker name"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-affiliation`}>Affiliation</Label>
+                    <Input
+                      id={`${formId}-affiliation`}
+                      value={affiliation}
+                      onChange={(e) => setAffiliation(e.target.value)}
+                      placeholder="University or organization"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-bio`}>Biography</Label>
+                    <Textarea
+                      id={`${formId}-bio`}
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder="Short biography shown in the speaker dialog"
+                      rows={5}
+                    />
+                  </div>
+                </FormSection>
               </div>
-              <Switch
-                id={`${formId}-published`}
-                checked={isPublished}
-                onCheckedChange={setIsPublished}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-name`}>Name</Label>
-              <Input
-                id={`${formId}-name`}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Speaker name"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-affiliation`}>Affiliation</Label>
-              <Input
-                id={`${formId}-affiliation`}
-                value={affiliation}
-                onChange={(e) => setAffiliation(e.target.value)}
-                placeholder="University or organization"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-bio`}>Biography</Label>
-              <Textarea
-                id={`${formId}-bio`}
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Short biography"
-                rows={4}
-              />
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="shrink-0 border-t border-border px-6 py-4">
             <Button
               type="button"
               variant="outline"

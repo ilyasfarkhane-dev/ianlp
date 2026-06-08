@@ -1,47 +1,121 @@
 'use client'
 
-import { useState } from 'react'
+import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { CalendarDays, ExternalLink, Link2, Mail, RotateCcw } from 'lucide-react'
 import { FormLoadingOverlay } from '@/components/ui/form-loading-overlay'
 import { LoadingButton } from '@/components/ui/loading-button'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { updateSiteSettings } from '@/app/admin/(dashboard)/settings/actions'
+import { cn } from '@/lib/utils'
+
+export type SiteSettingsFormValues = {
+  countdownDate: string
+  startDate: string
+  venue: string
+  email: string
+  phone: string
+  phoneDisplay: string
+  address: string
+  generalChairName: string
+  chairAffiliationPrimary: string
+  chairAffiliationSecondary: string
+  easychair: string
+  springerTemplate: string
+}
 
 type SettingsFormProps = {
-  initial: {
-    countdownDate: string
-    startDate: string
-    venue: string
-    email: string
-    phone: string
-    phoneDisplay: string
-    address: string
-    generalChairName: string
-    chairAffiliationPrimary: string
-    chairAffiliationSecondary: string
-    easychair: string
-    springerTemplate: string
-  }
+  initial: SiteSettingsFormValues
+}
+
+function toDatetimeLocalValue(iso: string): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const pad = (value: number) => String(value).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+function fromDatetimeLocalValue(value: string): string {
+  if (!value.trim()) return ''
+  return value.length === 16 ? `${value}:00` : value
+}
+
+function SectionIcon({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+      {children}
+    </div>
+  )
+}
+
+function FieldGroup({
+  label,
+  htmlFor,
+  hint,
+  children,
+  className,
+}: {
+  label: string
+  htmlFor: string
+  hint?: string
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <div className={cn('space-y-2', className)}>
+      <Label htmlFor={htmlFor}>{label}</Label>
+      {children}
+      {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  )
 }
 
 export function SettingsForm({ initial }: SettingsFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState(initial)
+  const [countdownLocal, setCountdownLocal] = useState(toDatetimeLocalValue(initial.countdownDate))
 
-  function updateField(key: keyof typeof form, value: string) {
+  useEffect(() => {
+    setForm(initial)
+    setCountdownLocal(toDatetimeLocalValue(initial.countdownDate))
+  }, [initial])
+
+  const isDirty = useMemo(
+    () =>
+      JSON.stringify({
+        ...form,
+        countdownDate: fromDatetimeLocalValue(countdownLocal),
+      }) !== JSON.stringify(initial),
+    [form, countdownLocal, initial]
+  )
+
+  function updateField(key: keyof SiteSettingsFormValues, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function handleReset() {
+    setForm(initial)
+    setCountdownLocal(toDatetimeLocalValue(initial.countdownDate))
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
 
-    const result = await updateSiteSettings(form)
+    const payload = {
+      ...form,
+      countdownDate: fromDatetimeLocalValue(countdownLocal),
+    }
+
+    const result = await updateSiteSettings(payload)
 
     setLoading(false)
 
@@ -55,141 +129,215 @@ export function SettingsForm({ initial }: SettingsFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="relative space-y-6" aria-busy={loading}>
+    <form
+      onSubmit={handleSubmit}
+      className="relative mx-auto flex w-full max-w-4xl flex-col gap-6"
+      aria-busy={loading}
+    >
       <FormLoadingOverlay loading={loading} label="Saving settings…" />
+
+      <section className="rounded-xl border border-border bg-card p-5 md:p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0 space-y-1">
+            <h2 className="text-lg font-semibold text-foreground">Global site content</h2>
+            <p className="text-sm text-muted-foreground">
+              Updates the homepage countdown, contact section, footer, and submission links.
+            </p>
+          </div>
+          <Button asChild variant="outline" className="cursor-pointer shrink-0">
+            <Link href="/en/ianlp" target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="h-4 w-4" />
+              Preview website
+            </Link>
+          </Button>
+        </div>
+      </section>
+
       <Card>
-        <CardHeader>
-          <CardTitle>Conference</CardTitle>
-          <CardDescription>Dates and venue shown on the homepage</CardDescription>
+        <CardHeader className="flex flex-row items-start gap-4 space-y-0">
+          <SectionIcon>
+            <CalendarDays className="h-5 w-5" aria-hidden />
+          </SectionIcon>
+          <div>
+            <CardTitle>Conference</CardTitle>
+            <CardDescription>Dates and venue shown on the homepage hero</CardDescription>
+          </div>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="countdownDate">Countdown target (ISO)</Label>
+          <FieldGroup
+            htmlFor="countdownDate"
+            label="Countdown target"
+            hint="Used for the homepage countdown timer."
+          >
             <Input
               id="countdownDate"
-              value={form.countdownDate}
-              onChange={(e) => updateField('countdownDate', e.target.value)}
-              placeholder="2026-06-29T09:00:00"
+              type="datetime-local"
+              value={countdownLocal}
+              onChange={(e) => setCountdownLocal(e.target.value)}
+              className="cursor-pointer"
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="startDate">Conference dates (display)</Label>
+          </FieldGroup>
+          <FieldGroup
+            htmlFor="startDate"
+            label="Conference dates (display)"
+            hint="Human-readable date range shown in the hero."
+          >
             <Input
               id="startDate"
               value={form.startDate}
               onChange={(e) => updateField('startDate', e.target.value)}
+              placeholder="June 29-30, 2026"
             />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="venue">Venue</Label>
+          </FieldGroup>
+          <FieldGroup htmlFor="venue" label="Venue" className="sm:col-span-2">
             <Input
               id="venue"
               value={form.venue}
               onChange={(e) => updateField('venue', e.target.value)}
             />
+          </FieldGroup>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-start gap-4 space-y-0">
+          <SectionIcon>
+            <Mail className="h-5 w-5" aria-hidden />
+          </SectionIcon>
+          <div>
+            <CardTitle>Get in Touch</CardTitle>
+            <CardDescription>Contact section and footer details</CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FieldGroup htmlFor="email" label="Email">
+              <Input
+                id="email"
+                type="email"
+                value={form.email}
+                onChange={(e) => updateField('email', e.target.value)}
+              />
+            </FieldGroup>
+            <FieldGroup
+              htmlFor="phone"
+              label="Phone (tel link)"
+              hint="Digits only, used for click-to-call links."
+            >
+              <Input
+                id="phone"
+                value={form.phone}
+                onChange={(e) => updateField('phone', e.target.value)}
+                placeholder="+212660082091"
+              />
+            </FieldGroup>
+            <FieldGroup htmlFor="phoneDisplay" label="Phone (display)" className="sm:col-span-2">
+              <Input
+                id="phoneDisplay"
+                value={form.phoneDisplay}
+                onChange={(e) => updateField('phoneDisplay', e.target.value)}
+                placeholder="+212 6 60 08 20 91"
+              />
+            </FieldGroup>
+            <FieldGroup htmlFor="address" label="Address" className="sm:col-span-2">
+              <Textarea
+                id="address"
+                value={form.address}
+                onChange={(e) => updateField('address', e.target.value)}
+                rows={3}
+              />
+            </FieldGroup>
+          </div>
+
+          <div className="space-y-4 border-t border-border pt-6">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">General chair</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Shown in the contact section alongside email and phone.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FieldGroup htmlFor="generalChairName" label="Name" className="sm:col-span-2">
+                <Input
+                  id="generalChairName"
+                  value={form.generalChairName}
+                  onChange={(e) => updateField('generalChairName', e.target.value)}
+                />
+              </FieldGroup>
+              <FieldGroup htmlFor="chairAffiliationPrimary" label="Affiliation (primary)">
+                <Input
+                  id="chairAffiliationPrimary"
+                  value={form.chairAffiliationPrimary}
+                  onChange={(e) => updateField('chairAffiliationPrimary', e.target.value)}
+                />
+              </FieldGroup>
+              <FieldGroup htmlFor="chairAffiliationSecondary" label="Affiliation (secondary)">
+                <Input
+                  id="chairAffiliationSecondary"
+                  value={form.chairAffiliationSecondary}
+                  onChange={(e) => updateField('chairAffiliationSecondary', e.target.value)}
+                />
+              </FieldGroup>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Get in Touch</CardTitle>
-          <CardDescription>Contact section and footer details</CardDescription>
+        <CardHeader className="flex flex-row items-start gap-4 space-y-0">
+          <SectionIcon>
+            <Link2 className="h-5 w-5" aria-hidden />
+          </SectionIcon>
+          <div>
+            <CardTitle>External links</CardTitle>
+            <CardDescription>Submission platform and author template URLs</CardDescription>
+          </div>
         </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => updateField('email', e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone (tel link)</Label>
-            <Input
-              id="phone"
-              value={form.phone}
-              onChange={(e) => updateField('phone', e.target.value)}
-              placeholder="+212660082091"
-            />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="phoneDisplay">Phone (display)</Label>
-            <Input
-              id="phoneDisplay"
-              value={form.phoneDisplay}
-              onChange={(e) => updateField('phoneDisplay', e.target.value)}
-              placeholder="+212 6 60 08 20 91"
-            />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="address">Address</Label>
-            <Textarea
-              id="address"
-              value={form.address}
-              onChange={(e) => updateField('address', e.target.value)}
-              rows={3}
-            />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="generalChairName">General chair name</Label>
-            <Input
-              id="generalChairName"
-              value={form.generalChairName}
-              onChange={(e) => updateField('generalChairName', e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="chairAffiliationPrimary">Chair affiliation (primary)</Label>
-            <Input
-              id="chairAffiliationPrimary"
-              value={form.chairAffiliationPrimary}
-              onChange={(e) => updateField('chairAffiliationPrimary', e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="chairAffiliationSecondary">Chair affiliation (secondary)</Label>
-            <Input
-              id="chairAffiliationSecondary"
-              value={form.chairAffiliationSecondary}
-              onChange={(e) => updateField('chairAffiliationSecondary', e.target.value)}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>External links</CardTitle>
-          <CardDescription>Submission platform and template URLs</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="easychair">EasyChair URL</Label>
+        <CardContent className="grid gap-4 lg:grid-cols-2">
+          <FieldGroup htmlFor="easychair" label="EasyChair URL">
             <Input
               id="easychair"
               type="url"
               value={form.easychair}
               onChange={(e) => updateField('easychair', e.target.value)}
+              placeholder="https://easychair.org/conferences/?conf=ianlp2026"
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="springerTemplate">Springer template URL</Label>
+          </FieldGroup>
+          <FieldGroup htmlFor="springerTemplate" label="Springer template URL">
             <Input
               id="springerTemplate"
               type="url"
               value={form.springerTemplate}
               onChange={(e) => updateField('springerTemplate', e.target.value)}
+              placeholder="https://www.springer.com/..."
             />
-          </div>
+          </FieldGroup>
         </CardContent>
       </Card>
 
-      <LoadingButton type="submit" loading={loading} loadingText="Saving…" className="cursor-pointer">
-        Save settings
-      </LoadingButton>
+      <div className="sticky bottom-0 z-10 -mx-4 border-t border-border bg-background/95 px-4 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:-mx-6 md:px-6">
+        <div className="flex items-center justify-end gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleReset}
+            disabled={loading || !isDirty}
+            className="cursor-pointer"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Reset
+          </Button>
+          <LoadingButton
+            type="submit"
+            loading={loading}
+            loadingText="Saving…"
+            disabled={!isDirty}
+            className="cursor-pointer"
+          >
+            Save settings
+          </LoadingButton>
+        </div>
+      </div>
     </form>
   )
 }

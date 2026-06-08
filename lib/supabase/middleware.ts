@@ -29,6 +29,9 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const isLoginPage = request.nextUrl.pathname === '/admin/login'
+  const isServerAction =
+    request.method === 'POST' &&
+    (request.headers.has('Next-Action') || request.headers.has('next-action'))
 
   if (!user && !isLoginPage) {
     const url = request.nextUrl.clone()
@@ -36,7 +39,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  if (user && isLoginPage) {
+  if (user && isLoginPage && !isServerAction) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin'
     return NextResponse.redirect(url)

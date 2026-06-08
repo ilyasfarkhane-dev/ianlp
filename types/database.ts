@@ -365,6 +365,85 @@ export interface Database {
           features?: Json
         }
       }
+      workshops: {
+        Row: {
+          id: string
+          sort_order: number
+          icon: string
+          image_path: string | null
+          registration_url: string
+          duration: string
+          fee: string
+          is_published: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          sort_order?: number
+          icon?: string
+          image_path?: string | null
+          registration_url: string
+          duration: string
+          fee: string
+          is_published?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          sort_order?: number
+          icon?: string
+          image_path?: string | null
+          registration_url?: string
+          duration?: string
+          fee?: string
+          is_published?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      workshop_translations: {
+        Row: {
+          id: string
+          workshop_id: string
+          locale: Locale
+          badge_label: string
+          title: string
+          subtitle: string
+          description: string
+          animator: string
+          animator_role: string
+          program: Json
+          audience: string
+        }
+        Insert: {
+          id?: string
+          workshop_id: string
+          locale: Locale
+          badge_label?: string
+          title: string
+          subtitle?: string
+          description?: string
+          animator?: string
+          animator_role?: string
+          program?: Json
+          audience?: string
+        }
+        Update: {
+          id?: string
+          workshop_id?: string
+          locale?: Locale
+          badge_label?: string
+          title?: string
+          subtitle?: string
+          description?: string
+          animator?: string
+          animator_role?: string
+          program?: Json
+          audience?: string
+        }
+      }
       site_settings: {
         Row: {
           key: string
@@ -380,6 +459,38 @@ export interface Database {
           key?: string
           value?: Json
           updated_at?: string
+        }
+      }
+      admin_action_logs: {
+        Row: {
+          id: string
+          user_email: string
+          action: string
+          resource: string
+          resource_id: string | null
+          resource_label: string | null
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_email: string
+          action: string
+          resource: string
+          resource_id?: string | null
+          resource_label?: string | null
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_email?: string
+          action?: string
+          resource?: string
+          resource_id?: string | null
+          resource_label?: string | null
+          metadata?: Json
+          created_at?: string
         }
       }
     }
@@ -465,6 +576,48 @@ export type PublicContactInfo = {
   chairAffiliationSecondary: string
 }
 
+export type WorkshopIcon = 'video' | 'workflow'
+
+export const WORKSHOP_ICONS: WorkshopIcon[] = ['video', 'workflow']
+
+export const WORKSHOP_ICON_LABELS: Record<WorkshopIcon, string> = {
+  video: 'Video',
+  workflow: 'Workflow',
+}
+
+export type PublicWorkshop = {
+  id: string
+  icon: WorkshopIcon
+  imagePath: string | null
+  registrationUrl: string
+  duration: string
+  fee: string
+  badgeLabel: string
+  title: string
+  subtitle: string
+  description: string
+  animator: string
+  animatorRole: string
+  program: string[]
+  audience: string
+}
+
+export type PublicRegisterPageContent = {
+  pageTitle: string
+  pageSubtitle: string
+  datesValue: string
+  conferenceStep: string
+  feesTitle: string
+  feesSubtitle: string
+  workshopsBadge: string
+  workshopsTitle: string
+  workshopsSubtitle: string
+  limitedSpots: string
+  helpTitle: string
+  helpSubtitle: string
+  helpEmail: string
+}
+
 export type Speaker = Database['public']['Tables']['speakers']['Row']
 export type SpeakerTranslation = Database['public']['Tables']['speaker_translations']['Row']
 export type ImportantDate = Database['public']['Tables']['important_dates']['Row']
@@ -480,7 +633,10 @@ export type CommitteeMemberTranslation =
 export type PricingTier = Database['public']['Tables']['pricing_tiers']['Row']
 export type PricingTierTranslation =
   Database['public']['Tables']['pricing_tier_translations']['Row']
+export type Workshop = Database['public']['Tables']['workshops']['Row']
+export type WorkshopTranslation = Database['public']['Tables']['workshop_translations']['Row']
 export type SiteSetting = Database['public']['Tables']['site_settings']['Row']
+export type AdminActionLog = Database['public']['Tables']['admin_action_logs']['Row']
 
 export type SpeakerWithTranslations = Speaker & {
   speaker_translations: SpeakerTranslation[]
@@ -504,6 +660,10 @@ export type CommitteeMemberWithTranslations = CommitteeMember & {
 
 export type PricingTierWithTranslations = PricingTier & {
   pricing_tier_translations: PricingTierTranslation[]
+}
+
+export type WorkshopWithTranslations = Workshop & {
+  workshop_translations: WorkshopTranslation[]
 }
 
 export const LOCALES: Locale[] = ['en', 'fr', 'ar']

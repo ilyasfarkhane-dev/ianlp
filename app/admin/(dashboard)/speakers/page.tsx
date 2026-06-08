@@ -18,6 +18,8 @@ export default async function AdminSpeakersPage() {
     .order('sort_order', { ascending: true })
 
   const speakerList = (speakers ?? []) as SpeakerWithTranslations[]
+  const nextSortOrder =
+    speakerList.length > 0 ? Math.max(...speakerList.map((speaker) => speaker.sort_order)) + 1 : 0
 
   return (
     <>
@@ -37,7 +39,7 @@ export default async function AdminSpeakersPage() {
                   : `${speakerList.length} speaker(s) in the database`}
               </CardDescription>
             </div>
-            <SpeakerFormDialog />
+            <SpeakerFormDialog defaultSortOrder={nextSortOrder} />
           </CardHeader>
           <CardContent>
             {speakerList.length === 0 ? (

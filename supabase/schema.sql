@@ -153,6 +153,35 @@ create table public.pricing_tier_translations (
   unique (tier_id, locale)
 );
 
+-- Workshops (register page)
+create table public.workshops (
+  id uuid primary key default gen_random_uuid(),
+  sort_order integer not null default 0,
+  icon text not null default 'video',
+  image_path text,
+  registration_url text not null,
+  duration text not null,
+  fee text not null,
+  is_published boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.workshop_translations (
+  id uuid primary key default gen_random_uuid(),
+  workshop_id uuid not null references public.workshops(id) on delete cascade,
+  locale public.locale not null,
+  badge_label text not null default '',
+  title text not null,
+  subtitle text not null default '',
+  description text not null default '',
+  animator text not null default '',
+  animator_role text not null default '',
+  program jsonb not null default '[]'::jsonb,
+  audience text not null default '',
+  unique (workshop_id, locale)
+);
+
 -- Site settings (key-value store)
 create table public.site_settings (
   key text primary key,
@@ -193,6 +222,10 @@ create trigger pricing_tiers_updated_at
   before update on public.pricing_tiers
   for each row execute function public.set_updated_at();
 
+create trigger workshops_updated_at
+  before update on public.workshops
+  for each row execute function public.set_updated_at();
+
 create trigger site_settings_updated_at
   before update on public.site_settings
   for each row execute function public.set_updated_at();
@@ -210,6 +243,8 @@ alter table public.committee_members enable row level security;
 alter table public.committee_member_translations enable row level security;
 alter table public.pricing_tiers enable row level security;
 alter table public.pricing_tier_translations enable row level security;
+alter table public.workshops enable row level security;
+alter table public.workshop_translations enable row level security;
 alter table public.site_settings enable row level security;
 
 -- Public read for published content (website)
@@ -291,6 +326,19 @@ create policy "Public read pricing tier translations"
     )
   );
 
+create policy "Public read published workshops"
+  on public.workshops for select
+  using (is_published = true);
+
+create policy "Public read workshop translations"
+  on public.workshop_translations for select
+  using (
+    exists (
+      select 1 from public.workshops w
+      where w.id = workshop_id and w.is_published = true
+    )
+  );
+
 create policy "Public read site settings"
   on public.site_settings for select
   using (true);
@@ -368,6 +416,18 @@ create policy "Admin full access pricing tier translations"
   using (true)
   with check (true);
 
+create policy "Admin full access workshops"
+  on public.workshops for all
+  to authenticated
+  using (true)
+  with check (true);
+
+create policy "Admin full access workshop translations"
+  on public.workshop_translations for all
+  to authenticated
+  using (true)
+  with check (true);
+
 create policy "Admin full access site_settings"
   on public.site_settings for all
   to authenticated
@@ -381,5 +441,6 @@ create policy "Admin full access site_settings"
 insert into public.site_settings (key, value) values
   ('conference', '{"countdownDate":"2026-06-29T09:00:00","startDate":"June 29-30, 2026","venue":"Faculty of Sciences Ben M''Sick (FSBM)"}'::jsonb),
   ('contact', '{"email":"omar.zahour@univh2c.ma","phone":"+212660082091","phoneDisplay":"+212 6 60 08 20 91","address":"Faculty of Sciences Ben M''Sick (FSBM), Hassan II University of Casablanca, Bd Commandant Driss Al Harti, Casablanca 20670, Morocco","generalChairName":"Prof. Omar Zahour","chairAffiliationPrimary":"Faculty of Sciences Ben M''Sick (FSBM)","chairAffiliationSecondary":"Hassan II University of Casablanca"}'::jsonb),
-  ('links', '{"easychair":"https://easychair.org/conferences/?conf=ianlp2026","springerTemplate":"https://www.springer.com/gp/computer-science/lncs/conference-proceedings-guidelines"}'::jsonb)
+  ('links', '{"easychair":"https://easychair.org/conferences/?conf=ianlp2026","springerTemplate":"https://www.springer.com/gp/computer-science/lncs/conference-proceedings-guidelines"}'::jsonb),
+  ('register', '{"pageTitle":"Registration & Workshops","pageSubtitle":"Secure your place at IANLP 2026 and join our hands-on practical workshops.","datesValue":"29–30 June 2026","conferenceStep":"Step 1","feesTitle":"Conference Registration Fees","feesSubtitle":"Choose your registration type for IANLP 2026.","workshopsBadge":"Practical Workshops","workshopsTitle":"Workshop Registration","workshopsSubtitle":"Two intensive practical sessions during IANLP 2026 — limited seats available.","limitedSpots":"Limited spots","helpTitle":"Need help?","helpSubtitle":"Contact the IANLP 2026 organizing committee for registration questions.","helpEmail":"omar.zahour@univh2c.ma"}'::jsonb)
 on conflict (key) do nothing;

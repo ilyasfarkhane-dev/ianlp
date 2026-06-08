@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { finalizeAction } from '@/lib/admin/audit-log'
 import { revalidatePublicSite } from '@/lib/revalidate-public'
 import type { CommitteeIcon, CommitteeType, Locale } from '@/types/database'
 
@@ -55,13 +56,20 @@ export async function createCommitteeMember(input: {
   revalidatePath('/admin/committees')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'create',
+      resource: 'committee_member',
+      resourceId: member.id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.name,
+    }
+  )
 }
 
 export async function updateCommitteeMember(
   id: string,
   input: {
-    sort_order: number
     committee_type: CommitteeType
     icon: CommitteeIcon | null
     email: string
@@ -74,7 +82,6 @@ export async function updateCommitteeMember(
   const { error } = await supabase
     .from('committee_members')
     .update({
-      sort_order: input.sort_order,
       committee_type: input.committee_type,
       icon: input.committee_type === 'organizing' ? input.icon : null,
       email: input.email.trim() || null,
@@ -106,7 +113,15 @@ export async function updateCommitteeMember(
   revalidatePath('/admin/committees')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'update',
+      resource: 'committee_member',
+      resourceId: id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.name,
+    }
+  )
 }
 
 export async function deleteCommitteeMember(id: string) {
@@ -120,5 +135,67 @@ export async function deleteCommitteeMember(id: string) {
   revalidatePath('/admin/committees')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    { action: 'delete', resource: 'committee_member', resourceId: id }
+  )
+}
+
+export async function reorderCommitteeMembers(
+  committeeType: CommitteeType,
+  orderedIds: string[]
+) {
+  const supabase = await createClient()
+
+  const { data: allMembers, error: fetchError } = await supabase
+    .from('committee_members')
+    .select('id, committee_type, sort_order')
+    .order('sort_order', { ascending: true })
+
+  if (fetchError) {
+    return { error: fetchError.message }
+  }
+
+  const members = allMembers ?? []
+  const byType: Record<CommitteeType, string[]> = {
+    pc_chair: members
+      .filter((member) => member.committee_type === 'pc_chair')
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((member) => member.id),
+    reviewer: members
+      .filter((member) => member.committee_type === 'reviewer')
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((member) => member.id),
+    organizing: members
+      .filter((member) => member.committee_type === 'organizing')
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((member) => member.id),
+  }
+
+  byType[committeeType] = orderedIds
+
+  const flattened = [...byType.pc_chair, ...byType.reviewer, ...byType.organizing]
+
+  for (let index = 0; index < flattened.length; index++) {
+    const { error } = await supabase
+      .from('committee_members')
+      .update({ sort_order: index })
+      .eq('id', flattened[index])
+
+    if (error) {
+      return { error: error.message }
+    }
+  }
+
+  revalidatePath('/admin/committees')
+  revalidatePath('/admin')
+  revalidatePublicSite()
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'update',
+      resource: 'committee_member',
+      resourceLabel: `${committeeType} committee order`,
+    }
+  )
 }

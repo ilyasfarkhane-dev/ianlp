@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { finalizeAction } from '@/lib/admin/audit-log'
 import { revalidatePublicSite } from '@/lib/revalidate-public'
 import type { Locale } from '@/types/database'
 
@@ -49,13 +50,20 @@ export async function createPartner(input: {
   revalidatePath('/admin/partners')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'create',
+      resource: 'partner',
+      resourceId: partner.id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.alt_text,
+    }
+  )
 }
 
 export async function updatePartner(
   id: string,
   input: {
-    sort_order: number
     logo_path: string
     url: string
     is_published: boolean
@@ -67,7 +75,6 @@ export async function updatePartner(
   const { error } = await supabase
     .from('partners')
     .update({
-      sort_order: input.sort_order,
       logo_path: input.logo_path,
       url: input.url || null,
       is_published: input.is_published,
@@ -96,7 +103,15 @@ export async function updatePartner(
   revalidatePath('/admin/partners')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'update',
+      resource: 'partner',
+      resourceId: id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.alt_text,
+    }
+  )
 }
 
 export async function deletePartner(id: string) {
@@ -110,5 +125,28 @@ export async function deletePartner(id: string) {
   revalidatePath('/admin/partners')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction({ success: true }, { action: 'delete', resource: 'partner', resourceId: id })
+}
+
+export async function reorderPartners(orderedIds: string[]) {
+  const supabase = await createClient()
+
+  for (let index = 0; index < orderedIds.length; index++) {
+    const { error } = await supabase
+      .from('partners')
+      .update({ sort_order: index })
+      .eq('id', orderedIds[index])
+
+    if (error) {
+      return { error: error.message }
+    }
+  }
+
+  revalidatePath('/admin/partners')
+  revalidatePath('/admin')
+  revalidatePublicSite()
+  return finalizeAction(
+    { success: true },
+    { action: 'update', resource: 'partner', resourceLabel: 'Partner order' }
+  )
 }

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { revalidatePublicSite } from '@/lib/revalidate-public'
 import { createClient } from '@/lib/supabase/server'
+import { finalizeAction } from '@/lib/admin/audit-log'
 import type { DateTab, Locale } from '@/types/database'
 
 type TranslationInput = {
@@ -51,13 +52,20 @@ export async function createImportantDate(input: {
   revalidatePath('/admin/dates')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'create',
+      resource: 'important_date',
+      resourceId: date.id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.label,
+    }
+  )
 }
 
 export async function updateImportantDate(
   id: string,
   input: {
-    sort_order: number
     tab: DateTab
     date_value: string
     is_published: boolean
@@ -69,7 +77,6 @@ export async function updateImportantDate(
   const { error } = await supabase
     .from('important_dates')
     .update({
-      sort_order: input.sort_order,
       tab: input.tab,
       date_value: input.date_value,
       is_published: input.is_published,
@@ -99,7 +106,15 @@ export async function updateImportantDate(
   revalidatePath('/admin/dates')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'update',
+      resource: 'important_date',
+      resourceId: id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.label,
+    }
+  )
 }
 
 export async function deleteImportantDate(id: string) {
@@ -113,5 +128,31 @@ export async function deleteImportantDate(id: string) {
   revalidatePath('/admin/dates')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    { action: 'delete', resource: 'important_date', resourceId: id }
+  )
+}
+
+export async function reorderImportantDates(orderedIds: string[]) {
+  const supabase = await createClient()
+
+  for (let index = 0; index < orderedIds.length; index++) {
+    const { error } = await supabase
+      .from('important_dates')
+      .update({ sort_order: index })
+      .eq('id', orderedIds[index])
+
+    if (error) {
+      return { error: error.message }
+    }
+  }
+
+  revalidatePath('/admin/dates')
+  revalidatePath('/admin')
+  revalidatePublicSite()
+  return finalizeAction(
+    { success: true },
+    { action: 'update', resource: 'important_date', resourceLabel: 'Date order' }
+  )
 }

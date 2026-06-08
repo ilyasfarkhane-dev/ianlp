@@ -18,6 +18,8 @@ export default async function AdminPricingPage() {
     .order('sort_order', { ascending: true })
 
   const tierList = (tiers ?? []) as PricingTierWithTranslations[]
+  const nextSortOrder =
+    tierList.length > 0 ? Math.max(...tierList.map((tier) => tier.sort_order)) + 1 : 0
 
   return (
     <>
@@ -37,7 +39,7 @@ export default async function AdminPricingPage() {
                   : `${tierList.length} tier(s) in the database`}
               </CardDescription>
             </div>
-            <PricingFormDialog />
+            <PricingFormDialog defaultSortOrder={nextSortOrder} />
           </CardHeader>
           <CardContent>
             {tierList.length === 0 ? (

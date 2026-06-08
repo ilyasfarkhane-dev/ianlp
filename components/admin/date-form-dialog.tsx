@@ -66,8 +66,31 @@ function getDateFields(date?: ImportantDateWithTranslations) {
   }
 }
 
+function FormSection({
+  title,
+  description,
+  children,
+}: {
+  title: string
+  description?: string
+  children: React.ReactNode
+}) {
+  return (
+    <section className="space-y-3">
+      <div>
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        {description ? (
+          <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  )
+}
+
 type DateFormDialogProps = {
   date?: ImportantDateWithTranslations
+  defaultSortOrder?: number
   trigger?: React.ReactNode
   open?: boolean
   onOpenChange?: (open: boolean) => void
@@ -75,6 +98,7 @@ type DateFormDialogProps = {
 
 export function DateFormDialog({
   date,
+  defaultSortOrder = 0,
   trigger,
   open: controlledOpen,
   onOpenChange,
@@ -83,7 +107,6 @@ export function DateFormDialog({
   const formId = useId()
   const [internalOpen, setInternalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [sortOrder, setSortOrder] = useState(date?.sort_order ?? 0)
   const [tab, setTab] = useState<DateTab>(date?.tab ?? 'submission')
   const [selectedDate, setSelectedDate] = useState<Date | undefined>()
   const [isPublished, setIsPublished] = useState(date?.is_published ?? true)
@@ -105,7 +128,6 @@ export function DateFormDialog({
     if (!open) return
 
     const fields = getDateFields(date)
-    setSortOrder(date?.sort_order ?? 0)
     setTab(date?.tab ?? 'submission')
     setSelectedDate(parseDateDisplay(date?.date_value ?? ''))
     setIsPublished(date?.is_published ?? true)
@@ -122,8 +144,7 @@ export function DateFormDialog({
     }
 
     setLoading(true)
-    const payload = {
-      sort_order: sortOrder,
+    const sharedPayload = {
       tab,
       date_value: format(selectedDate, DATE_DISPLAY_FORMAT),
       is_published: isPublished,
@@ -131,8 +152,11 @@ export function DateFormDialog({
     }
 
     const result = date
-      ? await updateImportantDate(date.id, payload)
-      : await createImportantDate(payload)
+      ? await updateImportantDate(date.id, sharedPayload)
+      : await createImportantDate({
+          sort_order: defaultSortOrder,
+          ...sharedPayload,
+        })
 
     setLoading(false)
 
@@ -158,105 +182,109 @@ export function DateFormDialog({
           </Button>
         </DialogTrigger>
       ) : null}
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-        <form onSubmit={handleSubmit} className="relative" aria-busy={loading}>
+      <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl">
+        <form onSubmit={handleSubmit} className="relative flex min-h-0 flex-1 flex-col" aria-busy={loading}>
           <FormLoadingOverlay loading={loading} label="Saving date…" />
-          <DialogHeader>
+          <DialogHeader className="shrink-0 border-b border-border px-6 pt-6 pb-4">
             <DialogTitle>{date ? 'Edit date' : 'Add important date'}</DialogTitle>
             <DialogDescription>
-              Schedule milestones for submission, review, or conference tabs.
+              Set tab and date on the left, label and description on the right.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="my-6 space-y-4">
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-sort_order`}>Sort order</Label>
-                <Input
-                  id={`${formId}-sort_order`}
-                  type="number"
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(Number(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-tab`}>Tab</Label>
-                <Select value={tab} onValueChange={(v) => setTab(v as DateTab)}>
-                  <SelectTrigger id={`${formId}-tab`} className="cursor-pointer">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="submission">Submission</SelectItem>
-                    <SelectItem value="review">Review</SelectItem>
-                    <SelectItem value="conference">Conference</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-date_value`}>Date display</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id={`${formId}-date_value`}
-                      type="button"
-                      variant="outline"
-                      className={cn(
-                        'w-full cursor-pointer justify-start text-left font-normal',
-                        !selectedDate && 'text-muted-foreground',
-                      )}
-                    >
-                      <CalendarIcon className="h-4 w-4" />
-                      {selectedDate ? format(selectedDate, DATE_DISPLAY_FORMAT) : 'Pick a date'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={setSelectedDate}
-                      defaultMonth={selectedDate}
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+              <FormSection
+                title="Basics"
+                description="Which tab this milestone appears under and when it occurs."
+              >
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-tab`}>Tab</Label>
+                  <Select value={tab} onValueChange={(value) => setTab(value as DateTab)}>
+                    <SelectTrigger id={`${formId}-tab`} className="cursor-pointer">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="submission">Submission</SelectItem>
+                      <SelectItem value="review">Review</SelectItem>
+                      <SelectItem value="conference">Conference</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-date_value`}>Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        id={`${formId}-date_value`}
+                        type="button"
+                        variant="outline"
+                        className={cn(
+                          'w-full cursor-pointer justify-start text-left font-normal',
+                          !selectedDate && 'text-muted-foreground'
+                        )}
+                      >
+                        <CalendarIcon className="h-4 w-4" />
+                        {selectedDate ? format(selectedDate, DATE_DISPLAY_FORMAT) : 'Pick a date'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        defaultMonth={selectedDate}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="flex items-center justify-between rounded-lg border border-border p-3">
+                  <div>
+                    <Label htmlFor={`${formId}-published`}>Published</Label>
+                    <p className="text-xs text-muted-foreground">Visible on the public website</p>
+                  </div>
+                  <Switch
+                    id={`${formId}-published`}
+                    checked={isPublished}
+                    onCheckedChange={setIsPublished}
+                  />
+                </div>
+              </FormSection>
+
+              <div className="lg:border-l lg:border-border lg:pl-8">
+                <FormSection title="Content" description="Label and optional details for this milestone.">
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-label`}>
+                      Label
+                      <span className="ml-1 text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id={`${formId}-label`}
+                      value={label}
+                      onChange={(e) => setLabel(e.target.value)}
+                      placeholder="Paper Submission Deadline"
+                      required
                     />
-                  </PopoverContent>
-                </Popover>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-description`}>Description</Label>
+                    <Textarea
+                      id={`${formId}-description`}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Additional details shown below the label"
+                      rows={4}
+                    />
+                  </div>
+                </FormSection>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-label`}>Label</Label>
-              <Input
-                id={`${formId}-label`}
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                placeholder="e.g. Paper Submission Deadline"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-description`}>Description</Label>
-              <Textarea
-                id={`${formId}-description`}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Additional details"
-                rows={3}
-              />
-            </div>
-
-            <div className="flex items-center justify-between rounded-lg border border-border p-3">
-              <div>
-                <Label htmlFor={`${formId}-published`}>Published</Label>
-                <p className="text-xs text-muted-foreground">Visible on the public website</p>
-              </div>
-              <Switch
-                id={`${formId}-published`}
-                checked={isPublished}
-                onCheckedChange={setIsPublished}
-              />
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="shrink-0 border-t border-border px-6 py-4">
             <Button
               type="button"
               variant="outline"

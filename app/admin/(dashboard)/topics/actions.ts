@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { finalizeAction } from '@/lib/admin/audit-log'
 import { revalidatePublicSite } from '@/lib/revalidate-public'
 import type { FocusIcon, Locale, TopicType } from '@/types/database'
 
@@ -51,13 +52,20 @@ export async function createTopic(input: {
   revalidatePath('/admin/topics')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'create',
+      resource: 'topic',
+      resourceId: topic.id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.title,
+    }
+  )
 }
 
 export async function updateTopic(
   id: string,
   input: {
-    sort_order: number
     topic_type: TopicType
     icon: FocusIcon | null
     is_published: boolean
@@ -69,7 +77,6 @@ export async function updateTopic(
   const { error } = await supabase
     .from('topics')
     .update({
-      sort_order: input.sort_order,
       topic_type: input.topic_type,
       icon: input.topic_type === 'focus' ? input.icon : null,
       is_published: input.is_published,
@@ -99,7 +106,15 @@ export async function updateTopic(
   revalidatePath('/admin/topics')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'update',
+      resource: 'topic',
+      resourceId: id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.title,
+    }
+  )
 }
 
 export async function deleteTopic(id: string) {
@@ -113,5 +128,57 @@ export async function deleteTopic(id: string) {
   revalidatePath('/admin/topics')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction({ success: true }, { action: 'delete', resource: 'topic', resourceId: id })
+}
+
+export async function reorderTopicsByType(topicType: TopicType, orderedIds: string[]) {
+  const supabase = await createClient()
+
+  const { data: allTopics, error: fetchError } = await supabase
+    .from('topics')
+    .select('id, topic_type, sort_order')
+    .order('sort_order', { ascending: true })
+
+  if (fetchError) {
+    return { error: fetchError.message }
+  }
+
+  const topics = allTopics ?? []
+  const byType: Record<TopicType, string[]> = {
+    main: topics
+      .filter((topic) => topic.topic_type === 'main')
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((topic) => topic.id),
+    focus: topics
+      .filter((topic) => topic.topic_type === 'focus')
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((topic) => topic.id),
+  }
+
+  byType[topicType] = orderedIds
+
+  const flattened = [...byType.main, ...byType.focus]
+
+  for (let index = 0; index < flattened.length; index++) {
+    const { error } = await supabase
+      .from('topics')
+      .update({ sort_order: index })
+      .eq('id', flattened[index])
+
+    if (error) {
+      return { error: error.message }
+    }
+  }
+
+  revalidatePath('/admin/topics')
+  revalidatePath('/admin')
+  revalidatePublicSite()
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'update',
+      resource: 'topic',
+      resourceLabel: `${topicType === 'main' ? 'Main topic' : 'Focus topic'} order`,
+    }
+  )
 }

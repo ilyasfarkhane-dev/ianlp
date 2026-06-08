@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { finalizeAction } from '@/lib/admin/audit-log'
 import { revalidatePublicSite } from '@/lib/revalidate-public'
 import type { Locale, SpeakerCategory } from '@/types/database'
 
@@ -53,13 +54,20 @@ export async function createSpeaker(input: {
   revalidatePath('/admin/speakers')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'create',
+      resource: 'speaker',
+      resourceId: speaker.id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.name,
+    }
+  )
 }
 
 export async function updateSpeaker(
   id: string,
   input: {
-    sort_order: number
     image_path: string
     category: SpeakerCategory
     is_published: boolean
@@ -71,7 +79,6 @@ export async function updateSpeaker(
   const { error } = await supabase
     .from('speakers')
     .update({
-      sort_order: input.sort_order,
       image_path: input.image_path || null,
       category: input.category,
       is_published: input.is_published,
@@ -102,7 +109,15 @@ export async function updateSpeaker(
   revalidatePath('/admin/speakers')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'update',
+      resource: 'speaker',
+      resourceId: id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.name,
+    }
+  )
 }
 
 export async function deleteSpeaker(id: string) {
@@ -116,5 +131,28 @@ export async function deleteSpeaker(id: string) {
   revalidatePath('/admin/speakers')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction({ success: true }, { action: 'delete', resource: 'speaker', resourceId: id })
+}
+
+export async function reorderSpeakers(orderedIds: string[]) {
+  const supabase = await createClient()
+
+  for (let index = 0; index < orderedIds.length; index++) {
+    const { error } = await supabase
+      .from('speakers')
+      .update({ sort_order: index })
+      .eq('id', orderedIds[index])
+
+    if (error) {
+      return { error: error.message }
+    }
+  }
+
+  revalidatePath('/admin/speakers')
+  revalidatePath('/admin')
+  revalidatePublicSite()
+  return finalizeAction(
+    { success: true },
+    { action: 'update', resource: 'speaker', resourceLabel: 'Speaker order' }
+  )
 }

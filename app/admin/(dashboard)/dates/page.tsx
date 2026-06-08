@@ -18,6 +18,8 @@ export default async function AdminDatesPage() {
     .order('sort_order', { ascending: true })
 
   const dateList = (dates ?? []) as ImportantDateWithTranslations[]
+  const nextSortOrder =
+    dateList.length > 0 ? Math.max(...dateList.map((date) => date.sort_order)) + 1 : 0
 
   return (
     <>
@@ -37,7 +39,7 @@ export default async function AdminDatesPage() {
                   : `${dateList.length} date(s) in the database`}
               </CardDescription>
             </div>
-            <DateFormDialog />
+            <DateFormDialog defaultSortOrder={nextSortOrder} />
           </CardHeader>
           <CardContent>
             {dateList.length === 0 ? (

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePublicSite } from '@/lib/revalidate-public'
+import { finalizeAction } from '@/lib/admin/audit-log'
 
 export async function updateSiteSettings(input: {
   countdownDate: string
@@ -64,5 +65,8 @@ export async function updateSiteSettings(input: {
   revalidatePath('/admin/settings')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    { action: 'update', resource: 'site_settings', resourceLabel: 'Site settings' }
+  )
 }

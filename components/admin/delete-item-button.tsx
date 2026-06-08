@@ -9,8 +9,9 @@ import { deletePartner } from '@/app/admin/(dashboard)/partners/actions'
 import { deletePricingTier } from '@/app/admin/(dashboard)/pricing/actions'
 import { deleteSpeaker } from '@/app/admin/(dashboard)/speakers/actions'
 import { deleteTopic } from '@/app/admin/(dashboard)/topics/actions'
+import { deleteWorkshop } from '@/app/admin/(dashboard)/register/actions'
 
-type DeleteAction = 'speaker' | 'date' | 'partner' | 'topic' | 'committee' | 'pricing'
+type DeleteAction = 'speaker' | 'date' | 'partner' | 'topic' | 'committee' | 'pricing' | 'workshop'
 
 const deleteActions: Record<
   DeleteAction,
@@ -22,6 +23,7 @@ const deleteActions: Record<
   topic: deleteTopic,
   committee: deleteCommitteeMember,
   pricing: deletePricingTier,
+  workshop: deleteWorkshop,
 }
 
 type DeleteItemButtonProps = {

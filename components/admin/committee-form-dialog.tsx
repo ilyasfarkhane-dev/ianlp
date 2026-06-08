@@ -60,8 +60,33 @@ function parseCommitteeIcon(icon: string | null | undefined): CommitteeIcon {
   return 'user-round'
 }
 
+function FormSection({
+  title,
+  description,
+  children,
+}: {
+  title: string
+  description?: string
+  children: React.ReactNode
+}) {
+  return (
+    <section className="space-y-3">
+      <div>
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        {description ? (
+          <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  )
+}
+
 type CommitteeFormDialogProps = {
   member?: CommitteeMemberWithTranslations
+  defaultSortOrder?: number
+  defaultCommitteeType?: CommitteeType
+  lockCommitteeType?: boolean
   trigger?: React.ReactNode
   open?: boolean
   onOpenChange?: (open: boolean) => void
@@ -69,6 +94,9 @@ type CommitteeFormDialogProps = {
 
 export function CommitteeFormDialog({
   member,
+  defaultSortOrder = 0,
+  defaultCommitteeType = 'pc_chair',
+  lockCommitteeType = false,
   trigger,
   open: controlledOpen,
   onOpenChange,
@@ -77,9 +105,8 @@ export function CommitteeFormDialog({
   const formId = useId()
   const [internalOpen, setInternalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [sortOrder, setSortOrder] = useState(member?.sort_order ?? 0)
   const [committeeType, setCommitteeType] = useState<CommitteeType>(
-    member?.committee_type ?? 'pc_chair'
+    member?.committee_type ?? defaultCommitteeType
   )
   const [icon, setIcon] = useState<CommitteeIcon>(parseCommitteeIcon(member?.icon))
   const [email, setEmail] = useState(member?.email ?? '')
@@ -90,6 +117,7 @@ export function CommitteeFormDialog({
 
   const isControlled = controlledOpen !== undefined
   const open = isControlled ? controlledOpen : internalOpen
+  const showEmail = committeeType === 'organizing' || committeeType === 'pc_chair'
 
   function setOpen(nextOpen: boolean) {
     if (isControlled) {
@@ -103,15 +131,14 @@ export function CommitteeFormDialog({
     if (!open) return
 
     const fields = getMemberFields(member)
-    setSortOrder(member?.sort_order ?? 0)
-    setCommitteeType(member?.committee_type ?? 'pc_chair')
+    setCommitteeType(member?.committee_type ?? defaultCommitteeType)
     setIcon(parseCommitteeIcon(member?.icon))
     setEmail(member?.email ?? '')
     setIsPublished(member?.is_published ?? true)
     setName(fields.name)
     setAffiliation(fields.affiliation)
     setRoleLabel(fields.roleLabel)
-  }, [open, member])
+  }, [open, member, defaultCommitteeType])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -126,23 +153,28 @@ export function CommitteeFormDialog({
       return
     }
 
+    const translations = buildTranslationsForAllLocales({
+      name: name.trim(),
+      affiliation: affiliation.trim(),
+      role_label: roleLabel.trim(),
+    })
+
     setLoading(true)
-    const payload = {
-      sort_order: sortOrder,
+
+    const sharedPayload = {
       committee_type: committeeType,
       icon: committeeType === 'organizing' ? icon : null,
-      email,
+      email: email.trim(),
       is_published: isPublished,
-      translations: buildTranslationsForAllLocales({
-        name,
-        affiliation,
-        role_label: roleLabel,
-      }),
+      translations,
     }
 
     const result = member
-      ? await updateCommitteeMember(member.id, payload)
-      : await createCommitteeMember(payload)
+      ? await updateCommitteeMember(member.id, sharedPayload)
+      : await createCommitteeMember({
+          sort_order: defaultSortOrder,
+          ...sharedPayload,
+        })
 
     setLoading(false)
 
@@ -168,126 +200,141 @@ export function CommitteeFormDialog({
           </Button>
         </DialogTrigger>
       ) : null}
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-        <form onSubmit={handleSubmit} className="relative" aria-busy={loading}>
+      <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl">
+        <form onSubmit={handleSubmit} className="relative flex min-h-0 flex-1 flex-col" aria-busy={loading}>
           <FormLoadingOverlay loading={loading} label="Saving member…" />
-          <DialogHeader>
+          <DialogHeader className="shrink-0 border-b border-border px-6 pt-6 pb-4">
             <DialogTitle>{member ? 'Edit committee member' : 'Add committee member'}</DialogTitle>
             <DialogDescription>
-              Manage program chairs, reviewers, or organizing committee cards.
+              Set member type and visibility on the left, profile details on the right.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="my-6 space-y-4">
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-sort_order`}>Sort order</Label>
-                <Input
-                  id={`${formId}-sort_order`}
-                  type="number"
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(Number(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-committee_type`}>Type</Label>
-                <Select
-                  value={committeeType}
-                  onValueChange={(v) => setCommitteeType(v as CommitteeType)}
-                >
-                  <SelectTrigger id={`${formId}-committee_type`} className="cursor-pointer">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pc_chair">Program chair</SelectItem>
-                    <SelectItem value="reviewer">External reviewer</SelectItem>
-                    <SelectItem value="organizing">Organizing card</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {committeeType === 'organizing' ? (
-                <div className="space-y-2">
-                  <Label htmlFor={`${formId}-icon`}>Icon</Label>
-                  <Select value={icon} onValueChange={(v) => setIcon(v as CommitteeIcon)}>
-                    <SelectTrigger id={`${formId}-icon`} className="cursor-pointer">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {COMMITTEE_ICONS.map((value) => (
-                        <SelectItem key={value} value={value}>
-                          {COMMITTEE_ICON_LABELS[value]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+              <FormSection title="Basics" description="How this member appears on the committees page.">
+                {lockCommitteeType && !member ? (
+                  <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
+                    <p className="text-xs font-medium text-muted-foreground">Section</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {committeeType === 'pc_chair'
+                        ? 'Program Committee Chairs'
+                        : committeeType === 'reviewer'
+                          ? 'External Reviewers & Advisors'
+                          : 'Organizing Committee'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-committee_type`}>Type</Label>
+                    <Select
+                      value={committeeType}
+                      onValueChange={(value) => setCommitteeType(value as CommitteeType)}
+                    >
+                      <SelectTrigger id={`${formId}-committee_type`} className="cursor-pointer">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pc_chair">Program chair</SelectItem>
+                        <SelectItem value="reviewer">External reviewer</SelectItem>
+                        <SelectItem value="organizing">Organizing card</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {committeeType === 'organizing' ? (
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-icon`}>Card icon</Label>
+                    <Select value={icon} onValueChange={(value) => setIcon(value as CommitteeIcon)}>
+                      <SelectTrigger id={`${formId}-icon`} className="cursor-pointer">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COMMITTEE_ICONS.map((value) => (
+                          <SelectItem key={value} value={value}>
+                            {COMMITTEE_ICON_LABELS[value]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : null}
+
+                {showEmail ? (
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-email`}>Email (optional)</Label>
+                    <Input
+                      id={`${formId}-email`}
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="name@university.edu"
+                    />
+                  </div>
+                ) : null}
+
+                <div className="flex items-center justify-between rounded-lg border border-border p-3">
+                  <div>
+                    <Label htmlFor={`${formId}-published`}>Published</Label>
+                    <p className="text-xs text-muted-foreground">Visible on the public website</p>
+                  </div>
+                  <Switch
+                    id={`${formId}-published`}
+                    checked={isPublished}
+                    onCheckedChange={setIsPublished}
+                  />
                 </div>
-              ) : (
-                <div className="hidden sm:block" aria-hidden />
-              )}
-            </div>
+              </FormSection>
 
-            {committeeType === 'organizing' && (
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-role_label`}>Role label</Label>
-                <Input
-                  id={`${formId}-role_label`}
-                  value={roleLabel}
-                  onChange={(e) => setRoleLabel(e.target.value)}
-                  placeholder="e.g. General Chair"
-                  required
-                />
+              <div className="lg:border-l lg:border-border lg:pl-8">
+                <FormSection title="Content" description="Name and affiliation shown on the card.">
+                  {committeeType === 'organizing' ? (
+                    <div className="space-y-2">
+                      <Label htmlFor={`${formId}-role_label`}>
+                        Role label
+                        <span className="ml-1 text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id={`${formId}-role_label`}
+                        value={roleLabel}
+                        onChange={(e) => setRoleLabel(e.target.value)}
+                        placeholder="General Chair"
+                        required
+                      />
+                    </div>
+                  ) : null}
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-name`}>
+                      Name
+                      <span className="ml-1 text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id={`${formId}-name`}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Prof. Jane Doe"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`${formId}-affiliation`}>Affiliation / details</Label>
+                    <Textarea
+                      id={`${formId}-affiliation`}
+                      value={affiliation}
+                      onChange={(e) => setAffiliation(e.target.value)}
+                      placeholder="University, department, country"
+                      rows={3}
+                    />
+                  </div>
+                </FormSection>
               </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-name`}>Name</Label>
-              <Input
-                id={`${formId}-name`}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Prof. Jane Doe"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor={`${formId}-affiliation`}>Affiliation / details</Label>
-              <Textarea
-                id={`${formId}-affiliation`}
-                value={affiliation}
-                onChange={(e) => setAffiliation(e.target.value)}
-                placeholder="University, department, country"
-                rows={3}
-              />
-            </div>
-
-            {(committeeType === 'organizing' || committeeType === 'pc_chair') && (
-              <div className="space-y-2">
-                <Label htmlFor={`${formId}-email`}>Email (optional)</Label>
-                <Input
-                  id={`${formId}-email`}
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@university.edu"
-                />
-              </div>
-            )}
-
-            <div className="flex items-center justify-between rounded-lg border border-border p-3">
-              <div>
-                <Label htmlFor={`${formId}-published`}>Published</Label>
-                <p className="text-xs text-muted-foreground">Visible on the public website</p>
-              </div>
-              <Switch
-                id={`${formId}-published`}
-                checked={isPublished}
-                onCheckedChange={setIsPublished}
-              />
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="shrink-0 border-t border-border px-6 py-4">
             <Button
               type="button"
               variant="outline"

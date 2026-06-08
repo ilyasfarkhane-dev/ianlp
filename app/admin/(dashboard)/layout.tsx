@@ -31,8 +31,8 @@ export default async function AdminDashboardLayout({
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       <NavigationProgress scope="admin" />
       <SidebarProvider>
-        <AdminSidebar />
-        <SidebarInset className="min-h-svh bg-muted/30">
+        <AdminSidebar email={user.email} />
+        <SidebarInset className="min-h-svh bg-muted/20">
           {children}
           <Toaster richColors closeButton />
         </SidebarInset>

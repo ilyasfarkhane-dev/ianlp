@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { finalizeAction } from '@/lib/admin/audit-log'
 import { revalidatePublicSite } from '@/lib/revalidate-public'
 import type { Locale } from '@/types/database'
 
@@ -53,13 +54,20 @@ export async function createPricingTier(input: {
   revalidatePath('/admin/pricing')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'create',
+      resource: 'pricing_tier',
+      resourceId: tier.id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.name,
+    }
+  )
 }
 
 export async function updatePricingTier(
   id: string,
   input: {
-    sort_order: number
     price: string
     currency: string
     is_featured: boolean
@@ -72,7 +80,6 @@ export async function updatePricingTier(
   const { error } = await supabase
     .from('pricing_tiers')
     .update({
-      sort_order: input.sort_order,
       price: input.price,
       currency: input.currency,
       is_featured: input.is_featured,
@@ -103,7 +110,15 @@ export async function updatePricingTier(
   revalidatePath('/admin/pricing')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    {
+      action: 'update',
+      resource: 'pricing_tier',
+      resourceId: id,
+      resourceLabel: input.translations.find((t) => t.locale === 'en')?.name,
+    }
+  )
 }
 
 export async function deletePricingTier(id: string) {
@@ -117,5 +132,31 @@ export async function deletePricingTier(id: string) {
   revalidatePath('/admin/pricing')
   revalidatePath('/admin')
   revalidatePublicSite()
-  return { success: true }
+  return finalizeAction(
+    { success: true },
+    { action: 'delete', resource: 'pricing_tier', resourceId: id }
+  )
+}
+
+export async function reorderPricingTiers(orderedIds: string[]) {
+  const supabase = await createClient()
+
+  for (let index = 0; index < orderedIds.length; index++) {
+    const { error } = await supabase
+      .from('pricing_tiers')
+      .update({ sort_order: index })
+      .eq('id', orderedIds[index])
+
+    if (error) {
+      return { error: error.message }
+    }
+  }
+
+  revalidatePath('/admin/pricing')
+  revalidatePath('/admin')
+  revalidatePublicSite()
+  return finalizeAction(
+    { success: true },
+    { action: 'update', resource: 'pricing_tier', resourceLabel: 'Pricing tier order' }
+  )
 }

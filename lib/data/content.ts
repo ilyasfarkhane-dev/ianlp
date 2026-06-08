@@ -16,11 +16,15 @@ import type {
   PublicImportantDate,
   PublicPartner,
   PublicPricingTier,
+  PublicRegisterPageContent,
   PublicSpeaker,
   PublicTopic,
   PublicTopicsContent,
+  PublicWorkshop,
   SpeakerWithTranslations,
   TopicWithTranslations,
+  WorkshopIcon,
+  WorkshopWithTranslations,
 } from '@/types/database'
 
 export type {
@@ -30,9 +34,11 @@ export type {
   PublicImportantDate,
   PublicPartner,
   PublicPricingTier,
+  PublicRegisterPageContent,
   PublicSpeaker,
   PublicTopic,
   PublicTopicsContent,
+  PublicWorkshop,
 }
 
 const STATIC_PARTNERS: Omit<PublicPartner, 'id'>[] = [
@@ -628,4 +634,171 @@ export async function getSiteSettings() {
 
   const settings = Object.fromEntries((data ?? []).map((row) => [row.key, row.value]))
   return { data: settings, error: null }
+}
+
+function parseWorkshopIcon(icon: string | null | undefined): WorkshopIcon {
+  if (icon === 'workflow') return 'workflow'
+  return 'video'
+}
+
+export function mapWorkshopToPublic(
+  workshop: WorkshopWithTranslations,
+  locale: Locale
+): PublicWorkshop | null {
+  const translation =
+    workshop.workshop_translations.find((t) => t.locale === locale) ??
+    workshop.workshop_translations.find((t) => t.locale === 'en') ??
+    workshop.workshop_translations[0]
+
+  if (!translation) return null
+
+  return {
+    id: workshop.id,
+    icon: parseWorkshopIcon(workshop.icon),
+    imagePath: workshop.image_path,
+    registrationUrl: workshop.registration_url,
+    duration: workshop.duration,
+    fee: workshop.fee,
+    badgeLabel: translation.badge_label,
+    title: translation.title,
+    subtitle: translation.subtitle,
+    description: translation.description,
+    animator: translation.animator,
+    animatorRole: translation.animator_role,
+    program: parseFeatures(translation.program),
+    audience: translation.audience,
+  }
+}
+
+async function getStaticWorkshops(locale: Locale): Promise<PublicWorkshop[]> {
+  const t = await getTranslations({ locale, namespace: 'register' })
+
+  const configs = [
+    {
+      id: 'textToVideo',
+      icon: 'video' as const,
+      imagePath: '/workshops/w1.jpg',
+      registrationUrl:
+        'https://docs.google.com/forms/d/e/1FAIpQLSexlxRa97uIEUGNECvlgGkC1Qw1E2K9jaYnGFK1XCA55ZJGmg/viewform',
+      numberKey: 'workshopNumber1' as const,
+    },
+    {
+      id: 'noCodeAutomation',
+      icon: 'workflow' as const,
+      imagePath: '/workshops/w2.jpg',
+      registrationUrl:
+        'https://docs.google.com/forms/d/e/1FAIpQLSfJX-6YG7hETweSRgodTLQcABLjGvT31bJmx_3WbT80DNGfMA/viewform',
+      numberKey: 'workshopNumber2' as const,
+    },
+  ]
+
+  return configs.map(({ id, icon, imagePath, registrationUrl, numberKey }) => ({
+    id,
+    icon,
+    imagePath,
+    registrationUrl,
+    duration: t(`workshops.${id}.duration`),
+    fee: t(`workshops.${id}.fee`),
+    badgeLabel: t(numberKey),
+    title: t(`workshops.${id}.title`),
+    subtitle: t(`workshops.${id}.subtitle`),
+    description: t(`workshops.${id}.description`),
+    animator: t(`workshops.${id}.animator`),
+    animatorRole: t(`workshops.${id}.animatorRole`),
+    program: ['program1', 'program2', 'program3', 'program4'].map((key) =>
+      t(`workshops.${id}.${key}`)
+    ),
+    audience: t(`workshops.${id}.audience`),
+  }))
+}
+
+export async function getPublishedWorkshops() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('workshops')
+    .select('*, workshop_translations(*)')
+    .eq('is_published', true)
+    .order('sort_order', { ascending: true })
+
+  if (error) return { data: [] as WorkshopWithTranslations[], error }
+  return { data: (data ?? []) as WorkshopWithTranslations[], error: null }
+}
+
+export async function getWorkshopsForLocale(locale: Locale): Promise<PublicWorkshop[]> {
+  if (!isSupabaseConfigured()) {
+    return getStaticWorkshops(locale)
+  }
+
+  const { data, error } = await getPublishedWorkshops()
+
+  if (error || data.length === 0) {
+    return getStaticWorkshops(locale)
+  }
+
+  const mapped = data
+    .map((workshop) => mapWorkshopToPublic(workshop, locale))
+    .filter((workshop): workshop is PublicWorkshop => workshop !== null)
+
+  return mapped.length > 0 ? mapped : getStaticWorkshops(locale)
+}
+
+async function getStaticRegisterPageContent(locale: Locale): Promise<PublicRegisterPageContent> {
+  const t = await getTranslations({ locale, namespace: 'register' })
+
+  return {
+    pageTitle: t('title'),
+    pageSubtitle: t('subtitle'),
+    datesValue: t('datesValue'),
+    conferenceStep: t('conferenceStep'),
+    feesTitle: t('feesTitle'),
+    feesSubtitle: t('feesSubtitle'),
+    workshopsBadge: t('workshopsBadge'),
+    workshopsTitle: t('workshopsTitle'),
+    workshopsSubtitle: t('workshopsSubtitle'),
+    limitedSpots: t('limitedSpots'),
+    helpTitle: t('helpTitle'),
+    helpSubtitle: t('helpSubtitle'),
+    helpEmail: 'omar.zahour@univh2c.ma',
+  }
+}
+
+function mapRegisterPageSettings(
+  register: Record<string, unknown> | undefined,
+  fallback: PublicRegisterPageContent
+): PublicRegisterPageContent {
+  if (!register) return fallback
+
+  return {
+    pageTitle: getStringSetting(register.pageTitle, fallback.pageTitle),
+    pageSubtitle: getStringSetting(register.pageSubtitle, fallback.pageSubtitle),
+    datesValue: getStringSetting(register.datesValue, fallback.datesValue),
+    conferenceStep: getStringSetting(register.conferenceStep, fallback.conferenceStep),
+    feesTitle: getStringSetting(register.feesTitle, fallback.feesTitle),
+    feesSubtitle: getStringSetting(register.feesSubtitle, fallback.feesSubtitle),
+    workshopsBadge: getStringSetting(register.workshopsBadge, fallback.workshopsBadge),
+    workshopsTitle: getStringSetting(register.workshopsTitle, fallback.workshopsTitle),
+    workshopsSubtitle: getStringSetting(register.workshopsSubtitle, fallback.workshopsSubtitle),
+    limitedSpots: getStringSetting(register.limitedSpots, fallback.limitedSpots),
+    helpTitle: getStringSetting(register.helpTitle, fallback.helpTitle),
+    helpSubtitle: getStringSetting(register.helpSubtitle, fallback.helpSubtitle),
+    helpEmail: getStringSetting(register.helpEmail, fallback.helpEmail),
+  }
+}
+
+export async function getRegisterPageContentForLocale(
+  locale: Locale
+): Promise<PublicRegisterPageContent> {
+  const fallback = await getStaticRegisterPageContent(locale)
+
+  if (!isSupabaseConfigured()) {
+    return fallback
+  }
+
+  const { data, error } = await getSiteSettings()
+
+  if (error || !data.register) {
+    return fallback
+  }
+
+  return mapRegisterPageSettings(data.register as Record<string, unknown>, fallback)
 }

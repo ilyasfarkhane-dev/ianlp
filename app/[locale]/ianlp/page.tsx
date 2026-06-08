@@ -11,10 +11,9 @@ import Submission from '@/components/ianlp/submission'
 import ReviewProcess from '@/components/ianlp/review-process'
 import Committees from '@/components/ianlp/committees'
 import VenueTravel from '@/components/ianlp/venue-travel'
-import Pricing from '@/components/ianlp/pricing'
 import Contact from '@/components/ianlp/contact'
 import Footer from '@/components/ianlp/footer'
-import { getCommitteesForLocale, getContactForLocale, getDatesForLocale, getPartnersForLocale, getPricingForLocale, getSpeakersForLocale, getTopicsForLocale } from '@/lib/data/content'
+import { getCommitteesForLocale, getContactForLocale, getDatesForLocale, getPartnersForLocale, getSpeakersForLocale, getTopicsForLocale } from '@/lib/data/content'
 import type { Locale } from '@/types/database'
 
 export const metadata: Metadata = {
@@ -28,13 +27,12 @@ export default async function IANLPPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  const [speakers, partners, dates, topics, committees, pricing, contact] = await Promise.all([
+  const [speakers, partners, dates, topics, committees, contact] = await Promise.all([
     getSpeakersForLocale(locale as Locale),
     getPartnersForLocale(locale as Locale),
     getDatesForLocale(locale as Locale),
     getTopicsForLocale(locale as Locale),
     getCommitteesForLocale(locale as Locale),
-    getPricingForLocale(locale as Locale),
     getContactForLocale(locale as Locale),
   ])
 
@@ -56,7 +54,6 @@ export default async function IANLPPage({ params }: Props) {
           organizing={committees.organizing}
         />
         <VenueTravel />
-        <Pricing tiers={pricing} />
         <Contact partners={partners} contact={contact} />
       </main>
       <Footer contact={contact} />
