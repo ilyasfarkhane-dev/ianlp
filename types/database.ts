@@ -566,15 +566,8 @@ export type PublicPricingTier = {
   isFeatured: boolean
 }
 
-export type PublicContactInfo = {
-  email: string
-  phone: string
-  phoneDisplay: string
-  address: string
-  generalChairName: string
-  chairAffiliationPrimary: string
-  chairAffiliationSecondary: string
-}
+export type PublicContactInfo = import('@/lib/contact-settings').PublicContactInfo
+export type ProgramChair = import('@/lib/contact-settings').ProgramChair
 
 export type WorkshopIcon = 'video' | 'workflow'
 

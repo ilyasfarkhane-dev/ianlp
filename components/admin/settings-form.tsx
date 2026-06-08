@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { CalendarDays, ExternalLink, Link2, Mail, RotateCcw } from 'lucide-react'
+import { CalendarDays, ExternalLink, Link2, Mail, Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { FormLoadingOverlay } from '@/components/ui/form-loading-overlay'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { Button } from '@/components/ui/button'
@@ -13,19 +13,18 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { updateSiteSettings } from '@/app/admin/(dashboard)/settings/actions'
+import { createEmptyProgramChair, type ProgramChair } from '@/lib/contact-settings'
 import { cn } from '@/lib/utils'
 
 export type SiteSettingsFormValues = {
   countdownDate: string
   startDate: string
   venue: string
-  email: string
+  emails: string[]
   phone: string
   phoneDisplay: string
   address: string
-  generalChairName: string
-  chairAffiliationPrimary: string
-  chairAffiliationSecondary: string
+  programChairs: ProgramChair[]
   easychair: string
   springerTemplate: string
 }
@@ -99,6 +98,47 @@ export function SettingsForm({ initial }: SettingsFormProps) {
 
   function updateField(key: keyof SiteSettingsFormValues, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function updateEmail(index: number, value: string) {
+    setForm((prev) => ({
+      ...prev,
+      emails: prev.emails.map((email, i) => (i === index ? value : email)),
+    }))
+  }
+
+  function addEmail() {
+    setForm((prev) => ({ ...prev, emails: [...prev.emails, ''] }))
+  }
+
+  function removeEmail(index: number) {
+    setForm((prev) => ({
+      ...prev,
+      emails: prev.emails.filter((_, i) => i !== index),
+    }))
+  }
+
+  function updateProgramChair(index: number, field: keyof ProgramChair, value: string) {
+    setForm((prev) => ({
+      ...prev,
+      programChairs: prev.programChairs.map((chair, i) =>
+        i === index ? { ...chair, [field]: value } : chair
+      ),
+    }))
+  }
+
+  function addProgramChair() {
+    setForm((prev) => ({
+      ...prev,
+      programChairs: [...prev.programChairs, createEmptyProgramChair()],
+    }))
+  }
+
+  function removeProgramChair(index: number) {
+    setForm((prev) => ({
+      ...prev,
+      programChairs: prev.programChairs.filter((_, i) => i !== index),
+    }))
   }
 
   function handleReset() {
@@ -210,15 +250,54 @@ export function SettingsForm({ initial }: SettingsFormProps) {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <FieldGroup htmlFor="email" label="Email">
-              <Input
-                id="email"
-                type="email"
-                value={form.email}
-                onChange={(e) => updateField('email', e.target.value)}
-              />
-            </FieldGroup>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">Email addresses</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Add one or more contact emails shown in the Get in Touch section and footer.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addEmail}
+                className="cursor-pointer shrink-0"
+              >
+                <Plus className="h-4 w-4" />
+                Add email
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {form.emails.map((email, index) => (
+                <div key={`email-${index}`} className="flex items-end gap-2">
+                  <FieldGroup htmlFor={`email-${index}`} label={`Email ${index + 1}`} className="flex-1">
+                    <Input
+                      id={`email-${index}`}
+                      type="email"
+                      value={email}
+                      onChange={(e) => updateEmail(index, e.target.value)}
+                      placeholder="contact@example.com"
+                    />
+                  </FieldGroup>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => removeEmail(index)}
+                    disabled={form.emails.length <= 1}
+                    className="cursor-pointer shrink-0"
+                    aria-label={`Remove email ${index + 1}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 border-t border-border pt-6 sm:grid-cols-2">
             <FieldGroup
               htmlFor="phone"
               label="Phone (tel link)"
@@ -250,34 +329,74 @@ export function SettingsForm({ initial }: SettingsFormProps) {
           </div>
 
           <div className="space-y-4 border-t border-border pt-6">
-            <div>
-              <h3 className="text-sm font-semibold text-foreground">General chair</h3>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Shown in the contact section alongside email and phone.
-              </p>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">Program chairs</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Shown in the Get in Touch section alongside contact details.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addProgramChair}
+                className="cursor-pointer shrink-0"
+              >
+                <Plus className="h-4 w-4" />
+                Add chair
+              </Button>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FieldGroup htmlFor="generalChairName" label="Name" className="sm:col-span-2">
-                <Input
-                  id="generalChairName"
-                  value={form.generalChairName}
-                  onChange={(e) => updateField('generalChairName', e.target.value)}
-                />
-              </FieldGroup>
-              <FieldGroup htmlFor="chairAffiliationPrimary" label="Affiliation (primary)">
-                <Input
-                  id="chairAffiliationPrimary"
-                  value={form.chairAffiliationPrimary}
-                  onChange={(e) => updateField('chairAffiliationPrimary', e.target.value)}
-                />
-              </FieldGroup>
-              <FieldGroup htmlFor="chairAffiliationSecondary" label="Affiliation (secondary)">
-                <Input
-                  id="chairAffiliationSecondary"
-                  value={form.chairAffiliationSecondary}
-                  onChange={(e) => updateField('chairAffiliationSecondary', e.target.value)}
-                />
-              </FieldGroup>
+
+            <div className="space-y-4">
+              {form.programChairs.map((chair, index) => (
+                <div
+                  key={`chair-${index}`}
+                  className="space-y-4 rounded-lg border border-border bg-muted/20 p-4"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-medium text-foreground">Program chair {index + 1}</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => removeProgramChair(index)}
+                      disabled={form.programChairs.length <= 1}
+                      className="cursor-pointer shrink-0"
+                      aria-label={`Remove program chair ${index + 1}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FieldGroup htmlFor={`chair-name-${index}`} label="Name" className="sm:col-span-2">
+                      <Input
+                        id={`chair-name-${index}`}
+                        value={chair.name}
+                        onChange={(e) => updateProgramChair(index, 'name', e.target.value)}
+                      />
+                    </FieldGroup>
+                    <FieldGroup htmlFor={`chair-affiliation-primary-${index}`} label="Affiliation (primary)">
+                      <Input
+                        id={`chair-affiliation-primary-${index}`}
+                        value={chair.affiliationPrimary}
+                        onChange={(e) =>
+                          updateProgramChair(index, 'affiliationPrimary', e.target.value)
+                        }
+                      />
+                    </FieldGroup>
+                    <FieldGroup htmlFor={`chair-affiliation-secondary-${index}`} label="Affiliation (secondary)">
+                      <Input
+                        id={`chair-affiliation-secondary-${index}`}
+                        value={chair.affiliationSecondary}
+                        onChange={(e) =>
+                          updateProgramChair(index, 'affiliationSecondary', e.target.value)
+                        }
+                      />
+                    </FieldGroup>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </CardContent>

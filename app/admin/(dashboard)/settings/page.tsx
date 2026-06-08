@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { AdminHeader } from '@/components/admin/admin-header'
 import { SettingsForm } from '@/components/admin/settings-form'
+import { normalizeContactSettings } from '@/lib/contact-settings'
 
 function getString(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value : fallback
@@ -19,26 +20,32 @@ export default async function AdminSettingsPage() {
   const contact = (byKey.contact ?? {}) as Record<string, unknown>
   const links = (byKey.links ?? {}) as Record<string, unknown>
 
+  const contactDefaults = normalizeContactSettings(undefined, {
+    emails: ['omar.zahour@univh2c.ma'],
+    phone: '+212660082091',
+    phoneDisplay: '+212 6 60 08 20 91',
+    address:
+      "Faculty of Sciences Ben M'Sick (FSBM), Hassan II University of Casablanca, Bd Commandant Driss Al Harti, Casablanca 20670, Morocco",
+    programChairs: [
+      {
+        name: 'Prof. Omar Zahour',
+        affiliationPrimary: "Faculty of Sciences Ben M'Sick (FSBM)",
+        affiliationSecondary: 'Hassan II University of Casablanca',
+      },
+    ],
+  })
+
+  const contactValues = normalizeContactSettings(contact, contactDefaults)
+
   const initial = {
     countdownDate: getString(conference.countdownDate, '2026-06-29T09:00:00'),
     startDate: getString(conference.startDate, 'June 29-30, 2026'),
     venue: getString(conference.venue, "Faculty of Sciences Ben M'Sick (FSBM)"),
-    email: getString(contact.email, 'omar.zahour@univh2c.ma'),
-    phone: getString(contact.phone, '+212660082091'),
-    phoneDisplay: getString(contact.phoneDisplay, '+212 6 60 08 20 91'),
-    address: getString(
-      contact.address,
-      "Faculty of Sciences Ben M'Sick (FSBM), Hassan II University of Casablanca, Bd Commandant Driss Al Harti, Casablanca 20670, Morocco"
-    ),
-    generalChairName: getString(contact.generalChairName, 'Prof. Omar Zahour'),
-    chairAffiliationPrimary: getString(
-      contact.chairAffiliationPrimary,
-      "Faculty of Sciences Ben M'Sick (FSBM)"
-    ),
-    chairAffiliationSecondary: getString(
-      contact.chairAffiliationSecondary,
-      'Hassan II University of Casablanca'
-    ),
+    emails: contactValues.emails,
+    phone: contactValues.phone,
+    phoneDisplay: contactValues.phoneDisplay,
+    address: contactValues.address,
+    programChairs: contactValues.programChairs,
     easychair: getString(
       links.easychair,
       'https://easychair.org/conferences/?conf=ianlp2026'

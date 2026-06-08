@@ -4,18 +4,17 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePublicSite } from '@/lib/revalidate-public'
 import { finalizeAction } from '@/lib/admin/audit-log'
+import { serializeContactSettings, type ProgramChair } from '@/lib/contact-settings'
 
 export async function updateSiteSettings(input: {
   countdownDate: string
   startDate: string
   venue: string
-  email: string
+  emails: string[]
   phone: string
   phoneDisplay: string
   address: string
-  generalChairName: string
-  chairAffiliationPrimary: string
-  chairAffiliationSecondary: string
+  programChairs: ProgramChair[]
   easychair: string
   springerTemplate: string
 }) {
@@ -32,15 +31,13 @@ export async function updateSiteSettings(input: {
     },
     {
       key: 'contact',
-      value: {
-        email: input.email,
+      value: serializeContactSettings({
+        emails: input.emails,
         phone: input.phone,
         phoneDisplay: input.phoneDisplay,
         address: input.address,
-        generalChairName: input.generalChairName,
-        chairAffiliationPrimary: input.chairAffiliationPrimary,
-        chairAffiliationSecondary: input.chairAffiliationSecondary,
-      },
+        programChairs: input.programChairs,
+      }),
     },
     {
       key: 'links',

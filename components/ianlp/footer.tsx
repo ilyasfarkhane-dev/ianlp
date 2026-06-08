@@ -90,15 +90,17 @@ export default function Footer({ contact }: FooterProps) {
               {t('contact')}
             </p>
             <ul className="space-y-4 text-sm">
-              <li>
-                <a
-                  href={`mailto:${contact.email}`}
-                  className="group flex cursor-pointer items-start gap-3 text-white/70 transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary"
-                >
-                  <Mail className="mt-0.5 h-4 w-4 flex-shrink-0 text-secondary" aria-hidden />
-                  <span>{contact.email}</span>
-                </a>
-              </li>
+              {contact.emails.map((email) => (
+                <li key={email}>
+                  <a
+                    href={`mailto:${email}`}
+                    className="group flex cursor-pointer items-start gap-3 text-white/70 transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary"
+                  >
+                    <Mail className="mt-0.5 h-4 w-4 flex-shrink-0 text-secondary" aria-hidden />
+                    <span>{email}</span>
+                  </a>
+                </li>
+              ))}
               <li>
                 <a
                   href={`tel:${contact.phone.replace(/\s/g, '')}`}

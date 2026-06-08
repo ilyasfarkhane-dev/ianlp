@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
+import { normalizeContactSettings } from '@/lib/contact-settings'
 import type {
   CommitteeIcon,
   CommitteeMemberWithTranslations,
@@ -489,36 +490,17 @@ async function getStaticContact(locale: Locale): Promise<PublicContactInfo> {
   const t = await getTranslations({ locale, namespace: 'contact' })
 
   return {
-    email: 'omar.zahour@univh2c.ma',
+    emails: ['omar.zahour@univh2c.ma'],
     phone: '+212660082091',
     phoneDisplay: '+212 6 60 08 20 91',
     address: t('addressValue'),
-    generalChairName: 'Prof. Omar Zahour',
-    chairAffiliationPrimary: "Faculty of Sciences Ben M'Sick (FSBM)",
-    chairAffiliationSecondary: 'Hassan II University of Casablanca',
-  }
-}
-
-function mapContactSettings(
-  contact: Record<string, unknown> | undefined,
-  fallback: PublicContactInfo
-): PublicContactInfo {
-  if (!contact) return fallback
-
-  return {
-    email: getStringSetting(contact.email, fallback.email),
-    phone: getStringSetting(contact.phone, fallback.phone),
-    phoneDisplay: getStringSetting(contact.phoneDisplay, fallback.phoneDisplay),
-    address: getStringSetting(contact.address, fallback.address),
-    generalChairName: getStringSetting(contact.generalChairName, fallback.generalChairName),
-    chairAffiliationPrimary: getStringSetting(
-      contact.chairAffiliationPrimary,
-      fallback.chairAffiliationPrimary
-    ),
-    chairAffiliationSecondary: getStringSetting(
-      contact.chairAffiliationSecondary,
-      fallback.chairAffiliationSecondary
-    ),
+    programChairs: [
+      {
+        name: 'Prof. Omar Zahour',
+        affiliationPrimary: "Faculty of Sciences Ben M'Sick (FSBM)",
+        affiliationSecondary: 'Hassan II University of Casablanca',
+      },
+    ],
   }
 }
 
@@ -535,7 +517,7 @@ export async function getContactForLocale(locale: Locale): Promise<PublicContact
     return fallback
   }
 
-  return mapContactSettings(data.contact as Record<string, unknown>, fallback)
+  return normalizeContactSettings(data.contact as Record<string, unknown>, fallback)
 }
 
 export async function getPartnersForLocale(locale: Locale): Promise<PublicPartner[]> {

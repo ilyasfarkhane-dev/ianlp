@@ -97,12 +97,6 @@ export default function Contact({ partners, contact }: ContactProps) {
     href?: string
   }[] = [
     {
-      icon: Mail,
-      label: t('email'),
-      value: contact.email,
-      href: `mailto:${contact.email}`,
-    },
-    {
       icon: Phone,
       label: t('phone'),
       value: contact.phoneDisplay,
@@ -225,6 +219,28 @@ export default function Contact({ partners, contact }: ContactProps) {
             <p className="mb-6 text-sm leading-relaxed text-muted-foreground">{t('reachOut')}</p>
 
             <div ref={contactRef} className="divide-y divide-border">
+              <div className="flex gap-5 py-6 first:pt-0">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Mail className="h-4 w-4" aria-hidden />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+                    {t('email')}
+                  </p>
+                  <div className="mt-2 space-y-2">
+                    {contact.emails.map((email) => (
+                      <a
+                        key={email}
+                        href={`mailto:${email}`}
+                        className="block cursor-pointer text-sm font-semibold text-foreground transition-colors duration-200 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                      >
+                        {email}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               {contactItems.map(({ icon: Icon, label, value, href }) => (
                 <div key={label} className="flex gap-5 py-6 first:pt-0 last:pb-0">
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -255,24 +271,32 @@ export default function Contact({ partners, contact }: ContactProps) {
               <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <UserRound className="h-5 w-5" aria-hidden />
               </div>
-              <h3 className="text-2xl font-bold text-foreground">{t('generalChair')}</h3>
+              <h3 className="text-2xl font-bold text-foreground">{t('programChair')}</h3>
             </div>
 
             <div className="divide-y divide-border">
-              <div className="pb-6">
-                <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-                  {t('name')}
-                </p>
-                <p className="mt-2 text-lg font-bold text-foreground">{contact.generalChairName}</p>
-              </div>
+              {contact.programChairs.map((chair, index) => (
+                <div key={`${chair.name}-${index}`} className="space-y-6 py-6 first:pt-0 last:pb-0">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+                      {t('name')}
+                    </p>
+                    <p className="mt-2 text-lg font-bold text-foreground">{chair.name}</p>
+                  </div>
 
-              <div className="py-6">
-                <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-                  {t('affiliation')}
-                </p>
-                <p className="mt-2 font-semibold text-foreground">{contact.chairAffiliationPrimary}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{contact.chairAffiliationSecondary}</p>
-              </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+                      {t('affiliation')}
+                    </p>
+                    <p className="mt-2 font-semibold text-foreground">{chair.affiliationPrimary}</p>
+                    {chair.affiliationSecondary ? (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {chair.affiliationSecondary}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
