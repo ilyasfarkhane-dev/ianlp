@@ -2,6 +2,15 @@ import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
 import { normalizeContactSettings } from '@/lib/contact-settings'
+import {
+  getSubmissionContentForLocale,
+  mergeSubmissionLinks,
+  normalizeSubmissionSettings,
+  DEFAULT_SUBMISSION_FORMAT_URL,
+  DEFAULT_SUBMISSION_PLATFORM_URL,
+  type PublicSubmissionContent,
+  type SubmissionSettingsValue,
+} from '@/lib/submission-settings'
 import type {
   CommitteeIcon,
   CommitteeMemberWithTranslations,
@@ -783,4 +792,107 @@ export async function getRegisterPageContentForLocale(
   }
 
   return mapRegisterPageSettings(data.register as Record<string, unknown>, fallback)
+}
+
+export type { PublicSubmissionContent }
+
+async function getStaticSubmissionForLocale(locale: Locale): Promise<PublicSubmissionContent> {
+  const t = await getTranslations({ locale, namespace: 'submission' })
+
+  return {
+    label: t('label'),
+    title: t('title'),
+    subtitle: t('subtitle'),
+    platform: t('platform'),
+    platformDesc: t('platformDesc'),
+    platformUrl: DEFAULT_SUBMISSION_PLATFORM_URL,
+    platformItems: [t('platform2'), t('platform3')],
+    format: t('format'),
+    formatDesc: t('formatDesc'),
+    formatUrl: DEFAULT_SUBMISSION_FORMAT_URL,
+    formatItems: [t('format1'), t('format2'), t('format3')],
+    keyReqs: t('keyReqs'),
+    keyReqsDesc: t('keyReqsDesc'),
+    keyReqsItems: [t('keyReqs1'), t('keyReqs2'), t('keyReqs3')],
+    qualityEthics: t('qualityEthics'),
+    evaluationCriteria: t('evaluationCriteria'),
+    evaluationItems: [t('eval1'), t('eval2'), t('eval3'), t('eval4'), t('eval5')],
+    plagiarism: t('plagiarism'),
+    plagiarismItems: [t('plag1'), t('plag2'), t('plag3'), t('plag4'), t('plag5')],
+  }
+}
+
+async function getStaticSubmissionSettings(): Promise<SubmissionSettingsValue> {
+  const [en, fr, ar] = await Promise.all([
+    getStaticSubmissionForLocale('en'),
+    getStaticSubmissionForLocale('fr'),
+    getStaticSubmissionForLocale('ar'),
+  ])
+
+  return { en, fr, ar }
+}
+
+export async function getSubmissionForLocale(locale: Locale): Promise<PublicSubmissionContent> {
+  const fallbacks = await getStaticSubmissionSettings()
+  const links = isSupabaseConfigured() ? (await getSiteSettings()).data?.links : undefined
+
+  if (!isSupabaseConfigured()) {
+    return mergeSubmissionLinks(
+      getSubmissionContentForLocale(fallbacks, locale),
+      links as { easychair?: unknown; springerTemplate?: unknown } | undefined
+    )
+  }
+
+  const { data, error } = await getSiteSettings()
+
+  if (error || !data.submission) {
+    return mergeSubmissionLinks(
+      getSubmissionContentForLocale(fallbacks, locale),
+      data?.links as { easychair?: unknown; springerTemplate?: unknown } | undefined
+    )
+  }
+
+  const settings = normalizeSubmissionSettings(
+    data.submission as Record<string, unknown>,
+    fallbacks
+  )
+
+  return mergeSubmissionLinks(
+    getSubmissionContentForLocale(settings, locale),
+    data.links as { easychair?: unknown; springerTemplate?: unknown } | undefined
+  )
+}
+
+export async function getSubmissionSettingsForAdmin(): Promise<SubmissionSettingsValue> {
+  const fallbacks = await getStaticSubmissionSettings()
+  const links = isSupabaseConfigured() ? (await getSiteSettings()).data?.links : undefined
+
+  if (!isSupabaseConfigured()) {
+    return {
+      en: mergeSubmissionLinks(fallbacks.en, links as { easychair?: unknown; springerTemplate?: unknown } | undefined),
+      fr: mergeSubmissionLinks(fallbacks.fr, links as { easychair?: unknown; springerTemplate?: unknown } | undefined),
+      ar: mergeSubmissionLinks(fallbacks.ar, links as { easychair?: unknown; springerTemplate?: unknown } | undefined),
+    }
+  }
+
+  const { data, error } = await getSiteSettings()
+
+  if (error || !data.submission) {
+    return {
+      en: mergeSubmissionLinks(fallbacks.en, data?.links as { easychair?: unknown; springerTemplate?: unknown } | undefined),
+      fr: mergeSubmissionLinks(fallbacks.fr, data?.links as { easychair?: unknown; springerTemplate?: unknown } | undefined),
+      ar: mergeSubmissionLinks(fallbacks.ar, data?.links as { easychair?: unknown; springerTemplate?: unknown } | undefined),
+    }
+  }
+
+  const settings = normalizeSubmissionSettings(
+    data.submission as Record<string, unknown>,
+    fallbacks
+  )
+
+  return {
+    en: mergeSubmissionLinks(settings.en, data.links as { easychair?: unknown; springerTemplate?: unknown } | undefined),
+    fr: mergeSubmissionLinks(settings.fr, data.links as { easychair?: unknown; springerTemplate?: unknown } | undefined),
+    ar: mergeSubmissionLinks(settings.ar, data.links as { easychair?: unknown; springerTemplate?: unknown } | undefined),
+  }
 }

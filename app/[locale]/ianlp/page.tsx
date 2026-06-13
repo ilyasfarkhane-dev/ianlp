@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import Navbar from '@/components/ianlp/navbar'
 import Hero from '@/components/ianlp/hero'
+import WorkshopsSection from '@/components/ianlp/workshops-section'
 import ImportantDates from '@/components/ianlp/important-dates'
 import QuickLinks from '@/components/ianlp/quick-links'
 import KeynoteSpeakers from '@/components/ianlp/keynote-speakers'
@@ -13,7 +14,17 @@ import Committees from '@/components/ianlp/committees'
 import VenueTravel from '@/components/ianlp/venue-travel'
 import Contact from '@/components/ianlp/contact'
 import Footer from '@/components/ianlp/footer'
-import { getCommitteesForLocale, getContactForLocale, getDatesForLocale, getPartnersForLocale, getSpeakersForLocale, getTopicsForLocale } from '@/lib/data/content'
+import {
+  getCommitteesForLocale,
+  getContactForLocale,
+  getDatesForLocale,
+  getPartnersForLocale,
+  getRegisterPageContentForLocale,
+  getSpeakersForLocale,
+  getSubmissionForLocale,
+  getTopicsForLocale,
+  getWorkshopsForLocale,
+} from '@/lib/data/content'
 import type { Locale } from '@/types/database'
 
 export const metadata: Metadata = {
@@ -27,13 +38,16 @@ export default async function IANLPPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  const [speakers, partners, dates, topics, committees, contact] = await Promise.all([
+  const [speakers, partners, dates, topics, committees, contact, workshops, registerContent, submissionContent] = await Promise.all([
     getSpeakersForLocale(locale as Locale),
     getPartnersForLocale(locale as Locale),
     getDatesForLocale(locale as Locale),
     getTopicsForLocale(locale as Locale),
     getCommitteesForLocale(locale as Locale),
     getContactForLocale(locale as Locale),
+    getWorkshopsForLocale(locale as Locale),
+    getRegisterPageContentForLocale(locale as Locale),
+    getSubmissionForLocale(locale as Locale),
   ])
 
   return (
@@ -41,12 +55,13 @@ export default async function IANLPPage({ params }: Props) {
       <Navbar />
       <main>
         <Hero />
+        <WorkshopsSection workshops={workshops} pageContent={registerContent} />
         <ImportantDates dates={dates} />
         <QuickLinks />
         <KeynoteSpeakers speakers={speakers} />
         <Topics mainTopics={topics.mainTopics} focusAreas={topics.focusAreas} />
         <CFPSection />
-        <Submission />
+        <Submission content={submissionContent} />
         <ReviewProcess />
         <Committees
           pcChairs={committees.pcChairs}

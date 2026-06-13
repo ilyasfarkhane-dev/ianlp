@@ -6,6 +6,7 @@ import {
   ClipboardList,
   CreditCard,
   ExternalLink,
+  FileText,
   Mic2,
   Settings,
   Tags,
@@ -145,6 +146,15 @@ export const DASHBOARD_SECTIONS = [
     icon: Tags,
     description: 'Main thematic areas and focus cards',
     table: 'topics',
+  },
+  {
+    key: 'submission',
+    label: 'Submission Guidelines',
+    href: '/admin/submission',
+    icon: FileText,
+    description: 'Platform, format, and ethics guidelines',
+    table: 'site_settings',
+    settingsKey: 'submission',
   },
   {
     key: 'committees',

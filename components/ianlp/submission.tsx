@@ -3,9 +3,9 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useTranslations } from 'next-intl'
 import {
   CheckCircle2,
+  ExternalLink,
   FileText,
   ListChecks,
   MonitorUp,
@@ -13,42 +13,53 @@ import {
   ShieldAlert,
   type LucideIcon,
 } from 'lucide-react'
+import type { PublicSubmissionContent } from '@/lib/submission-settings'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const submissionCards: {
-  titleKey: string
-  descKey: string
-  itemKeys: string[]
+  titleKey: keyof PublicSubmissionContent
+  descKey: keyof PublicSubmissionContent
+  itemsKey: keyof PublicSubmissionContent
+  urlKey?: keyof PublicSubmissionContent
   icon: LucideIcon
 }[] = [
   {
     titleKey: 'platform',
     descKey: 'platformDesc',
-    itemKeys: ['platform2', 'platform3'],
+    itemsKey: 'platformItems',
+    urlKey: 'platformUrl',
     icon: MonitorUp,
   },
   {
     titleKey: 'format',
     descKey: 'formatDesc',
-    itemKeys: ['format1', 'format2', 'format3'],
+    itemsKey: 'formatItems',
+    urlKey: 'formatUrl',
     icon: FileText,
   },
   {
     titleKey: 'keyReqs',
     descKey: 'keyReqsDesc',
-    itemKeys: ['keyReqs1', 'keyReqs2', 'keyReqs3'],
+    itemsKey: 'keyReqsItems',
     icon: ListChecks,
   },
 ]
 
-const ethicsSections: { titleKey: string; itemKeys: string[]; icon: LucideIcon }[] = [
-  { titleKey: 'evaluationCriteria', itemKeys: ['eval1', 'eval2', 'eval3', 'eval4', 'eval5'], icon: Scale },
-  { titleKey: 'plagiarism', itemKeys: ['plag1', 'plag2', 'plag3', 'plag4', 'plag5'], icon: ShieldAlert },
+const ethicsSections: {
+  titleKey: keyof PublicSubmissionContent
+  itemsKey: keyof PublicSubmissionContent
+  icon: LucideIcon
+}[] = [
+  { titleKey: 'evaluationCriteria', itemsKey: 'evaluationItems', icon: Scale },
+  { titleKey: 'plagiarism', itemsKey: 'plagiarismItems', icon: ShieldAlert },
 ]
 
-export default function Submission() {
-  const t = useTranslations('submission')
+type SubmissionProps = {
+  content: PublicSubmissionContent
+}
+
+export default function Submission({ content }: SubmissionProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
@@ -126,14 +137,19 @@ export default function Submission() {
     <section ref={sectionRef} id="submission" className="section-light bg-muted/30">
       <div className="mx-auto max-w-7xl">
         <div ref={headerRef} className="mb-14 text-center">
-          <p className="section-label">{t('label')}</p>
-          <h2 className="section-heading">{t('title')}</h2>
-          <p className="section-subheading mx-auto max-w-2xl">{t('subtitle')}</p>
+          <p className="section-label">{content.label}</p>
+          <h2 className="section-heading">{content.title}</h2>
+          <p className="section-subheading mx-auto max-w-2xl">{content.subtitle}</p>
         </div>
 
         <div ref={cardsRef} className="mb-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {submissionCards.map((card) => {
             const Icon = card.icon
+            const title = content[card.titleKey] as string
+            const desc = content[card.descKey] as string
+            const items = content[card.itemsKey] as string[]
+            const url = card.urlKey ? (content[card.urlKey] as string) : ''
+
             return (
               <article
                 key={card.titleKey}
@@ -144,23 +160,35 @@ export default function Submission() {
                     <Icon className="h-5 w-5" aria-hidden />
                   </div>
                   <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                    {t(card.descKey)}
+                    {desc}
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-foreground">{t(card.titleKey)}</h3>
+                {url ? (
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-lg font-bold text-foreground transition-colors duration-200 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary cursor-pointer"
+                  >
+                    {title}
+                    <ExternalLink className="h-4 w-4 flex-shrink-0 opacity-70" aria-hidden />
+                  </a>
+                ) : (
+                  <h3 className="text-lg font-bold text-foreground">{title}</h3>
+                )}
 
                 <ul className="mt-4 space-y-2.5">
-                  {card.itemKeys.map((key) => (
+                  {items.map((item) => (
                     <li
-                      key={key}
+                      key={item}
                       className="flex items-start gap-2.5 text-sm leading-relaxed text-muted-foreground"
                     >
                       <CheckCircle2
                         className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
                         aria-hidden
                       />
-                      <span>{t(key)}</span>
+                      <span>{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -177,9 +205,9 @@ export default function Submission() {
 
           <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-stretch lg:gap-0 lg:p-0">
             <div className="flex flex-col justify-center bg-primary/[0.04] px-6 py-8 sm:px-8 lg:w-[min(100%,340px)] lg:flex-shrink-0 lg:px-10 lg:py-10">
-              <p className="section-label mb-3 text-primary">{t('label')}</p>
+              <p className="section-label mb-3 text-primary">{content.label}</p>
               <h3 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
-                {t('qualityEthics')}
+                {content.qualityEthics}
               </h3>
               <div className="mt-6 h-1 w-12 rounded-full bg-primary" aria-hidden />
             </div>
@@ -190,6 +218,9 @@ export default function Submission() {
             >
               {ethicsSections.map((section) => {
                 const Icon = section.icon
+                const title = content[section.titleKey] as string
+                const items = content[section.itemsKey] as string[]
+
                 return (
                   <article
                     key={section.titleKey}
@@ -199,20 +230,20 @@ export default function Submission() {
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
                         <Icon className="h-4 w-4" aria-hidden />
                       </div>
-                      <h4 className="font-bold text-foreground">{t(section.titleKey)}</h4>
+                      <h4 className="font-bold text-foreground">{title}</h4>
                     </div>
 
                     <ul className="space-y-2.5">
-                      {section.itemKeys.map((key) => (
+                      {items.map((item) => (
                         <li
-                          key={key}
+                          key={item}
                           className="flex items-start gap-2.5 text-sm leading-relaxed text-muted-foreground"
                         >
                           <CheckCircle2
                             className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
                             aria-hidden
                           />
-                          <span>{t(key)}</span>
+                          <span>{item}</span>
                         </li>
                       ))}
                     </ul>

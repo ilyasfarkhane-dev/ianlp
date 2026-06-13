@@ -9,7 +9,6 @@ import type { PublicRegisterPageContent } from '@/types/database'
 
 const sections = [
   { id: 'conference-fees', labelKey: 'jumpToFees' as const },
-  { id: 'workshops', labelKey: 'jumpToWorkshops' as const },
 ] as const
 
 type RegisterPageHeroProps = {
@@ -97,13 +96,9 @@ export default function RegisterPageHero({ pageContent }: RegisterPageHeroProps)
               >
                 {t('jumpToFees')}
               </button>
-              <button
-                type="button"
-                onClick={() => scrollTo('workshops')}
-                className="btn-outline-light"
-              >
+              <Link href="/ianlp#workshops" className="btn-outline-light">
                 {t('jumpToWorkshops')}
-              </button>
+              </Link>
             </div>
           </div>
 

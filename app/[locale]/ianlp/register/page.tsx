@@ -8,7 +8,6 @@ import {
   getContactForLocale,
   getPricingForLocale,
   getRegisterPageContentForLocale,
-  getWorkshopsForLocale,
 } from '@/lib/data/content'
 import type { Locale } from '@/types/database'
 
@@ -28,9 +27,8 @@ export default async function RegisterPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  const [pricing, workshops, pageContent, contact] = await Promise.all([
+  const [pricing, pageContent, contact] = await Promise.all([
     getPricingForLocale(locale as Locale),
-    getWorkshopsForLocale(locale as Locale),
     getRegisterPageContentForLocale(locale as Locale),
     getContactForLocale(locale as Locale),
   ])
@@ -42,7 +40,6 @@ export default async function RegisterPage({ params }: Props) {
         <RegisterPageHero pageContent={pageContent} />
         <Register
           tiers={pricing}
-          workshops={workshops}
           pageContent={pageContent}
           showHeader={false}
           variant="page"
