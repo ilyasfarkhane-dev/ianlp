@@ -1,6 +1,12 @@
 import type { CommitteeMemberWithTranslations, CommitteeType } from '@/types/database'
 
-const COMMITTEE_TYPE_ORDER: CommitteeType[] = ['pc_chair', 'scientific', 'reviewer', 'organizing']
+const COMMITTEE_TYPE_ORDER: CommitteeType[] = [
+  'pc_chair',
+  'scientific',
+  'reviewer',
+  'institution',
+  'organizing',
+]
 
 export function getCommitteeMembersByType(
   members: CommitteeMemberWithTranslations[],
@@ -27,11 +33,13 @@ export function getNextSortOrderForType(
     const pcCount = getCommitteeMembersByType(members, 'pc_chair').length
     const scientificCount = getCommitteeMembersByType(members, 'scientific').length
     const reviewerCount = getCommitteeMembersByType(members, 'reviewer').length
+    const institutionCount = getCommitteeMembersByType(members, 'institution').length
 
     if (committeeType === 'pc_chair') return 0
     if (committeeType === 'scientific') return pcCount
     if (committeeType === 'reviewer') return pcCount + scientificCount
-    return pcCount + scientificCount + reviewerCount
+    if (committeeType === 'institution') return pcCount + scientificCount + reviewerCount
+    return pcCount + scientificCount + reviewerCount + institutionCount
   }
 
   return Math.max(...sectionMembers.map((member) => member.sort_order)) + 1

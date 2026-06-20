@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTranslations } from 'next-intl'
 import {
   Building2,
+  ClipboardList,
   GraduationCap,
   Mail,
   Microscope,
@@ -37,7 +38,13 @@ function MemberAvatar({ name }: { name: string }) {
 
 type CommitteesProps = PublicCommitteesContent
 
-export default function Committees({ pcChairs, scientific, reviewers, organizing }: CommitteesProps) {
+export default function Committees({
+  pcChairs,
+  scientific,
+  reviewers,
+  institution,
+  organizing,
+}: CommitteesProps) {
   const t = useTranslations('committees')
   const tContact = useTranslations('contact')
   const sectionRef = useRef<HTMLElement>(null)
@@ -46,7 +53,9 @@ export default function Committees({ pcChairs, scientific, reviewers, organizing
   const pcCardsRef = useRef<HTMLDivElement>(null)
   const scientificRef = useRef<HTMLDivElement>(null)
   const reviewersRef = useRef<HTMLDivElement>(null)
+  const institutionRef = useRef<HTMLDivElement>(null)
   const orgRef = useRef<HTMLDivElement>(null)
+  const organizingRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -122,6 +131,35 @@ export default function Committees({ pcChairs, scientific, reviewers, organizing
             stagger: 0.04,
             ease: 'power2.out',
             scrollTrigger: { trigger: reviewersRef.current, start: 'top 88%' },
+          }
+        )
+      }
+
+      if (institutionRef.current) {
+        gsap.fromTo(
+          institutionRef.current,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: institutionRef.current, start: 'top 90%' },
+          }
+        )
+      }
+
+      if (organizingRef.current) {
+        gsap.fromTo(
+          organizingRef.current.children,
+          { opacity: 0, y: 14 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.38,
+            stagger: 0.04,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: organizingRef.current, start: 'top 92%' },
           }
         )
       }
@@ -286,8 +324,8 @@ export default function Committees({ pcChairs, scientific, reviewers, organizing
           </div>
         )}
 
-        {organizing.length > 0 && (
-          <div ref={orgRef} className="relative overflow-hidden bg-white">
+        {institution.length > 0 && (
+          <div ref={institutionRef} className="relative mb-14 overflow-hidden bg-white">
             <div
               className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
               aria-hidden
@@ -295,15 +333,21 @@ export default function Committees({ pcChairs, scientific, reviewers, organizing
 
             <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-stretch lg:gap-0 lg:p-0">
               <div className="flex flex-col justify-center bg-primary/[0.04] px-6 py-8 sm:px-8 lg:w-[min(100%,300px)] lg:flex-shrink-0 lg:px-10 lg:py-10">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Building2 className="h-5 w-5" aria-hidden />
+                </div>
                 <p className="section-label mb-3 text-primary">{t('label')}</p>
                 <h3 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
-                  {t('organizingCommittee')}
+                  {t('institutionCommittee')}
                 </h3>
                 <div className="mt-6 h-1 w-12 rounded-full bg-primary" aria-hidden />
+                <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
+                  {t('institutionCommitteeSub')}
+                </p>
               </div>
 
               <div className="grid flex-1 gap-4 p-6 sm:grid-cols-2 sm:p-8 lg:p-8">
-                {organizing.map((member) => {
+                {institution.map((member) => {
                   const Icon = member.icon ? ORG_ICON_MAP[member.icon] : UserRound
 
                   return (
@@ -330,6 +374,58 @@ export default function Committees({ pcChairs, scientific, reviewers, organizing
                   )
                 })}
               </div>
+            </div>
+          </div>
+        )}
+
+        {organizing.length > 0 && (
+          <div ref={orgRef} className="relative overflow-hidden bg-white">
+            <div
+              className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary"
+              aria-hidden
+            />
+
+            <div className="mb-8 flex flex-col gap-4 p-6 pb-0 sm:p-8 sm:pb-0">
+              <div>
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <ClipboardList className="h-5 w-5" aria-hidden />
+                  </div>
+                  <p className="section-label mb-0">{t('label')}</p>
+                </div>
+                <h3 className="text-2xl font-bold text-foreground sm:text-3xl">
+                  {t('organizingCommittee')}
+                </h3>
+                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                  {t('organizingCommitteeSub')}
+                </p>
+              </div>
+            </div>
+
+            <div
+              ref={organizingRef}
+              className="grid gap-4 px-6 pb-6 sm:grid-cols-2 sm:px-8 sm:pb-8 lg:grid-cols-3"
+            >
+              {organizing.map((member) => (
+                <article
+                  key={member.id}
+                  className="group flex flex-col rounded-xl bg-slate-50/60 p-5 transition-colors duration-200 hover:bg-slate-50"
+                >
+                  <div className="flex items-center gap-3">
+                    <MemberAvatar name={member.name} />
+                    <p className="min-w-0 font-semibold text-foreground">{member.name}</p>
+                  </div>
+                  {member.affiliation.trim().length > 0 && (
+                    <p className="mt-4 flex items-start gap-2 border-t border-border/60 pt-4 text-sm leading-relaxed text-muted-foreground">
+                      <GraduationCap
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                        aria-hidden
+                      />
+                      <span>{member.affiliation}</span>
+                    </p>
+                  )}
+                </article>
+              ))}
             </div>
           </div>
         )}

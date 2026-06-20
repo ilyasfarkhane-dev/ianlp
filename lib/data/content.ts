@@ -334,7 +334,7 @@ export function mapCommitteeMemberToPublic(
     roleLabel: translation.role_label,
     email: member.email,
     icon:
-      member.committee_type === 'organizing'
+      member.committee_type === 'institution'
         ? parseCommitteeIcon(member.icon) ?? 'user-round'
         : null,
   }
@@ -367,9 +367,9 @@ async function getStaticCommittees(locale: Locale): Promise<PublicCommitteesCont
     }
   })
 
-  const organizing: PublicCommitteeMember[] = [
+  const institution: PublicCommitteeMember[] = [
     {
-      id: 'static-org-1',
+      id: 'static-inst-1',
       name: t('profOmar'),
       affiliation: t('fsbmH2c'),
       roleLabel: t('generalChair'),
@@ -377,7 +377,7 @@ async function getStaticCommittees(locale: Locale): Promise<PublicCommitteesCont
       icon: 'user-round',
     },
     {
-      id: 'static-org-2',
+      id: 'static-inst-2',
       name: t('am2iFsbm'),
       affiliation: t('h2cAddress'),
       roleLabel: t('organizingInstitution'),
@@ -386,7 +386,7 @@ async function getStaticCommittees(locale: Locale): Promise<PublicCommitteesCont
     },
   ]
 
-  return { pcChairs, scientific: [], reviewers, organizing }
+  return { pcChairs, scientific: [], reviewers, institution, organizing: [] }
 }
 
 export async function getCommitteesForLocale(locale: Locale): Promise<PublicCommitteesContent> {
@@ -403,6 +403,7 @@ export async function getCommitteesForLocale(locale: Locale): Promise<PublicComm
   const pcChairs: PublicCommitteeMember[] = []
   const scientific: PublicCommitteeMember[] = []
   const reviewers: PublicCommitteeMember[] = []
+  const institution: PublicCommitteeMember[] = []
   const organizing: PublicCommitteeMember[] = []
 
   for (const member of data) {
@@ -415,16 +416,24 @@ export async function getCommitteesForLocale(locale: Locale): Promise<PublicComm
       scientific.push(mapped)
     } else if (member.committee_type === 'reviewer') {
       reviewers.push(mapped)
+    } else if (member.committee_type === 'institution') {
+      institution.push(mapped)
     } else {
       organizing.push(mapped)
     }
   }
 
-  if (pcChairs.length === 0 && scientific.length === 0 && reviewers.length === 0 && organizing.length === 0) {
+  if (
+    pcChairs.length === 0 &&
+    scientific.length === 0 &&
+    reviewers.length === 0 &&
+    institution.length === 0 &&
+    organizing.length === 0
+  ) {
     return getStaticCommittees(locale)
   }
 
-  return { pcChairs, scientific, reviewers, organizing }
+  return { pcChairs, scientific, reviewers, institution, organizing }
 }
 
 function parseFeatures(value: Json | undefined): string[] {

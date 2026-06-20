@@ -117,7 +117,8 @@ export function CommitteeFormDialog({
 
   const isControlled = controlledOpen !== undefined
   const open = isControlled ? controlledOpen : internalOpen
-  const showEmail = committeeType === 'organizing' || committeeType === 'pc_chair'
+  const showEmail =
+    committeeType === 'institution' || committeeType === 'pc_chair' || committeeType === 'organizing'
 
   function setOpen(nextOpen: boolean) {
     if (isControlled) {
@@ -148,8 +149,8 @@ export function CommitteeFormDialog({
       return
     }
 
-    if (committeeType === 'organizing' && !roleLabel.trim()) {
-      toast.error('Role label is required for organizing committee cards')
+    if (committeeType === 'institution' && !roleLabel.trim()) {
+      toast.error('Role label is required for institution committee cards')
       return
     }
 
@@ -163,7 +164,7 @@ export function CommitteeFormDialog({
 
     const sharedPayload = {
       committee_type: committeeType,
-      icon: committeeType === 'organizing' ? icon : null,
+      icon: committeeType === 'institution' ? icon : null,
       email: email.trim(),
       is_published: isPublished,
       translations,
@@ -223,7 +224,9 @@ export function CommitteeFormDialog({
                           ? 'Scientific Committee'
                           : committeeType === 'reviewer'
                             ? 'External Reviewers & Advisors'
-                            : 'Organizing Committee'}
+                            : committeeType === 'institution'
+                              ? 'Institution Committee'
+                              : 'Organizing Committee'}
                     </p>
                   </div>
                 ) : (
@@ -240,13 +243,14 @@ export function CommitteeFormDialog({
                         <SelectItem value="pc_chair">Program chair</SelectItem>
                         <SelectItem value="scientific">Scientific committee</SelectItem>
                         <SelectItem value="reviewer">External reviewer</SelectItem>
-                        <SelectItem value="organizing">Organizing card</SelectItem>
+                        <SelectItem value="institution">Institution card</SelectItem>
+                        <SelectItem value="organizing">Organizing member</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 )}
 
-                {committeeType === 'organizing' ? (
+                {committeeType === 'institution' ? (
                   <div className="space-y-2">
                     <Label htmlFor={`${formId}-icon`}>Card icon</Label>
                     <Select value={icon} onValueChange={(value) => setIcon(value as CommitteeIcon)}>
@@ -292,7 +296,7 @@ export function CommitteeFormDialog({
 
               <div className="lg:border-l lg:border-border lg:pl-8">
                 <FormSection title="Content" description="Name and affiliation shown on the card.">
-                  {committeeType === 'organizing' ? (
+                  {committeeType === 'institution' ? (
                     <div className="space-y-2">
                       <Label htmlFor={`${formId}-role_label`}>
                         Role label

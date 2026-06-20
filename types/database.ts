@@ -6,7 +6,7 @@ export type DateTab = 'submission' | 'review' | 'conference'
 
 export type TopicType = 'main' | 'focus'
 
-export type CommitteeType = 'pc_chair' | 'scientific' | 'reviewer' | 'organizing'
+export type CommitteeType = 'pc_chair' | 'scientific' | 'reviewer' | 'institution' | 'organizing'
 
 export type CommitteeIcon = 'user-round' | 'building-2'
 
@@ -555,6 +555,7 @@ export type PublicCommitteesContent = {
   pcChairs: PublicCommitteeMember[]
   scientific: PublicCommitteeMember[]
   reviewers: PublicCommitteeMember[]
+  institution: PublicCommitteeMember[]
   organizing: PublicCommitteeMember[]
 }
 

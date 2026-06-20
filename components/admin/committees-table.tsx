@@ -29,6 +29,8 @@ type CommitteeSectionConfig = {
   emptyMessage: string
 }
 
+const CARD_COMMITTEE_TYPES: CommitteeType[] = ['institution']
+
 const COMMITTEE_SECTIONS: CommitteeSectionConfig[] = [
   {
     committeeType: 'pc_chair',
@@ -49,10 +51,16 @@ const COMMITTEE_SECTIONS: CommitteeSectionConfig[] = [
     emptyMessage: 'No external reviewers yet. Add the first reviewer for this section.',
   },
   {
+    committeeType: 'institution',
+    title: 'Institution Committee',
+    description: 'Institution cards with role labels and optional icons.',
+    emptyMessage: 'No institution committee cards yet. Add the first card for this section.',
+  },
+  {
     committeeType: 'organizing',
     title: 'Organizing Committee',
-    description: 'Organizing cards with role labels and optional icons.',
-    emptyMessage: 'No organizing committee members yet. Add the first card for this section.',
+    description: 'Members shown in the organizing committee grid.',
+    emptyMessage: 'No organizing committee members yet. Add the first member for this section.',
   },
 ]
 
@@ -170,9 +178,11 @@ function CommitteeSection({ config, members, defaultSortOrder, onEdit }: Committ
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-10" aria-label="Reorder" />
-                  {config.committeeType === 'organizing' ? <TableHead>Role</TableHead> : null}
+                  {CARD_COMMITTEE_TYPES.includes(config.committeeType) ? (
+                    <TableHead>Role</TableHead>
+                  ) : null}
                   <TableHead>Name</TableHead>
-                  {config.committeeType !== 'organizing' ? (
+                  {!CARD_COMMITTEE_TYPES.includes(config.committeeType) ? (
                     <TableHead>Affiliation</TableHead>
                   ) : null}
                   <TableHead>Status</TableHead>
@@ -223,11 +233,11 @@ function CommitteeSection({ config, members, defaultSortOrder, onEdit }: Committ
                           <GripVertical className="h-4 w-4" />
                         </button>
                       </TableCell>
-                      {config.committeeType === 'organizing' ? (
+                      {CARD_COMMITTEE_TYPES.includes(config.committeeType) ? (
                         <TableCell>{translation?.role_label || '—'}</TableCell>
                       ) : null}
                       <TableCell className="font-medium">{translation?.name ?? '—'}</TableCell>
-                      {config.committeeType !== 'organizing' ? (
+                      {!CARD_COMMITTEE_TYPES.includes(config.committeeType) ? (
                         <TableCell className="max-w-xs truncate text-muted-foreground">
                           {translation?.affiliation || '—'}
                         </TableCell>

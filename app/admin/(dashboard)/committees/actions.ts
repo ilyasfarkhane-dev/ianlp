@@ -28,7 +28,7 @@ export async function createCommitteeMember(input: {
     .insert({
       sort_order: input.sort_order,
       committee_type: input.committee_type,
-      icon: input.committee_type === 'organizing' ? input.icon : null,
+      icon: input.committee_type === 'institution' ? input.icon : null,
       email: input.email.trim() || null,
       is_published: input.is_published,
     })
@@ -83,7 +83,7 @@ export async function updateCommitteeMember(
     .from('committee_members')
     .update({
       committee_type: input.committee_type,
-      icon: input.committee_type === 'organizing' ? input.icon : null,
+      icon: input.committee_type === 'institution' ? input.icon : null,
       email: input.email.trim() || null,
       is_published: input.is_published,
     })
@@ -170,6 +170,10 @@ export async function reorderCommitteeMembers(
       .filter((member) => member.committee_type === 'reviewer')
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((member) => member.id),
+    institution: members
+      .filter((member) => member.committee_type === 'institution')
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((member) => member.id),
     organizing: members
       .filter((member) => member.committee_type === 'organizing')
       .sort((a, b) => a.sort_order - b.sort_order)
@@ -178,7 +182,13 @@ export async function reorderCommitteeMembers(
 
   byType[committeeType] = orderedIds
 
-  const flattened = [...byType.pc_chair, ...byType.scientific, ...byType.reviewer, ...byType.organizing]
+  const flattened = [
+    ...byType.pc_chair,
+    ...byType.scientific,
+    ...byType.reviewer,
+    ...byType.institution,
+    ...byType.organizing,
+  ]
 
   for (let index = 0; index < flattened.length; index++) {
     const { error } = await supabase
