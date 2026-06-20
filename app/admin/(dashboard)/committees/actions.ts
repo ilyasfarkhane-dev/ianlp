@@ -162,6 +162,10 @@ export async function reorderCommitteeMembers(
       .filter((member) => member.committee_type === 'pc_chair')
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((member) => member.id),
+    scientific: members
+      .filter((member) => member.committee_type === 'scientific')
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((member) => member.id),
     reviewer: members
       .filter((member) => member.committee_type === 'reviewer')
       .sort((a, b) => a.sort_order - b.sort_order)
@@ -174,7 +178,7 @@ export async function reorderCommitteeMembers(
 
   byType[committeeType] = orderedIds
 
-  const flattened = [...byType.pc_chair, ...byType.reviewer, ...byType.organizing]
+  const flattened = [...byType.pc_chair, ...byType.scientific, ...byType.reviewer, ...byType.organizing]
 
   for (let index = 0; index < flattened.length; index++) {
     const { error } = await supabase

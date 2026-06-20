@@ -37,6 +37,12 @@ const COMMITTEE_SECTIONS: CommitteeSectionConfig[] = [
     emptyMessage: 'No program chairs yet. Add the first chair for this section.',
   },
   {
+    committeeType: 'scientific',
+    title: 'Scientific Committee',
+    description: 'Members shown in the scientific committee grid.',
+    emptyMessage: 'No scientific committee members yet. Add the first member for this section.',
+  },
+  {
     committeeType: 'reviewer',
     title: 'External Reviewers & Advisors',
     description: 'Reviewers shown in the external reviewers grid.',

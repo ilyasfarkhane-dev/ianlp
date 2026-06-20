@@ -8,6 +8,7 @@ import {
   Building2,
   GraduationCap,
   Mail,
+  Microscope,
   UserRound,
   Users,
   type LucideIcon,
@@ -36,13 +37,14 @@ function MemberAvatar({ name }: { name: string }) {
 
 type CommitteesProps = PublicCommitteesContent
 
-export default function Committees({ pcChairs, reviewers, organizing }: CommitteesProps) {
+export default function Committees({ pcChairs, scientific, reviewers, organizing }: CommitteesProps) {
   const t = useTranslations('committees')
   const tContact = useTranslations('contact')
   const sectionRef = useRef<HTMLElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const pcRef = useRef<HTMLDivElement>(null)
   const pcCardsRef = useRef<HTMLDivElement>(null)
+  const scientificRef = useRef<HTMLDivElement>(null)
   const reviewersRef = useRef<HTMLDivElement>(null)
   const orgRef = useRef<HTMLDivElement>(null)
 
@@ -90,6 +92,21 @@ export default function Committees({ pcChairs, reviewers, organizing }: Committe
             stagger: 0.06,
             ease: 'power2.out',
             scrollTrigger: { trigger: pcCardsRef.current, start: 'top 85%' },
+          }
+        )
+      }
+
+      if (scientificRef.current) {
+        gsap.fromTo(
+          scientificRef.current.children,
+          { opacity: 0, y: 14 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.38,
+            stagger: 0.04,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: scientificRef.current, start: 'top 86%' },
           }
         )
       }
@@ -182,6 +199,53 @@ export default function Committees({ pcChairs, reviewers, organizing }: Committe
                   </article>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {scientific.length > 0 && (
+          <div className="mb-14">
+            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Microscope className="h-5 w-5" aria-hidden />
+                  </div>
+                  <p className="section-label mb-0">{t('label')}</p>
+                </div>
+                <h3 className="text-2xl font-bold text-foreground sm:text-3xl">
+                  {t('scientificCommittee')}
+                </h3>
+                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                  {t('scientificCommitteeSub')}
+                </p>
+              </div>
+            </div>
+
+            <div
+              ref={scientificRef}
+              className="grid gap-4 rounded-2xl border border-border/60 bg-white p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3"
+            >
+              {scientific.map((member) => (
+                <article
+                  key={member.id}
+                  className="group flex flex-col rounded-xl bg-slate-50/60 p-5 transition-colors duration-200 hover:bg-slate-50"
+                >
+                  <div className="flex items-center gap-3">
+                    <MemberAvatar name={member.name} />
+                    <p className="min-w-0 font-semibold text-foreground">{member.name}</p>
+                  </div>
+                  {member.affiliation.trim().length > 0 && (
+                    <p className="mt-4 flex items-start gap-2 border-t border-border/60 pt-4 text-sm leading-relaxed text-muted-foreground">
+                      <GraduationCap
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                        aria-hidden
+                      />
+                      <span>{member.affiliation}</span>
+                    </p>
+                  )}
+                </article>
+              ))}
             </div>
           </div>
         )}

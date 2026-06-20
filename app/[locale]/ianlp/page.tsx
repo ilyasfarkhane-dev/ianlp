@@ -65,6 +65,7 @@ export default async function IANLPPage({ params }: Props) {
         <ReviewProcess />
         <Committees
           pcChairs={committees.pcChairs}
+          scientific={committees.scientific}
           reviewers={committees.reviewers}
           organizing={committees.organizing}
         />

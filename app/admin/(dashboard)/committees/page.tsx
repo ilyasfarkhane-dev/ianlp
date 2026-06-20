@@ -18,6 +18,7 @@ export default async function AdminCommitteesPage() {
   const memberList = (members ?? []) as CommitteeMemberWithTranslations[]
   const defaultSortOrders = {
     pc_chair: getNextSortOrderForType(memberList, 'pc_chair'),
+    scientific: getNextSortOrderForType(memberList, 'scientific'),
     reviewer: getNextSortOrderForType(memberList, 'reviewer'),
     organizing: getNextSortOrderForType(memberList, 'organizing'),
   }
@@ -26,7 +27,7 @@ export default async function AdminCommitteesPage() {
     <>
       <AdminHeader
         title="Committees"
-        description="Manage program chairs, external reviewers, and organizing committee"
+        description="Manage program chairs, scientific committee, external reviewers, and organizing committee"
         email={user?.email}
       />
       <main className="flex flex-1 flex-col gap-6 p-4 md:p-6">

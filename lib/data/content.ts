@@ -386,7 +386,7 @@ async function getStaticCommittees(locale: Locale): Promise<PublicCommitteesCont
     },
   ]
 
-  return { pcChairs, reviewers, organizing }
+  return { pcChairs, scientific: [], reviewers, organizing }
 }
 
 export async function getCommitteesForLocale(locale: Locale): Promise<PublicCommitteesContent> {
@@ -401,6 +401,7 @@ export async function getCommitteesForLocale(locale: Locale): Promise<PublicComm
   }
 
   const pcChairs: PublicCommitteeMember[] = []
+  const scientific: PublicCommitteeMember[] = []
   const reviewers: PublicCommitteeMember[] = []
   const organizing: PublicCommitteeMember[] = []
 
@@ -410,6 +411,8 @@ export async function getCommitteesForLocale(locale: Locale): Promise<PublicComm
 
     if (member.committee_type === 'pc_chair') {
       pcChairs.push(mapped)
+    } else if (member.committee_type === 'scientific') {
+      scientific.push(mapped)
     } else if (member.committee_type === 'reviewer') {
       reviewers.push(mapped)
     } else {
@@ -417,11 +420,11 @@ export async function getCommitteesForLocale(locale: Locale): Promise<PublicComm
     }
   }
 
-  if (pcChairs.length === 0 && reviewers.length === 0 && organizing.length === 0) {
+  if (pcChairs.length === 0 && scientific.length === 0 && reviewers.length === 0 && organizing.length === 0) {
     return getStaticCommittees(locale)
   }
 
-  return { pcChairs, reviewers, organizing }
+  return { pcChairs, scientific, reviewers, organizing }
 }
 
 function parseFeatures(value: Json | undefined): string[] {

@@ -219,9 +219,11 @@ export function CommitteeFormDialog({
                     <p className="text-sm font-medium text-foreground">
                       {committeeType === 'pc_chair'
                         ? 'Program Committee Chairs'
-                        : committeeType === 'reviewer'
-                          ? 'External Reviewers & Advisors'
-                          : 'Organizing Committee'}
+                        : committeeType === 'scientific'
+                          ? 'Scientific Committee'
+                          : committeeType === 'reviewer'
+                            ? 'External Reviewers & Advisors'
+                            : 'Organizing Committee'}
                     </p>
                   </div>
                 ) : (
@@ -236,6 +238,7 @@ export function CommitteeFormDialog({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pc_chair">Program chair</SelectItem>
+                        <SelectItem value="scientific">Scientific committee</SelectItem>
                         <SelectItem value="reviewer">External reviewer</SelectItem>
                         <SelectItem value="organizing">Organizing card</SelectItem>
                       </SelectContent>
