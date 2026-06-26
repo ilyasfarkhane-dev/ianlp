@@ -1,6 +1,7 @@
 {
   "nav": {
     "overview": "Aperçu",
+    "program": "Programme",
     "topics": "Thèmes",
     "cfp": "Appel",
     "dates": "Dates",
@@ -35,6 +36,16 @@
     "publicationValue": "Actes évalués par les pairs",
     "publicationSub": "Publication indexée de haute qualité",
     "quote": "Rassemblant chercheurs, universitaires et praticiens pour partager les avancées en TALN, Transformers, LLM et IA fiable."
+  },
+  "program": {
+    "label": "Programme",
+    "title": "Programme de la conférence",
+    "subtitle": "Téléchargez le programme complet d'IANLP 2026, incluant les conférences plénières, sessions et ateliers.",
+    "highlight1": "Conférences plénières",
+    "highlight2": "Présentations d'articles",
+    "highlight3": "Ateliers et panels",
+    "downloadButton": "Télécharger le programme (PDF)",
+    "downloadHint": "PDF · Programme de la conférence IANLP 2026"
   },
   "quickLinks": {
     "label": "Navigation",

@@ -16,6 +16,7 @@ const LNCS_GUIDELINES_URL =
 
 const navLinks = [
   { labelKey: 'overview', href: '#overview' },
+  { labelKey: 'program', href: '#program' },
   { labelKey: 'topics', href: '#topics' },
   { labelKey: 'cfp', href: '#cfp' },
   { labelKey: 'dates', href: '#dates' },

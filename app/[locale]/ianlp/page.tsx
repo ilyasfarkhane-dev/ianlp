@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import Navbar from '@/components/ianlp/navbar'
 import Hero from '@/components/ianlp/hero'
+import ProgramSection from '@/components/ianlp/program-section'
 import WorkshopsSection from '@/components/ianlp/workshops-section'
 import ImportantDates from '@/components/ianlp/important-dates'
 import QuickLinks from '@/components/ianlp/quick-links'
@@ -55,6 +56,7 @@ export default async function IANLPPage({ params }: Props) {
       <Navbar />
       <main>
         <Hero />
+        <ProgramSection />
         <WorkshopsSection workshops={workshops} pageContent={registerContent} />
         <ImportantDates dates={dates} />
         <QuickLinks />

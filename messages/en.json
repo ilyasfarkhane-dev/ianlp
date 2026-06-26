@@ -1,6 +1,7 @@
 {
   "nav": {
     "overview": "Overview",
+    "program": "Program",
     "topics": "Topics",
     "cfp": "CFP",
     "dates": "Dates",
@@ -35,6 +36,16 @@
     "publicationValue": "Peer-reviewed proceedings",
     "publicationSub": "High-quality indexed publication",
     "quote": "Gathering researchers, academics, and practitioners to share advances in NLP, Transformers, LLMs, and trustworthy AI."
+  },
+  "program": {
+    "label": "Program",
+    "title": "Conference Program",
+    "subtitle": "Download the full IANLP 2026 schedule, including keynotes, paper sessions, and workshops.",
+    "highlight1": "Keynote sessions",
+    "highlight2": "Paper presentations",
+    "highlight3": "Workshops and panels",
+    "downloadButton": "Download Program (PDF)",
+    "downloadHint": "PDF · IANLP 2026 conference schedule"
   },
   "quickLinks": {
     "label": "Navigate",
